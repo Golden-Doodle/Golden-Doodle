@@ -12,7 +12,6 @@ export default StyleSheet.create({
     height: "100%",
     backgroundColor: "rgba(0, 0, 0, 0.4)",
   },
-  /* ✅ Keep icons aligned at the top */
   headerTopRow: {
     position: "absolute",
     top: 40,
@@ -22,30 +21,33 @@ export default StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: "center",
   },
-  /* ✅ Smaller Logout Button */
+  /* Logout Button */
   logoutButton: {
     backgroundColor: "#912338",
     padding: 10,
-    borderRadius: 30, // Circular button
+    borderRadius: 30, 
   },
-  /* ✅ Menu Button */
+  refreshButton: {
+    padding: 10,
+    marginLeft: 10,  
+  },
+  /* Menu Button */
   menuButton: {
     padding: 10,
   },
-  /* ✅ Reduce margins & padding so everything fits */
   headerContent: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 80,  // Less space from the top
-    paddingHorizontal: 60, // Less horizontal padding
+    marginTop: 80,  
+    paddingHorizontal: 60, 
   },
   welcomeText: {
-    fontSize: 18, // Slightly smaller
+    fontSize: 18, 
     fontWeight: "700",
     color: "#fff",
     textAlign: "center",
-    marginBottom: 5, // Less space
+    marginBottom: 5, 
   },
   studySpotText: { 
     fontSize: 18,
@@ -55,13 +57,12 @@ export default StyleSheet.create({
     textAlign: "center",
   },
   timerText: {
-    fontSize: 20, // Slightly smaller
+    fontSize: 20,
     fontWeight: "400",
     color: "#fff",
     marginTop: 5,
     textAlign: "center",
   },
-  /* ✅ Optimize Route Button - Smaller */
   routeButton: {
     backgroundColor: "#912338",
     paddingVertical: 10,
@@ -71,7 +72,7 @@ export default StyleSheet.create({
   },
   routeButtonText: {
     color: "#fff",
-    fontSize: 14, // Slightly smaller
+    fontSize: 14,
     fontWeight: "600",
   },
 });

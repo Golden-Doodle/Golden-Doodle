@@ -1,5 +1,5 @@
-import { View, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
 import Header from "../../components/Header/Header";
 import ButtonSection from "../../components/ButtonSection/ButtonSection";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -7,30 +7,45 @@ import QuickShortcuts from "../../components/QuickShortcuts/QuickShortcuts";
 import HottestSpots from "../../components/HottestSpots/HottestSpots";
 import ShuttleSchedule from "../../components/ShuttleSchedule/ShuttleSchedule";
 import BottomNavigation from "../../components/BottomNavigation/BottomNavigation";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "@/app/contexts/AuthContext";
+import { fetchSameDayCalendarEvents } from "@/app/services/GoogleCalendar/fetchingUserCalendarData"; 
+import { GoogleCalendarEvent } from "@/app/utils/types";
 
 export default function HomePageScreen() {
-  const [userName, setUserName] = useState("Guest");
-  const [isGuest, setIsGuest] = useState(true);
+  const auth = React.useContext(AuthContext);
+  const user = auth?.user;
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [calendarEvents, setCalendarEvents] = useState<GoogleCalendarEvent[]>([]);
+
+  const refreshCalendarEvents = useCallback(async () => {
+    if (!user) return;
+  
+    setIsLoading(true);
+    try {
+      console.log("Refreshing calendar events...");
+      const events = await fetchSameDayCalendarEvents();
+      setCalendarEvents(events);
+    } catch (error) {
+      console.error("Failed to refresh calendar:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]); 
+  
   useEffect(() => {
-    const fetchUserData = async () => {
-      const storedName = await AsyncStorage.getItem("userName");
-
-      if (storedName) {
-        setUserName(storedName); 
-        setIsGuest(storedName.toLowerCase() === "guest"); 
-      }
-    };
-
-    fetchUserData();
-  }, []);
+    refreshCalendarEvents();
+    const interval = setInterval(refreshCalendarEvents, 30000);
+    
+    return () => clearInterval(interval);
+  }, [refreshCalendarEvents]); 
+  
 
   return (
     <View style={styles.container}>
-      {/* Header Section */}
+      {/* Pass calendarEvents to Header */}
       <View style={styles.headerContainer}>
-        <Header userName={userName || "Guest"} isGuest={isGuest} />
+        <Header refreshCalendarEvents={refreshCalendarEvents} isLoading={isLoading} calendarEvents={calendarEvents} />
       </View>
 
       {/* Main Content */}
