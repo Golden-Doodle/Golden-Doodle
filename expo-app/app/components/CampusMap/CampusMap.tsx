@@ -22,7 +22,7 @@ import { getFillColorWithOpacity } from "../../utils/helperFunctions";
 import { eatingOnCampusData } from "./data/eatingOnCampusData";
 import NextClassModal from "./modals/NextClassModal";
 import HamburgerWidget from "./HamburgerWidget";
-import SearchModal from "./modals/NavigateModal";
+import NavigateModal from "./modals/NavigateModal";
 import { styles } from "./CampusMap.styles";
 
 const CampusMap = () => {
@@ -165,7 +165,7 @@ const CampusMap = () => {
   }, [selectedBuilding, fetchRouteWithDestination]);
 
   // Handle closing search modal
-  const onCloseSearchModal = useCallback(() => {
+  const onCloseNavigateModal = useCallback(() => {
     setSearchBarVisible(false);
   }, []);
 
@@ -267,9 +267,9 @@ const CampusMap = () => {
       />
 
       {/* Search Modal -- Shows up when Navigate is pressed */}
-      <SearchModal
+      <NavigateModal
         visible={searchBarVisible}
-        onClose={onCloseSearchModal}
+        onClose={onCloseNavigateModal}
         onSelectBuilding={(building) => {
           setSelectedBuilding(building);
           setSearchBarVisible(false);
@@ -278,12 +278,12 @@ const CampusMap = () => {
         markers={markers}
         onPressSelectOnMap={() => {
           setIsSelectingDestination(true);
-          onCloseSearchModal();
+          onCloseNavigateModal();
         }}
         destination={destination}
         onGetDirections={() => {
           fetchRoute();
-          onCloseSearchModal();
+          onCloseNavigateModal();
         }}
       />
 

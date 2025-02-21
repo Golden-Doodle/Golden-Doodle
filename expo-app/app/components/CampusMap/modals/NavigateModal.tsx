@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Building, Coordinates, CustomMarkerType } from "@/app/utils/types";
 
-interface SearchBarModalProps {
+interface NavigateModalProps {
   visible: boolean;
   onClose: () => void;
   buildings: Building[];
@@ -21,7 +21,7 @@ interface SearchBarModalProps {
   onGetDirections: () => void;  
 }
 
-const SearchBarModal: React.FC<SearchBarModalProps> = ({
+const NavigateModal: React.FC<NavigateModalProps> = ({
   visible,
   onClose,
   buildings,
@@ -168,4 +168,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SearchBarModal;
+export default NavigateModal;
