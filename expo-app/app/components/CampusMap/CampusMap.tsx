@@ -70,6 +70,7 @@ const CampusMap = () => {
 
   // Fetch route from user's location to destination
   const fetchRoute = useCallback(async () => {
+    // Check if user location is available
     if (!userLocation) {
       Alert.alert("Cannot fetch route without user location");
       return;
@@ -77,8 +78,13 @@ const CampusMap = () => {
 
     let targetDestination = destination;
 
+    // If no destination is set, use selected building
     if (!targetDestination && selectedBuilding) {
-      targetDestination = selectedBuilding.coordinates[0];
+      if (selectedBuilding === "markerOnMap") {
+        targetDestination = userLocation;
+      } else {
+        targetDestination = selectedBuilding.coordinates[0];
+      }
     }
 
     if (!targetDestination) {
@@ -133,11 +139,16 @@ const CampusMap = () => {
 
   // Handle building press to show building info
   const handleBuildingPressed = (building: Building) => () => {
-    if (selectedBuilding?.id === building.id) {
+    if (selectedBuilding === "markerOnMap" || selectedBuilding === null) {
+      return;
+    }
+
+    if (selectedBuilding.id === building.id) {
       setSelectedBuilding(null);
       setIsModalVisible(false);
       return;
     }
+    
     // console.log("Building pressed:", building);
     setDestination(null);
     setSelectedBuilding(building);
@@ -249,28 +260,10 @@ const CampusMap = () => {
       <BuildingInfoModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
-        title={selectedBuilding?.name || "Building Information"}
-        description={
-          selectedBuilding?.description || "No description available"
-        }
-        footerContent={
-          <TouchableOpacity
-            style={styles.navigateButton}
-            onPress={() => {
-              if (selectedBuilding) {
-                setDestination({
-                  latitude: selectedBuilding.coordinates[0].latitude,
-                  longitude: selectedBuilding.coordinates[0].longitude,
-                });
-                setIsModalVisible(false);
-              }
-            }}
-          >
-            <Text style={styles.navigateButtonText}>
-              Navigate to this Building
-            </Text>
-          </TouchableOpacity>
-        }
+        selectedBuilding={selectedBuilding}
+        onNavigate={(latitude, longitude) => {
+          setDestination({ latitude, longitude });
+        }}
       />
 
       {/* Search Modal -- Shows up when Navigate is pressed */}
