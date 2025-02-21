@@ -1,10 +1,14 @@
-import { Building } from "./types";
+import { Building, SelectedBuildingType } from "./types";
 
 // Get fill color with opacity
 export const getFillColorWithOpacity = (
   building: Building,
-  selectedBuilding: Building | null
+  selectedBuilding: SelectedBuildingType
 ) => {
+
+  if (selectedBuilding === "markerOnMap" || selectedBuilding === null) {
+    return building.fillColor;
+  }
   const fillColor = building.fillColor;
   let rgbaColor = fillColor;
   if (fillColor.startsWith("#")) {
