@@ -25,9 +25,12 @@ import { eatingOnCampusData } from "./data/eatingOnCampusData";
 import NextClassModal from "./modals/NextClassModal";
 import HamburgerWidget from "./HamburgerWidget";
 
+interface CampusMapProps {
+  pressedOptimizeRoute: boolean;
+}
 
-const CampusMap = () => {
-  const [campus, setCampus] = useState<"SGW" | "Loyola">("SGW");
+const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
+  const [campus, setCampus] = useState<"SGW" | "LOY">("SGW");
   const [routeCoordinates, setRouteCoordinates] = useState<Coordinates[]>([]);
   const [destination, setDestination] = useState<Coordinates | null>(null);
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
@@ -36,7 +39,8 @@ const CampusMap = () => {
     null
   );
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [isNextClassModalVisible, setIsNextClassModalVisible] = useState<boolean>(false);
+  const [isNextClassModalVisible, setIsNextClassModalVisible] =
+    useState<boolean>(false);
   const [viewEatingOnCampus, setViewEatingOnCampus] = useState<boolean>(false);
 
   const markers = campus === "SGW" ? SGWMarkers : LoyolaMarkers;
@@ -58,6 +62,13 @@ const CampusMap = () => {
       });
     })();
   }, []);
+
+  // Open the modal if the user pressed the optimize route button
+  useEffect(() => {
+    if (pressedOptimizeRoute) {
+      setIsNextClassModalVisible(true);
+    }
+  },[]);
 
   // Reset destination and route
   const resetDirections = () => {
@@ -109,13 +120,12 @@ const CampusMap = () => {
 
   // Handle marker press to set destination
   const handleMarkerPress = useCallback((coordinate: Coordinates) => {
-    // console.log("Setting destination:", coordinate);
     setDestination(coordinate);
   }, []);
 
   // Toggle between SGW and Loyola campuses
   const toggleCampus = useCallback(() => {
-    setCampus((prevCampus) => (prevCampus === "SGW" ? "Loyola" : "SGW"));
+    setCampus((prevCampus) => (prevCampus === "SGW" ? "LOY" : "SGW"));
     resetDirections();
   }, []);
 
@@ -126,7 +136,6 @@ const CampusMap = () => {
       setIsModalVisible(false);
       return;
     }
-    // console.log("Building pressed:", building);
     setSelectedBuilding(building);
     setIsModalVisible(true);
   };
@@ -268,8 +277,7 @@ const CampusMap = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, position: "relative" },
   map: { flex: 1 },
-  
-  
+
   modalOverlay: {
     flex: 1,
     justifyContent: "center",

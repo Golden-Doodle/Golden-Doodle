@@ -8,6 +8,7 @@ import {
 } from "@/app/utils/types";
 import { SGWBuildings, LoyolaBuildings } from "../data/buildingData";
 import { fetchCalendarEvents } from "@/app/services/GoogleCalendar/fetchingUserCalendarData";
+import { coordinatesFromRoomLocation } from "@/app/utils/directions";
 
 interface NextClassModalProps {
   visible: boolean;
@@ -38,7 +39,6 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
         const nextClassLocation = JSON.parse(events[0].location || "{}");
 
         setLocation(nextClassLocation);
-        // console.log("Next Classssd:", nextClassLocation);
       };
     };
 
@@ -46,23 +46,14 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
   }, [visible]);
 
   const handleGetDirections = () => {
-    if (!location) {
+    const coordinates: Coordinates | undefined = coordinatesFromRoomLocation(
+      location,
+      SGWBuildings,
+      LoyolaBuildings
+    );
+    if(!coordinates) {
       return;
     }
-
-    const coordinates: Coordinates | undefined =
-      location.campus === "SGW"
-        ? SGWBuildings.find((building) => building.name === location.building)
-            ?.coordinates[0]
-        : LoyolaBuildings.find(
-            (building) => building.name === location.building
-          )?.coordinates[0];
-
-    if (!coordinates) {
-      console.error("Building coordinates not found");
-      return;
-    }
-
     fetchRouteWithDestination(coordinates);
     onClose();
   };

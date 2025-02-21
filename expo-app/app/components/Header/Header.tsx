@@ -1,11 +1,12 @@
-import React from "react";
-import { View, Text, ImageBackground, TouchableOpacity, ActivityIndicator } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import styles from "./Header.styles";
+import { styles } from "./Header.styles";
 import { AuthContext } from "@/app/contexts/AuthContext";
 import NextClassComponent from "./NextClassComponent";
 import { GoogleCalendarEvent } from "@/app/utils/types"; // Import event type
+import { ImageBackground } from "react-native";
 
 interface HeaderProps {
   refreshCalendarEvents: () => void;
@@ -13,35 +14,62 @@ interface HeaderProps {
   calendarEvents: GoogleCalendarEvent[];
 }
 
-export default function Header({ refreshCalendarEvents, isLoading, calendarEvents }: HeaderProps) {
+export default function Header({
+  refreshCalendarEvents,
+  isLoading,
+  calendarEvents,
+}: HeaderProps) {
   const router = useRouter();
   const auth = React.useContext(AuthContext);
   const user = auth?.user || null;
   const signOut = auth?.signOut;
 
+  const [nextClass, setNextClass] = useState<GoogleCalendarEvent | null>(null);
+
+  const onOptimizeRoutePress = () => {
+    router.push({
+      pathname: "/screens/Home/CampusMapScreen",
+      params: {
+        pressedOptimizeRoute: "true",
+      },
+    });
+  };
+
   return (
-    <ImageBackground
-      source={require("../../../assets/images/header-background.jpg")}
-      style={styles.background}
-    >
+    <ImageBackground source={require("@/assets/images/header-background.jpg")} style={styles.headerContainer}>
+    <View style={styles.headerContainer}>
+      {/* Overlay */}
       <View style={styles.overlay} />
 
-      {/* Header Row for Icons */}
+      {/* Header Top Row for Icons */}
       <View style={styles.headerTopRow}>
-        <TouchableOpacity style={styles.logoutButton} onPress={!user ? () => router.push("/") : signOut}>
-          <Feather name={!user ? "log-in" : "log-out"} size={22} color="white" />
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={!user ? () => router.push("/") : signOut}
+        >
+          <Feather
+            name={!user ? "log-in" : "log-out"}
+            size={22}
+            color="white"
+          />
         </TouchableOpacity>
 
-        {/* Refresh Button */}
-        <TouchableOpacity style={styles.refreshButton} onPress={refreshCalendarEvents}>
+        {/* Refresh Button -- Using pull down now */}
+        {/* <TouchableOpacity
+          style={styles.refreshButton}
+          onPress={refreshCalendarEvents}
+        >
           {isLoading ? (
             <ActivityIndicator size="small" color="white" />
           ) : (
             <Feather name="refresh-ccw" size={22} color="white" />
           )}
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
-        <TouchableOpacity style={styles.menuButton} onPress={() => router.push("/screens/Home/HomeMenuScreen")}>
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => router.push("/screens/Home/HomeMenuScreen")}
+        >
           <Feather name="menu" size={26} color="white" />
         </TouchableOpacity>
       </View>
@@ -51,14 +79,29 @@ export default function Header({ refreshCalendarEvents, isLoading, calendarEvent
         <Text style={styles.welcomeText}>
           {user?.displayName ? `Welcome Back, ${user.displayName}` : "Welcome!"}
         </Text>
-        <NextClassComponent calendarEvents={calendarEvents} style={styles.timerText} />
+        <NextClassComponent
+          calendarEvents={calendarEvents}
+          style={styles.timerText}
+          nextClass={nextClass}
+          setNextClass={setNextClass}
+        />
 
-        <TouchableOpacity style={styles.routeButton}>
-          <Text style={styles.routeButtonText}>Optimize Route</Text>
-        </TouchableOpacity>
+        {/* Optimize Routes Button */}
+        {user && (
+          <TouchableOpacity
+            style={styles.routeButton}
+            onPress={onOptimizeRoutePress}
+          >
+            <Text style={styles.routeButtonText}>Optimize Route</Text>
+          </TouchableOpacity>
+        )}
 
-        <Text style={styles.studySpotText}>Find your next study spot or coffee stop.</Text>
+        <Text style={styles.studySpotText}>
+          Find your next study spot or coffee stop.
+        </Text>
       </View>
+    </View>
     </ImageBackground>
   );
+
 }

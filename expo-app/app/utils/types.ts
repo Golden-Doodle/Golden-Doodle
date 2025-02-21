@@ -1,4 +1,4 @@
-export type Campus = "SGW" | "Loyola";
+export type Campus = "SGW" | "LOY";
 
 export type Coordinates = {
   latitude: number;
