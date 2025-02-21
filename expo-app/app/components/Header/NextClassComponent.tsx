@@ -6,7 +6,6 @@ import { GoogleCalendarEvent } from "@/app/utils/types";
 interface NextClassComponentProps {
   calendarEvents: GoogleCalendarEvent[];
   style?: any;
-  user: any;
 }
 
 export default function NextClassComponent({ calendarEvents, style }: NextClassComponentProps) {

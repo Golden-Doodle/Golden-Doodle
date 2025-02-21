@@ -48,3 +48,7 @@ export interface GoogleCalendarEvent {
     responseStatus: string;
   }>;
 }
+
+// Define SelectedBuilding type
+// This is used for the CampusMap and CampusMapNavTab component 
+export type SelectedBuildingType = Building | null | "markerOnMap";

@@ -11,7 +11,12 @@ import {
 } from "./data/customMarkerData";
 import NavTab from "./CampusMapNavTab";
 import * as Location from "expo-location";
-import { Building, Coordinates, CustomMarkerType } from "../../utils/types";
+import {
+  Building,
+  Coordinates,
+  CustomMarkerType,
+  SelectedBuildingType,
+} from "../../utils/types";
 import BuildingInfoModal from "./modals/BuildingInfoModal";
 import { getFillColorWithOpacity } from "../../utils/helperFunctions";
 import { eatingOnCampusData } from "./data/eatingOnCampusData";
@@ -26,16 +31,15 @@ const CampusMap = () => {
   const [destination, setDestination] = useState<Coordinates | null>(null);
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [viewCampusMap, setViewCampusMap] = useState<boolean>(true);
-  const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(
-    null
-  );
+  const [selectedBuilding, setSelectedBuilding] =
+    useState<SelectedBuildingType>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isNextClassModalVisible, setIsNextClassModalVisible] =
     useState<boolean>(false);
   const [viewEatingOnCampus, setViewEatingOnCampus] = useState<boolean>(false);
   const [searchBarVisible, setSearchBarVisible] = useState<boolean>(false);
-
-  const [isSelectingDestination, setIsSelectingDestination] = useState<boolean>(false); // Used for allowing user to select any destination on map
+  const [isSelectingDestination, setIsSelectingDestination] =
+    useState<boolean>(false); // Used for allowing user to select any destination on map
 
   const markers = campus === "SGW" ? SGWMarkers : LoyolaMarkers;
   const buildings = campus === "SGW" ? SGWBuildings : LoyolaBuildings;
@@ -107,8 +111,7 @@ const CampusMap = () => {
 
   // Handle marker press to set destination
   const handleMarkerPress = useCallback((marker: CustomMarkerType) => {
-
-    const makerToBuilding : Building = {
+    const makerToBuilding: Building = {
       id: marker.id,
       name: marker.title,
       description: marker.description,
@@ -120,7 +123,6 @@ const CampusMap = () => {
 
     setSelectedBuilding(makerToBuilding);
     setIsModalVisible(true);
-
   }, []);
 
   // Toggle between SGW and Loyola campuses
@@ -137,13 +139,16 @@ const CampusMap = () => {
       return;
     }
     // console.log("Building pressed:", building);
+    setDestination(null);
     setSelectedBuilding(building);
     setIsModalVisible(true);
   };
 
   // Handle directions press
   const onDirectionsPress = useCallback(() => {
-    if (selectedBuilding) {
+    if (selectedBuilding === "markerOnMap") {
+      fetchRoute();
+    } else if (selectedBuilding) {
       fetchRouteWithDestination(selectedBuilding.coordinates[0]);
     }
   }, [selectedBuilding, fetchRouteWithDestination]);
@@ -154,14 +159,14 @@ const CampusMap = () => {
   }, []);
 
   // Handle map press
-  const handleMapPress = (event:any) => {
+  const handleMapPress = (event: any) => {
     if (isSelectingDestination) {
       const { latitude, longitude } = event.nativeEvent.coordinate;
       setDestination({ latitude, longitude });
       setIsSelectingDestination(false); // Exit selection mode
+      setSelectedBuilding("markerOnMap");
     }
   };
-
 
   return (
     <View style={styles.container}>
@@ -181,7 +186,7 @@ const CampusMap = () => {
         loadingEnabled={true}
         scrollEnabled={true}
         zoomEnabled={true}
-        onLongPress={(event : any ) => handleMapPress(event)}
+        onLongPress={(event: any) => handleMapPress(event)}
       >
         {viewCampusMap && (
           <>
@@ -278,9 +283,15 @@ const CampusMap = () => {
         }}
         buildings={buildings}
         markers={markers}
-        onPressSelectOnMap={() => {setIsSelectingDestination(true); onCloseSearchModal();}}
+        onPressSelectOnMap={() => {
+          setIsSelectingDestination(true);
+          onCloseSearchModal();
+        }}
         destination={destination}
-        onGetDirections={() => {fetchRoute(); onCloseSearchModal();}}
+        onGetDirections={() => {
+          fetchRoute();
+          onCloseSearchModal();
+        }}
       />
 
       <NextClassModal
