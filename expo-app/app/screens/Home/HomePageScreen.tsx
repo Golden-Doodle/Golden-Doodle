@@ -35,9 +35,10 @@ export default function HomePageScreen() {
   
   useEffect(() => {
     refreshCalendarEvents();
-    const interval = setInterval(refreshCalendarEvents, 30000);
+    // const interval = setInterval(refreshCalendarEvents, 30000);
     
-    return () => clearInterval(interval);
+    // return () => clearInterval(interval);
+    return () => {};
   }, [refreshCalendarEvents]); 
   
 

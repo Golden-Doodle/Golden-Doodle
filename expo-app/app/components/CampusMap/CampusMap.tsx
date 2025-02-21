@@ -33,13 +33,18 @@ const CampusMap = () => {
   const [viewCampusMap, setViewCampusMap] = useState<boolean>(true);
   const [selectedBuilding, setSelectedBuilding] =
     useState<SelectedBuildingType>(null);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [isBuildingInfoModalVisible, setIsBuildingInfoModalVisible] = useState<boolean>(false);
   const [isNextClassModalVisible, setIsNextClassModalVisible] =
     useState<boolean>(false);
   const [viewEatingOnCampus, setViewEatingOnCampus] = useState<boolean>(false);
-  const [searchBarVisible, setSearchBarVisible] = useState<boolean>(false);
+  const [isNavigateModalVisible, setIsNavigateModalVisible] = useState<boolean>(false);
   const [isSelectingDestination, setIsSelectingDestination] =
     useState<boolean>(false); // Used for allowing user to select any destination on map
+  const [isSelectingStartingLocation, setIsSelectingStartingLocation] =
+    useState<boolean>(false);
+  const [startingLocation, setStartingLocation] = useState<Coordinates | null>(
+    null
+  );
 
   const markers = campus === "SGW" ? SGWMarkers : LoyolaMarkers;
   const buildings = campus === "SGW" ? SGWBuildings : LoyolaBuildings;
@@ -70,9 +75,9 @@ const CampusMap = () => {
 
   // Fetch route from user's location to destination
   const fetchRoute = useCallback(async () => {
-    // Check if user location is available
-    if (!userLocation) {
-      Alert.alert("Cannot fetch route without user location");
+    const origin = startingLocation || userLocation; // Use selected or user location
+    if (!origin) {
+      Alert.alert("Cannot fetch route without a starting location");
       return;
     }
 
@@ -92,12 +97,12 @@ const CampusMap = () => {
       return;
     }
 
-    const route = await getDirections(userLocation, targetDestination);
+    const route = await getDirections(origin, targetDestination);
 
     if (route) {
       setRouteCoordinates(route);
     }
-  }, [userLocation, destination, selectedBuilding]);
+  }, [startingLocation, userLocation, destination, selectedBuilding]);
 
   const fetchRouteWithDestination = useCallback(
     async (destination: Coordinates) => {
@@ -128,7 +133,7 @@ const CampusMap = () => {
     };
 
     setSelectedBuilding(makerToBuilding);
-    setIsModalVisible(true);
+    setIsBuildingInfoModalVisible(true);
   }, []);
 
   // Toggle between SGW and Loyola campuses
@@ -139,20 +144,17 @@ const CampusMap = () => {
 
   // Handle building press to show building info
   const handleBuildingPressed = (building: Building) => () => {
-    if (selectedBuilding === "markerOnMap" || selectedBuilding === null) {
+
+    if (selectedBuilding !== null && selectedBuilding !== 'markerOnMap' && selectedBuilding.id === building.id) {
+      setSelectedBuilding(null);
+      setIsBuildingInfoModalVisible(false);
       return;
     }
 
-    if (selectedBuilding.id === building.id) {
-      setSelectedBuilding(null);
-      setIsModalVisible(false);
-      return;
-    }
-    
     // console.log("Building pressed:", building);
     setDestination(null);
     setSelectedBuilding(building);
-    setIsModalVisible(true);
+    setIsBuildingInfoModalVisible(true);
   };
 
   // Handle directions press
@@ -166,16 +168,25 @@ const CampusMap = () => {
 
   // Handle closing search modal
   const onCloseNavigateModal = useCallback(() => {
-    setSearchBarVisible(false);
+    setIsNavigateModalVisible(false);
   }, []);
 
   // Handle map press
   const handleMapPress = (event: any) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+
+    const coordinates: Coordinates = { latitude, longitude };
+
     if (isSelectingDestination) {
-      const { latitude, longitude } = event.nativeEvent.coordinate;
-      setDestination({ latitude, longitude });
-      setIsSelectingDestination(false); // Exit selection mode
+      setDestination(coordinates);
       setSelectedBuilding("markerOnMap");
+      setIsBuildingInfoModalVisible(true); // Re-Open building info modal
+      setIsSelectingDestination(false); // Exit selection mode
+    } else if (isSelectingStartingLocation) {
+      console.log("Starting location set to:", coordinates);
+      setStartingLocation(coordinates);
+      setIsNavigateModalVisible(true); // Re-Open navigate modal
+      setIsSelectingStartingLocation(false); // Exit selection mode
     }
   };
 
@@ -258,8 +269,8 @@ const CampusMap = () => {
 
       {/* Modal for Building Info */}
       <BuildingInfoModal
-        visible={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
+        visible={isBuildingInfoModalVisible}
+        onClose={() => setIsBuildingInfoModalVisible(false)}
         selectedBuilding={selectedBuilding}
         onNavigate={(latitude, longitude) => {
           setDestination({ latitude, longitude });
@@ -268,11 +279,12 @@ const CampusMap = () => {
 
       {/* Search Modal -- Shows up when Navigate is pressed */}
       <NavigateModal
-        visible={searchBarVisible}
+        visible={isNavigateModalVisible}
         onClose={onCloseNavigateModal}
         onSelectBuilding={(building) => {
           setSelectedBuilding(building);
-          setSearchBarVisible(false);
+          setDestination(building.coordinates[0]); // Set destination
+          setIsNavigateModalVisible(false);
         }}
         buildings={buildings}
         markers={markers}
@@ -298,12 +310,12 @@ const CampusMap = () => {
         campus={campus}
         selectedBuilding={selectedBuilding}
         // onNavigatePress={fetchRoute}
-        onNavigatePress={() => setSearchBarVisible(true)}
+        onNavigatePress={() => setIsNavigateModalVisible(true)}
         onTravelPress={() => fetchRouteWithDestination(initialRegion[campus])}
         onEatPress={() => setViewEatingOnCampus((prevValue) => !prevValue)}
         onNextClassPress={() => setIsNextClassModalVisible(true)}
         onMoreOptionsPress={() => Alert.alert("More Options pressed")}
-        onInfoPress={() => setIsModalVisible(true)}
+        onInfoPress={() => setIsBuildingInfoModalVisible(true)}
         onBackPress={() => resetDirections()}
         onDirectionsPress={onDirectionsPress}
       />
