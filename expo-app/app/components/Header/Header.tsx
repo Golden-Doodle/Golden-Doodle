@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ImageBackground,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import styles from "./Header.styles";
+import { styles } from "./Header.styles";
 import { AuthContext } from "@/app/contexts/AuthContext";
 import NextClassComponent from "./NextClassComponent";
 import { GoogleCalendarEvent } from "@/app/utils/types"; // Import event type
+import { ImageBackground } from "react-native";
 
 interface HeaderProps {
   refreshCalendarEvents: () => void;
@@ -24,7 +19,6 @@ export default function Header({
   isLoading,
   calendarEvents,
 }: HeaderProps) {
-
   const router = useRouter();
   const auth = React.useContext(AuthContext);
   const user = auth?.user || null;
@@ -42,13 +36,12 @@ export default function Header({
   };
 
   return (
-    <ImageBackground
-      source={require("../../../assets/images/header-background.jpg")}
-      style={styles.background}
-    >
+    <ImageBackground source={require("@/assets/images/header-background.jpg")} style={styles.headerContainer}>
+    <View style={styles.headerContainer}>
+      {/* Overlay */}
       <View style={styles.overlay} />
 
-      {/* Header Row for Icons */}
+      {/* Header Top Row for Icons */}
       <View style={styles.headerTopRow}>
         <TouchableOpacity
           style={styles.logoutButton}
@@ -61,8 +54,8 @@ export default function Header({
           />
         </TouchableOpacity>
 
-        {/* Refresh Button */}
-        <TouchableOpacity
+        {/* Refresh Button -- Using pull down now */}
+        {/* <TouchableOpacity
           style={styles.refreshButton}
           onPress={refreshCalendarEvents}
         >
@@ -71,7 +64,7 @@ export default function Header({
           ) : (
             <Feather name="refresh-ccw" size={22} color="white" />
           )}
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           style={styles.menuButton}
@@ -107,6 +100,8 @@ export default function Header({
           Find your next study spot or coffee stop.
         </Text>
       </View>
+    </View>
     </ImageBackground>
   );
+
 }
