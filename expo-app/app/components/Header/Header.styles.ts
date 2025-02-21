@@ -53,7 +53,7 @@ export default StyleSheet.create({
     fontSize: 18,
     fontWeight: "500",
     color: "#fff",
-    marginTop: 50,
+    marginTop: 10,
     textAlign: "center",
   },
   timerText: {
@@ -68,7 +68,7 @@ export default StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
-    marginTop: 40
+    marginTop: 10
   },
   routeButtonText: {
     color: "#fff",

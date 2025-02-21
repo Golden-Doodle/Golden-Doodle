@@ -93,6 +93,7 @@ export default function Header({
           setNextClass={setNextClass}
         />
 
+        {/* Optimize Routes Button */}
         {user && (
           <TouchableOpacity
             style={styles.routeButton}
