@@ -1,36 +1,25 @@
 import React from "react";
-import { View, Text, ImageBackground, TouchableOpacity } from "react-native";
+import { View, Text, ImageBackground, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import auth from "@react-native-firebase/auth";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import styles from "./Header.styles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "@/app/contexts/AuthContext";
+import NextClassComponent from "./NextClassComponent";
+import { GoogleCalendarEvent } from "@/app/utils/types"; // Import event type
 
 interface HeaderProps {
-  userName: string;
-  isGuest: boolean;
+  refreshCalendarEvents: () => void;
+  isLoading: boolean;
+  calendarEvents: GoogleCalendarEvent[];
 }
 
-export default function Header({ userName, isGuest }: HeaderProps): JSX.Element {
+export default function Header({ refreshCalendarEvents, isLoading, calendarEvents }: HeaderProps) {
   const router = useRouter();
-
-  const handleLogout = async () => {
-    try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
-      await auth().signOut();
-      
-      await AsyncStorage.removeItem("userName");
-  
-      router.push("/");
-    } catch (error) {
-      console.error("Logout Error:", error);
-    }
-  };
+  const auth = React.useContext(AuthContext);
+  const user = auth?.user || null;
+  const signOut = auth?.signOut;
 
   return (
-    
     <ImageBackground
       source={require("../../../assets/images/header-background.jpg")}
       style={styles.background}
@@ -39,43 +28,36 @@ export default function Header({ userName, isGuest }: HeaderProps): JSX.Element 
 
       {/* Header Row for Icons */}
       <View style={styles.headerTopRow}>
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={isGuest ? () => router.push("/") : handleLogout}
-        >
-          {isGuest ? (
-            <Feather name="arrow-left" size={22} color="white" />
+        <TouchableOpacity style={styles.logoutButton} onPress={!user ? () => router.push("/") : signOut}>
+          <Feather name={!user ? "log-in" : "log-out"} size={22} color="white" />
+        </TouchableOpacity>
+
+        {/* Refresh Button */}
+        <TouchableOpacity style={styles.refreshButton} onPress={refreshCalendarEvents}>
+          {isLoading ? (
+            <ActivityIndicator size="small" color="white" />
           ) : (
-            <Feather name="log-out" size={22} color="white" />
+            <Feather name="refresh-ccw" size={22} color="white" />
           )}
         </TouchableOpacity>
 
-        {/* Hamburger Menu */}
-        <TouchableOpacity
-          style={styles.menuButton}
-          onPress={() => router.push("/screens/Home/HomeMenuScreen")}
-        >
+        <TouchableOpacity style={styles.menuButton} onPress={() => router.push("/screens/Home/HomeMenuScreen")}>
           <Feather name="menu" size={26} color="white" />
         </TouchableOpacity>
       </View>
 
-      {/* Text & Buttons */}
+      {/* Header Content */}
       <View style={styles.headerContent}>
         <Text style={styles.welcomeText}>
-          {userName ? `Welcome Back, ${userName}` : "Welcome!"}
+          {user?.displayName ? `Welcome Back, ${user.displayName}` : "Welcome!"}
         </Text>
-        <Text style={styles.timerText}>
-          You have 13 minutes until your next class
-        </Text>
+        <NextClassComponent calendarEvents={calendarEvents} style={styles.timerText} />
 
-        {/* Optimize Route Button */}
         <TouchableOpacity style={styles.routeButton}>
           <Text style={styles.routeButtonText}>Optimize Route</Text>
         </TouchableOpacity>
 
-        <Text style={styles.studySpotText}>
-          Find your next study spot or coffee stop.
-        </Text>
+        <Text style={styles.studySpotText}>Find your next study spot or coffee stop.</Text>
       </View>
     </ImageBackground>
   );
