@@ -1,8 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { fetchBusLocations } from "@/app/services/ConcordiaShuttle/ConcordiaApiShuttle";
+import { AuthContext } from "@/app/contexts/AuthContext";
 
 export default function ShuttleSchedule() {
+  const auth = React.useContext(AuthContext);
+  if(!auth) return;
+
+  const user = auth.user;
+  const [shuttleData, setShuttleData] = useState(null);
+
+
+
+  useEffect(() => {
+    // Fetch shuttle schedule data from API
+    const data = fetchBusLocations();
+    console.log(new Date(), " - fetchBusLocation", data);
+  }, []);
+
+
   return (
     <View style={styles.container}>
       {/* Bus Icon (Left-Aligned) */}
