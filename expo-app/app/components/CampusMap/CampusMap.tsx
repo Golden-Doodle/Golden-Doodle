@@ -33,18 +33,15 @@ const CampusMap = () => {
   const [viewCampusMap, setViewCampusMap] = useState<boolean>(true);
   const [selectedBuilding, setSelectedBuilding] =
     useState<SelectedBuildingType>(null);
-  const [isBuildingInfoModalVisible, setIsBuildingInfoModalVisible] = useState<boolean>(false);
+  const [isBuildingInfoModalVisible, setIsBuildingInfoModalVisible] =
+    useState<boolean>(false);
   const [isNextClassModalVisible, setIsNextClassModalVisible] =
     useState<boolean>(false);
   const [viewEatingOnCampus, setViewEatingOnCampus] = useState<boolean>(false);
-  const [isNavigateModalVisible, setIsNavigateModalVisible] = useState<boolean>(false);
+  const [isNavigateModalVisible, setIsNavigateModalVisible] =
+    useState<boolean>(false);
   const [isSelectingDestination, setIsSelectingDestination] =
     useState<boolean>(false); // Used for allowing user to select any destination on map
-  const [isSelectingStartingLocation, setIsSelectingStartingLocation] =
-    useState<boolean>(false);
-  const [startingLocation, setStartingLocation] = useState<Coordinates | null>(
-    null
-  );
 
   const markers = campus === "SGW" ? SGWMarkers : LoyolaMarkers;
   const buildings = campus === "SGW" ? SGWBuildings : LoyolaBuildings;
@@ -75,7 +72,7 @@ const CampusMap = () => {
 
   // Fetch route from user's location to destination
   const fetchRoute = useCallback(async () => {
-    const origin = startingLocation || userLocation; // Use selected or user location
+    const origin = userLocation; // Use selected or user location
     if (!origin) {
       Alert.alert("Cannot fetch route without a starting location");
       return;
@@ -102,7 +99,7 @@ const CampusMap = () => {
     if (route) {
       setRouteCoordinates(route);
     }
-  }, [startingLocation, userLocation, destination, selectedBuilding]);
+  }, [userLocation, destination, selectedBuilding]);
 
   const fetchRouteWithDestination = useCallback(
     async (destination: Coordinates) => {
@@ -144,8 +141,11 @@ const CampusMap = () => {
 
   // Handle building press to show building info
   const handleBuildingPressed = (building: Building) => () => {
-
-    if (selectedBuilding !== null && selectedBuilding !== 'markerOnMap' && selectedBuilding.id === building.id) {
+    if (
+      selectedBuilding !== null &&
+      selectedBuilding !== "markerOnMap" &&
+      selectedBuilding.id === building.id
+    ) {
       setSelectedBuilding(null);
       setIsBuildingInfoModalVisible(false);
       return;
@@ -174,20 +174,10 @@ const CampusMap = () => {
   // Handle map press
   const handleMapPress = (event: any) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
-
     const coordinates: Coordinates = { latitude, longitude };
 
-    if (isSelectingDestination) {
-      setDestination(coordinates);
-      setSelectedBuilding("markerOnMap");
-      setIsBuildingInfoModalVisible(true); // Re-Open building info modal
-      setIsSelectingDestination(false); // Exit selection mode
-    } else if (isSelectingStartingLocation) {
-      console.log("Starting location set to:", coordinates);
-      setStartingLocation(coordinates);
-      setIsNavigateModalVisible(true); // Re-Open navigate modal
-      setIsSelectingStartingLocation(false); // Exit selection mode
-    }
+    setDestination(coordinates);
+    setSelectedBuilding("markerOnMap");
   };
 
   return (
