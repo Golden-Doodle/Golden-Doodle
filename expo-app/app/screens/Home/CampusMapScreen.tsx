@@ -1,23 +1,15 @@
-import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-} from "react-native";
+import React, { useCallback, useState } from "react";
+import { View, TouchableOpacity, StyleSheet, SafeAreaView } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CampusMapping from "../../components/CampusMap/CampusMap";
 import { useRouter } from "expo-router";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useFocusEffect } from "expo-router";
 
 export default function CampusMapScreen() {
   const router = useRouter();
-  // Get the next class from the URL params
+
   const { pressedOptimizeRoute } = useLocalSearchParams();
-
-  console.log("sds", pressedOptimizeRoute)
-
+  
   return (
     <View style={styles.container}>
       {/* Title & Back Button Overlay */}
@@ -36,7 +28,7 @@ export default function CampusMapScreen() {
 
       {/* Map should take full remaining space */}
       <View style={styles.mapContainer}>
-        <CampusMapping pressedOptimizeRoute={!!pressedOptimizeRoute} />
+        <CampusMapping pressedOptimizeRoute={pressedOptimizeRoute === 'true'} />
       </View>
     </View>
   );

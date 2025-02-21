@@ -36,7 +36,7 @@ export default function Header({
     router.push({
       pathname: "/screens/Home/CampusMapScreen",
       params: {
-        pressedOptimizeRoute: JSON.stringify(nextClass),
+        pressedOptimizeRoute: "true",
       },
     });
   };

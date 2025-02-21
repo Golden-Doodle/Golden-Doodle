@@ -29,7 +29,7 @@ interface CampusMapProps {
   pressedOptimizeRoute: boolean;
 }
 
-const CampusMap = ({ pressedOptimizeRoute }: CampusMapProps) => {
+const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
   const [campus, setCampus] = useState<"SGW" | "LOY">("SGW");
   const [routeCoordinates, setRouteCoordinates] = useState<Coordinates[]>([]);
   const [destination, setDestination] = useState<Coordinates | null>(null);
@@ -40,7 +40,7 @@ const CampusMap = ({ pressedOptimizeRoute }: CampusMapProps) => {
   );
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isNextClassModalVisible, setIsNextClassModalVisible] =
-    useState<boolean>(pressedOptimizeRoute);
+    useState<boolean>(false);
   const [viewEatingOnCampus, setViewEatingOnCampus] = useState<boolean>(false);
 
   const markers = campus === "SGW" ? SGWMarkers : LoyolaMarkers;
@@ -62,6 +62,13 @@ const CampusMap = ({ pressedOptimizeRoute }: CampusMapProps) => {
       });
     })();
   }, []);
+
+  // Open the modal if the user pressed the optimize route button
+  useEffect(() => {
+    if (pressedOptimizeRoute) {
+      setIsNextClassModalVisible(true);
+    }
+  },[]);
 
   // Reset destination and route
   const resetDirections = () => {
@@ -113,7 +120,6 @@ const CampusMap = ({ pressedOptimizeRoute }: CampusMapProps) => {
 
   // Handle marker press to set destination
   const handleMarkerPress = useCallback((coordinate: Coordinates) => {
-    // console.log("Setting destination:", coordinate);
     setDestination(coordinate);
   }, []);
 
@@ -130,7 +136,6 @@ const CampusMap = ({ pressedOptimizeRoute }: CampusMapProps) => {
       setIsModalVisible(false);
       return;
     }
-    // console.log("Building pressed:", building);
     setSelectedBuilding(building);
     setIsModalVisible(true);
   };
