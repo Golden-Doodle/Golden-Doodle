@@ -2,18 +2,18 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "esModuleInterop": true, // Enable default imports for CommonJS modules
+    "jsx": "react-native", // ✅ Enables JSX support for React Native
+    "allowJs": true, // ✅ Allows JavaScript files in case of mixed JS/TS project
     "paths": {
       "@/*": [
         "./*"
       ]
-    },
-    "jsx": "react-native"
+    }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "jest.setup.js"  ]
+  ]
 }
