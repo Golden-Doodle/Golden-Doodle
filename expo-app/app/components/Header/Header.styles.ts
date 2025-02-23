@@ -74,6 +74,10 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 10,
   },
+  disabledRouteButton: {
+    backgroundColor: "#888888",
+    opacity: 0.6,
+  },
   routeButtonText: {
     color: "#fff",
     fontSize: 14,

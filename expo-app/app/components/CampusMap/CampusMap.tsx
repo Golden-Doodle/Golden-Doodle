@@ -108,15 +108,19 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         Alert.alert("Cannot fetch route without user location");
         return;
       }
-
+  
       const route = await getDirections(userLocation, destination);
-
-      if (route) {
-        setRouteCoordinates(route);
+  
+      if (!route || route.length === 0) {
+        setIsNextClassModalVisible(true); // Show modal for invalid directions
+        return;
       }
+  
+      setRouteCoordinates(route);
     },
     [userLocation, destination]
   );
+  
 
   // Handle marker press to set destination
   const handleMarkerPress = useCallback((coordinate: Coordinates) => {
@@ -204,7 +208,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
                 coordinate={marker.coordinate}
                 title={marker.title}
                 description={marker.description}
-                isFoodLocation={true} // ✅ Mark as a food location
+                isFoodLocation={true} // Mark as a food location
                 onPress={() => handleMarkerPress(marker.coordinate)}
               />
             ))}
@@ -255,7 +259,6 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         visible={isNextClassModalVisible}
         onClose={() => setIsNextClassModalVisible(false)}
         fetchRouteWithDestination={fetchRouteWithDestination}
-        buildingData={buildings}
       />
 
       <NavTab
