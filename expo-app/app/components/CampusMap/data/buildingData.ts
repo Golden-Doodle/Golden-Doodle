@@ -162,7 +162,7 @@ export const LoyolaBuildings: Building[] = [
     ],
     fillColor: "rgba(255, 165, 0, 0.5)", // Semi-Transparent orange
     strokeColor: "rgba(255, 140, 0, 1)", // Solid orange outline
-    campus: "Loyola",
+    campus: "LOY",
   },
   {
     id: "LW",
@@ -175,7 +175,7 @@ export const LoyolaBuildings: Building[] = [
     ],
     fillColor: "rgba(255, 165, 0, 0.5)", // Semi-Transparent orange
     strokeColor: "rgba(255, 140, 0, 1)", // Solid orange outline
-    campus: "Loyola",
+    campus: "LOY",
   },
   {
     id: "RW",
@@ -188,7 +188,7 @@ export const LoyolaBuildings: Building[] = [
     ],
     fillColor: "rgba(255, 165, 0, 0.5)", // Semi-Transparent orange
     strokeColor: "rgba(255, 140, 0, 1)", // Solid orange outline
-    campus: "Loyola",
+    campus: "LOY",
   },
   {
     id: "NW",
@@ -203,7 +203,7 @@ export const LoyolaBuildings: Building[] = [
     ],
     fillColor: "rgba(255, 165, 0, 0.5)", // Semi-Transparent orange
     strokeColor: "rgba(255, 140, 0, 1)", // Solid orange outline
-    campus: "Loyola",
+    campus: "LOY",
   },
   {
     id: "SW",
@@ -218,6 +218,6 @@ export const LoyolaBuildings: Building[] = [
     ],
     fillColor: "rgba(255, 165, 0, 0.5)", // Semi-Transparent orange
     strokeColor: "rgba(255, 140, 0, 1)", // Solid orange outline
-    campus: "Loyola",
+    campus: "LOY",
   },
 ];

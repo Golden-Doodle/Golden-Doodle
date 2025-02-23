@@ -88,7 +88,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const signInResponse = await GoogleSignin.signIn();
       const { idToken, accessToken } = await GoogleSignin.getTokens();
-      // console.log("accessToken", accessToken);
 
       if (!idToken) {
         throw new Error("Google Sign-In failed: No ID Token received.");
