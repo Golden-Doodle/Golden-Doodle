@@ -53,6 +53,12 @@ export interface GoogleCalendarEvent {
 // This is used for the CampusMap and CampusMapNavTab component 
 export type SelectedBuildingType = Building | null | "markerOnMap";
 
-
 export const concordiaBurgendyColor = "#8C2633";
 
+export type LocationType = {
+  coordinates?: Coordinates;
+  building?: Building;
+  room?: string;
+  floor?: number;
+  campus?: Campus;
+} | null;
