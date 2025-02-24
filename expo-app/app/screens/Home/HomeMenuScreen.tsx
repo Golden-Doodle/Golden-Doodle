@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 55, // Adjust as needed for safe area
+    top: 55,
     left: 15,
     padding: 10,
   },
