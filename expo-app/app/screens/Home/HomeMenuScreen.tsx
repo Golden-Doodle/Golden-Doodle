@@ -27,7 +27,7 @@ export default function HomeMenuScreen() {
       <TouchableOpacity 
         style={styles.menuItem} 
         activeOpacity={0.8} 
-        onPress={() => router.push("/screens/Home/ShuttleScheduleScreen")}
+        onPress={() => router.push("/screens/Shuttle/ShuttleScreen")}
       >
         <Text style={styles.menuText}>🚌 Shuttle Schedule</Text>
       </TouchableOpacity>
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 55, // Adjust as needed for safe area
+    top: 55,
     left: 15,
     padding: 10,
   },

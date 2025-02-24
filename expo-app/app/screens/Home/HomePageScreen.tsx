@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, StyleSheet, ActivityIndicator } from "react-native";
+import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import Header from "../../components/Header/Header";
 import ButtonSection from "../../components/ButtonSection/ButtonSection";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -8,7 +8,7 @@ import HottestSpots from "../../components/HottestSpots/HottestSpots";
 import ShuttleSchedule from "../../components/ShuttleSchedule/ShuttleSchedule";
 import BottomNavigation from "../../components/BottomNavigation/BottomNavigation";
 import { AuthContext } from "@/app/contexts/AuthContext";
-import { fetchSameDayCalendarEvents } from "@/app/services/GoogleCalendar/fetchingUserCalendarData"; 
+import { fetchSameDayCalendarEvents } from "@/app/services/GoogleCalendar/fetchingUserCalendarData";
 import { GoogleCalendarEvent } from "@/app/utils/types";
 
 export default function HomePageScreen() {
@@ -20,7 +20,6 @@ export default function HomePageScreen() {
 
   const refreshCalendarEvents = useCallback(async () => {
     if (!user) return;
-  
     setIsLoading(true);
     try {
       console.log("Refreshing calendar events...");
@@ -31,8 +30,8 @@ export default function HomePageScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, [user]); 
-  
+  }, [user]);
+
   useEffect(() => {
     refreshCalendarEvents();
     // const interval = setInterval(refreshCalendarEvents, 30000);
@@ -44,21 +43,22 @@ export default function HomePageScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Pass calendarEvents to Header */}
-      <View style={styles.headerContainer}>
-        <Header refreshCalendarEvents={refreshCalendarEvents} isLoading={isLoading} calendarEvents={calendarEvents} />
-      </View>
-
-      {/* Main Content */}
-      <View style={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refreshCalendarEvents} />}
+      >
+        <Header
+          refreshCalendarEvents={refreshCalendarEvents}
+          isLoading={isLoading}
+          calendarEvents={calendarEvents}
+        />
         <ButtonSection />
         <SearchBar />
         <QuickShortcuts />
         <HottestSpots />
         <ShuttleSchedule />
-      </View>
+      </ScrollView>
 
-      {/* Bottom Navigation */}
       <BottomNavigation />
     </View>
   );
@@ -70,9 +70,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
     justifyContent: "space-between",
   },
-  headerContainer: {},
   content: {
-    marginTop: 250,
     alignItems: "center",
   },
 });

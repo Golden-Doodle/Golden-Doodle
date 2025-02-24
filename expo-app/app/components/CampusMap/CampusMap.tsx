@@ -24,9 +24,12 @@ import NextClassModal from "./modals/NextClassModal";
 import HamburgerWidget from "./HamburgerWidget";
 import NavigateModal from "./modals/NavigateModal";
 import { styles } from "./CampusMap.styles";
+interface CampusMapProps {
+  pressedOptimizeRoute: boolean;
+}
 
-const CampusMap = () => {
-  const [campus, setCampus] = useState<"SGW" | "Loyola">("SGW");
+const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
+  const [campus, setCampus] = useState<"SGW" | "LOY">("SGW");
   const [routeCoordinates, setRouteCoordinates] = useState<Coordinates[]>([]);
   const [destination, setDestination] = useState<Coordinates | null>(null);
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
@@ -36,6 +39,7 @@ const CampusMap = () => {
   const [isBuildingInfoModalVisible, setIsBuildingInfoModalVisible] =
     useState<boolean>(false);
   const [isNextClassModalVisible, setIsNextClassModalVisible] =
+   
     useState<boolean>(false);
   const [viewEatingOnCampus, setViewEatingOnCampus] = useState<boolean>(false);
   const [isNavigateModalVisible, setIsNavigateModalVisible] =
@@ -62,6 +66,13 @@ const CampusMap = () => {
       });
     })();
   }, []);
+
+  // Open the modal if the user pressed the optimize route button
+  useEffect(() => {
+    if (pressedOptimizeRoute) {
+      setIsNextClassModalVisible(true);
+    }
+  },[]);
 
   // Reset destination and route
   const resetDirections = () => {
@@ -107,15 +118,19 @@ const CampusMap = () => {
         Alert.alert("Cannot fetch route without user location");
         return;
       }
-
+  
       const route = await getDirections(userLocation, destination);
-
-      if (route) {
-        setRouteCoordinates(route);
+  
+      if (!route || route.length === 0) {
+        setIsNextClassModalVisible(true); // Show modal for invalid directions
+        return;
       }
+  
+      setRouteCoordinates(route);
     },
     [userLocation, destination]
   );
+  
 
   // Handle marker press to set destination
   const handleMarkerPress = useCallback((marker: CustomMarkerType) => {
@@ -135,7 +150,7 @@ const CampusMap = () => {
 
   // Toggle between SGW and Loyola campuses
   const toggleCampus = useCallback(() => {
-    setCampus((prevCampus) => (prevCampus === "SGW" ? "Loyola" : "SGW"));
+    setCampus((prevCampus) => (prevCampus === "SGW" ? "LOY" : "SGW"));
     resetDirections();
   }, []);
 
@@ -293,7 +308,6 @@ const CampusMap = () => {
         visible={isNextClassModalVisible}
         onClose={() => setIsNextClassModalVisible(false)}
         fetchRouteWithDestination={fetchRouteWithDestination}
-        buildingData={buildings}
       />
 
       <NavTab
@@ -312,5 +326,66 @@ const CampusMap = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flex: 1, position: "relative" },
+  map: { flex: 1 },
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    width: "90%",
+    maxWidth: 400,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  closeButton: {
+    padding: 4,
+  },
+  modalBody: {
+    padding: 16,
+  },
+  modalDescription: {
+    fontSize: 16,
+    color: "#555",
+  },
+  modalFooter: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
+  },
+  navigateButton: {
+    backgroundColor: "#007AFF",
+    borderRadius: 8,
+    padding: 12,
+    alignItems: "center",
+  },
+  navigateButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});
 
 export default CampusMap;

@@ -1,59 +1,63 @@
 import { StyleSheet } from "react-native";
-export default StyleSheet.create({
-  background: {
-    position: "absolute",
+
+export const styles = StyleSheet.create({
+  headerContainer: {
     width: "100%",
-    height: 350, 
-    resizeMode: "cover",
+    height: 350, // Adjusted to make it take up less space
+    // backgroundColor: "#912338", // Solid background color for the header
+    // backgroundImage: require("@/assets/images/header-background.jpg"), // Background image
+    position: "relative",
+    justifyContent: "flex-end", // Align header content to the bottom
   },
   overlay: {
     position: "absolute",
     width: "100%",
     height: "100%",
     backgroundColor: "rgba(0, 0, 0, 0.4)",
+    zIndex: 1,
   },
   headerTopRow: {
     position: "absolute",
-    top: 40,
+    top: 40, // Adjusted top positioning
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 20,
     alignItems: "center",
+    zIndex: 2,
   },
-  /* Logout Button */
   logoutButton: {
     backgroundColor: "#912338",
     padding: 10,
-    borderRadius: 30, 
+    borderRadius: 30,
   },
   refreshButton: {
     padding: 10,
-    marginLeft: 10,  
+    marginLeft: 10,
   },
-  /* Menu Button */
   menuButton: {
     padding: 10,
   },
   headerContent: {
-    flex: 1,
+    position: "absolute",
+    bottom: 50, // Aligning the content to the bottom
+    width: "100%",
+    paddingHorizontal: 20,
     alignItems: "center",
-    justifyContent: "center",
-    marginTop: 80,  
-    paddingHorizontal: 60, 
+    zIndex: 2,
   },
   welcomeText: {
-    fontSize: 18, 
+    fontSize: 18,
     fontWeight: "700",
     color: "#fff",
     textAlign: "center",
-    marginBottom: 5, 
+    marginBottom: 5,
   },
-  studySpotText: { 
+  studySpotText: {
     fontSize: 18,
     fontWeight: "500",
     color: "#fff",
-    marginTop: 50,
+    marginTop: 10,
     textAlign: "center",
   },
   timerText: {
@@ -68,7 +72,11 @@ export default StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
-    marginTop: 40
+    marginTop: 10,
+  },
+  disabledRouteButton: {
+    backgroundColor: "#888888",
+    opacity: 0.6,
   },
   routeButtonText: {
     color: "#fff",

@@ -6,13 +6,15 @@ import { GoogleCalendarEvent } from "@/app/utils/types";
 interface NextClassComponentProps {
   calendarEvents: GoogleCalendarEvent[];
   style?: any;
+  nextClass: GoogleCalendarEvent | null;
+  setNextClass: (nextClass: GoogleCalendarEvent | null) => void;
 }
 
-export default function NextClassComponent({ calendarEvents, style }: NextClassComponentProps) {
+export default function NextClassComponent({ calendarEvents, style, nextClass, setNextClass }: NextClassComponentProps) {
   const auth = React.useContext(AuthContext);
   const user = auth?.user ?? null; 
   
-  const [nextClass, setNextClass] = useState<GoogleCalendarEvent | null>(null);
+  
   const [timeUntilNextClass, setTimeUntilNextClass] = useState<string | null>(null);
   useEffect(() => {
     if (!user) {

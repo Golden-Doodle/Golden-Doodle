@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Building, SelectedBuildingType } from "@/app/utils/types";
+import { Building, SelectedBuildingType, Campus } from "@/app/utils/types";
 
 interface NavTabProps {
-  campus: "SGW" | "Loyola";
+  campus: Campus;
   selectedBuilding: SelectedBuildingType;
   onNavigatePress?: () => void;
   onTravelPress?: () => void;
@@ -42,7 +42,7 @@ const NavTab: React.FC<NavTabProps> = ({
       ] : [
         { label: "Navigate", icon: "compass", action: onNavigatePress },
         {
-          label: campus === "SGW" ? "SGW" : "Loyola",
+          label: campus === "SGW" ? "SGW" : "LOY",
           icon: "location-arrow",
           action: onTravelPress,
         },
