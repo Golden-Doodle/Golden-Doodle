@@ -100,11 +100,21 @@ export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
 
   return (
     <View style={{ flex: 1 }}>
+      
       {/* NEW: ID Card Notice at top */}
       <View style={styles.idCardNotice}>
-        <FontAwesome5 name="id-card" size={18} color="#666" style={styles.idCardIcon} />
-        <Text style={styles.idCardNoticeText}>ID Card is obligatory to board the shuttle</Text>
+        <FontAwesome5 
+          name="id-card" 
+          size={18} 
+          color="#666" 
+          style={styles.idCardIcon} 
+          testID="id-card-icon" 
+        />
+        <Text style={styles.idCardNoticeText}>
+          ID Card is obligatory to board the shuttle
+        </Text>
       </View>
+
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/**
