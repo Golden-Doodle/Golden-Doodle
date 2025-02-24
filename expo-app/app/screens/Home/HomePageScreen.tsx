@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, StyleSheet, ActivityIndicator, ScrollView, RefreshControl } from "react-native";
+import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import Header from "../../components/Header/Header";
 import ButtonSection from "../../components/ButtonSection/ButtonSection";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -16,13 +16,10 @@ export default function HomePageScreen() {
   const user = auth?.user;
 
   const [isLoading, setIsLoading] = useState(false);
-  const [calendarEvents, setCalendarEvents] = useState<GoogleCalendarEvent[]>(
-    []
-  );
+  const [calendarEvents, setCalendarEvents] = useState<GoogleCalendarEvent[]>([]);
 
   const refreshCalendarEvents = useCallback(async () => {
     if (!user) return;
-
     setIsLoading(true);
     try {
       console.log("Refreshing calendar events...");
@@ -38,7 +35,6 @@ export default function HomePageScreen() {
   useEffect(() => {
     refreshCalendarEvents();
     const interval = setInterval(refreshCalendarEvents, 30000);
-
     return () => clearInterval(interval);
   }, [refreshCalendarEvents]);
 
@@ -48,24 +44,18 @@ export default function HomePageScreen() {
         contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refreshCalendarEvents} />}
       >
-        {/* Pass calendarEvents to Header */}
         <Header
           refreshCalendarEvents={refreshCalendarEvents}
           isLoading={isLoading}
           calendarEvents={calendarEvents}
         />
-
-        {/* Main Content */}
         <ButtonSection />
         <SearchBar />
         <QuickShortcuts />
         <HottestSpots />
         <ShuttleSchedule />
-        {/* Good to see if you like the scrolling */}
-        {/* <View style={{ height: 100 }} />   */}
       </ScrollView>
 
-      {/* Bottom Navigation */}
       <BottomNavigation />
     </View>
   );
@@ -78,7 +68,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   content: {
-    // marginTop: 250,
     alignItems: "center",
   },
 });
