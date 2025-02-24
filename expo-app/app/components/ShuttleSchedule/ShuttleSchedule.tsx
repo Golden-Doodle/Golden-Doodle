@@ -7,6 +7,9 @@ import {
   ScrollView,
 } from "react-native";
 
+/** NEW: Import FontAwesome5 for the ID card icon */
+import { FontAwesome5 } from "@expo/vector-icons";
+
 /** Props */
 interface ShuttleScheduleProps {
   route: "LOY" | "SGW"; // Which route is selected
@@ -16,28 +19,18 @@ interface ShuttleScheduleProps {
  * Helper: Parse a 12-hour time string like "9:15 AM" → Date object (today).
  */
 function parseTime12ToDate(time12: string): Date {
-  // E.g. "9:15 AM" or "10:45 PM"
   const [time, modifier] = time12.split(" ");
   let [hours, minutes] = time.split(":").map(Number);
 
-  // Handle PM
   if (modifier.toUpperCase() === "PM" && hours < 12) {
     hours += 12;
   }
-  // 12 AM is 00:00
   if (modifier.toUpperCase() === "AM" && hours === 12) {
     hours = 0;
   }
 
   const now = new Date();
-  // Create a Date for *today* using hours/minutes
-  return new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-    hours,
-    minutes
-  );
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
 }
 
 export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
@@ -65,7 +58,7 @@ export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
 
   /** Load the schedule whenever route changes */
   useEffect(() => {
-    setSelectedTime(null); // Reset any open info when toggling route
+    setSelectedTime(null);
     if (route in schedules) {
       setSchedule(schedules[route]);
     }
@@ -75,13 +68,10 @@ export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
   const isPastTime = (timeStr: string): boolean => {
     const now = new Date();
     const shuttleTime = parseTime12ToDate(timeStr);
-    return shuttleTime < now; // Or <= if you want the exact minute blocked
+    return shuttleTime < now;
   };
 
-  /** 
-   * Render the info panel that appears directly below the selected time.
-   * You could also extract this into its own component if you wish.
-   */
+  /** Render the info panel that appears directly below the selected time. */
   const renderInfoPanel = () => (
     <View style={styles.infoPanel}>
       <Text style={styles.infoPanelTitle}>Pickup Location</Text>
@@ -109,57 +99,56 @@ export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContent}>
-      {/**
-       * Map over all times. For each time:
-       * - If it's in the past, show grey (and disable).
-       * - Otherwise show red, clickable.
-       * - If user clicks on a time that is not the selectedTime, set it as selectedTime.
-       *   If they click the same time again, close it (set selectedTime=null).
-       * - If the time is selectedTime, render the info panel below it.
-       */}
-      {schedule.map((time, idx) => {
-        const past = isPastTime(time);
-        const isSelected = time === selectedTime;
-        return (
-          <View key={idx} style={styles.timeRow}>
-            <TouchableOpacity
-              style={[
-                styles.timeButton,
-                past ? styles.timeButtonPast : styles.timeButtonFuture,
-              ]}
-              disabled={past}
-              onPress={() => {
-                if (isSelected) {
-                  // If we tap the same time again, close the panel
-                  setSelectedTime(null);
-                } else {
-                  // Otherwise open this time
-                  setSelectedTime(time);
-                }
-              }}
-            >
-              <Text
-                style={[
-                  styles.timeText,
-                  past && styles.timeTextPast,
-                ]}
-              >
-                {time}
-              </Text>
-            </TouchableOpacity>
+    <View style={{ flex: 1 }}>
+      {/* NEW: ID Card Notice at top */}
+      <View style={styles.idCardNotice}>
+        <FontAwesome5 name="id-card" size={18} color="#666" style={styles.idCardIcon} />
+        <Text style={styles.idCardNoticeText}>ID Card is obligatory to board the shuttle</Text>
+      </View>
 
-            {/* If this time is selected, show the info panel right below it */}
-            {isSelected && renderInfoPanel()}
-          </View>
-        );
-      })}
-    </ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/**
+         * Map over all times. For each time:
+         * - If it's in the past, show grey (and disable).
+         * - Otherwise show red, clickable.
+         * - If user clicks on a time that is not the selectedTime, set it as selectedTime.
+         *   If they click the same time again, close it (setSelectedTime(null)).
+         * - If the time is selectedTime, render the info panel below it.
+         */}
+        {schedule.map((time, idx) => {
+          const past = isPastTime(time);
+          const isSelected = time === selectedTime;
+          return (
+            <View key={idx} style={styles.timeRow}>
+              <TouchableOpacity
+                style={[
+                  styles.timeButton,
+                  past ? styles.timeButtonPast : styles.timeButtonFuture,
+                ]}
+                disabled={past}
+                onPress={() => {
+                  if (isSelected) {
+                    setSelectedTime(null);
+                  } else {
+                    setSelectedTime(time);
+                  }
+                }}
+              >
+                <Text style={[styles.timeText, past && styles.timeTextPast]}>
+                  {time}
+                </Text>
+              </TouchableOpacity>
+
+              {isSelected && renderInfoPanel()}
+            </View>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  /** Outer ScrollView content style */
   scrollContent: {
     paddingVertical: 20,
     alignItems: "center",
@@ -170,20 +159,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   errorText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#990000",
+    color: "#912338",
   },
 
-  /** Each time row includes the time button and optionally the info panel */
+  // ID Card Notice
+  idCardNotice: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#F5F5F5",
+    justifyContent: "center",
+  },
+  idCardIcon: {
+    marginRight: 8,
+  },
+  idCardNoticeText: {
+    fontSize: 14,
+    color: "#666",
+  },
+
   timeRow: {
     width: "90%",
     marginBottom: 10,
   },
-
-  /** The time "pill" itself */
   timeButton: {
     width: "100%",
     paddingVertical: 12,
@@ -204,17 +205,11 @@ const styles = StyleSheet.create({
   timeTextPast: {
     color: "#666",
   },
-
-  /**
-   * Info panel that appears when you click a future time
-   */
   infoPanel: {
     backgroundColor: "#fff",
     padding: 15,
     borderRadius: 10,
     marginTop: 5,
-
-    // Shadow for Android / iOS
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -232,8 +227,6 @@ const styles = StyleSheet.create({
     color: "#444",
     marginBottom: 2,
   },
-
-  /** Badges row inside the info panel */
   badgeRow: {
     flexDirection: "row",
     marginTop: 10,
