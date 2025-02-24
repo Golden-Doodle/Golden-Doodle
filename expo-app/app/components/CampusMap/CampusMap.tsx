@@ -168,6 +168,8 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
   };
 
   // Handle directions press
+  // TODO:
+  // Add logic to open transit modal
   const onDirectionsPress = useCallback(() => {
     if (selectedBuilding === "markerOnMap") {
       fetchRoute();
