@@ -60,19 +60,17 @@ const SearchModal: React.FC<SearchModalProps> = ({
           <Text style={styles.title}>Select Destination</Text>
 
           {/* Destination Input */}
-          <TouchableOpacity
-            style={styles.inputContainer}
-            onPress={() => setSearchQuery("")}
-          >
-            <MaterialIcons name="location-pin" size={20} color="#D9534F" />
+          <View style={styles.inputContainer}>
+            <MaterialIcons name="search" size={24} color="#888" />
             <TextInput
               style={styles.input}
               placeholder="Search for destination..."
+              placeholderTextColor="#888"
               value={searchQuery}
               onChangeText={setSearchQuery}
               autoFocus
             />
-          </TouchableOpacity>
+          </View>
 
           {/* Search Results */}
           <FlatList
@@ -86,9 +84,13 @@ const SearchModal: React.FC<SearchModalProps> = ({
                   setSearchQuery(item.name); // Set the selected destination
                 }}
               >
+                <MaterialIcons name="location-on" size={20} color="#007AFF" />
                 <Text style={styles.resultText}>{item.name}</Text>
               </TouchableOpacity>
             )}
+            ListEmptyComponent={
+              <Text style={styles.noResultsText}>No results found</Text>
+            }
           />
 
           {/* Action Buttons */}
@@ -98,6 +100,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
                 style={styles.selectOnMapButton}
                 onPress={onPressSelectOnMap}
               >
+                <MaterialIcons name="map" size={20} color="#fff" />
                 <Text style={styles.selectOnMapText}>Select on Map</Text>
               </TouchableOpacity>
             ) : (
@@ -105,6 +108,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
                 style={styles.getDirectionsButton}
                 onPress={onGetDirections}
               >
+                <MaterialIcons name="directions" size={20} color="#fff" />
                 <Text style={styles.getDirectionsText}>Get Directions</Text>
               </TouchableOpacity>
             )}
@@ -124,7 +128,6 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: "flex-end",
-    alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContainer: {
@@ -134,67 +137,92 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     elevation: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 10,
+    marginBottom: 20,
+    color: "#333",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    backgroundColor: "#f5f5f5",
-    marginBottom: 8,
+    borderColor: "#ddd",
+    borderRadius: 12,
+    backgroundColor: "#f9f9f9",
+    marginBottom: 16,
   },
   input: {
     flex: 1,
-    marginLeft: 8,
+    marginLeft: 10,
     fontSize: 16,
+    color: "#333",
   },
   resultItem: {
+    flexDirection: "row",
+    alignItems: "center",
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
   resultText: {
     fontSize: 16,
+    marginLeft: 10,
+    color: "#333",
+  },
+  noResultsText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#888",
+    marginTop: 20,
   },
   buttonContainer: {
-    marginTop: 10,
+    marginTop: 20,
   },
   selectOnMapButton: {
-    padding: 12,
-    backgroundColor: "#007AFF",
-    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
+    padding: 14,
+    backgroundColor: "#007AFF",
+    borderRadius: 12,
+    elevation: 3,
   },
   selectOnMapText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+    marginLeft: 10,
   },
   getDirectionsButton: {
-    padding: 12,
-    backgroundColor: "#28A745",
-    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
+    padding: 14,
+    backgroundColor: "#28A745",
+    borderRadius: 12,
+    elevation: 3,
   },
   getDirectionsText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+    marginLeft: 10,
   },
   closeButton: {
-    marginTop: 10,
-    padding: 12,
+    marginTop: 16,
+    padding: 14,
     backgroundColor: "#D9534F",
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: "center",
+    elevation: 3,
   },
   closeButtonText: {
     color: "white",
