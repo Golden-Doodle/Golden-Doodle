@@ -56,7 +56,7 @@ export default function HomePageScreen() {
         <SearchBar />
         <QuickShortcuts />
         <HottestSpots />
-        <ShuttleSchedule />
+        <ShuttleSchedule route={"SGW"} />
       </ScrollView>
 
       <BottomNavigation />

@@ -23,7 +23,7 @@ import { eatingOnCampusData } from "./data/eatingOnCampusData";
 import NextClassModal from "./modals/NextClassModal";
 import HamburgerWidget from "./HamburgerWidget";
 import NavigateModal from "./modals/NavigateModal";
-import { styles } from "./CampusMap.styles";
+import { StyleSheet } from "react-native";
 interface CampusMapProps {
   pressedOptimizeRoute: boolean;
 }
