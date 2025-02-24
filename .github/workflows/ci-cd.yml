@@ -3,12 +3,10 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - main
-      - develop
+      - '**'
   pull_request:
     branches:
-      - main
-      - develop
+      - '**'
 
 jobs:
   setup:
@@ -99,6 +97,9 @@ jobs:
             -Dsonar.exclusions=expo-app/node_modules/**,expo-app/coverage/**,expo-app/__tests__/**
             -Dsonar.javascript.lcov.reportPaths=expo-app/coverage/lcov.info
             -Dsonar.tests=expo-app
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=${{ github.head_ref }}
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
 
   deploy:
     needs: [sonarqube]
