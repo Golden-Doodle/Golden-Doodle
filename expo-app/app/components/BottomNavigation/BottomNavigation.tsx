@@ -8,8 +8,8 @@ export default function BottomNavigation() {
   const TABS = [
     { label: "Home", icon: "home", path: "/screens/Home/HomePageScreen" },
     { label: "Services", icon: "concierge-bell" },
-    { label: "Report", icon: "exclamation-circle", path: "/screens/Navigation/ReportScreen" },
-    { label: "Settings", icon: "cog" },
+    { label: "Report", icon: "exclamation-circle", path: "/screens/Report/ReportScreen" },
+    { label: "Settings", icon: "cog", path: "/screens/Settings/SettingsScreen"},
   ];
   
   return (

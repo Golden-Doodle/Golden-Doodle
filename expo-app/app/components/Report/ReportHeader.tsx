@@ -18,7 +18,7 @@ export default function ReportHeader() {
 
                 {/* Back Arrow Button */}
                 <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                    <FontAwesome5 name="arrow-left" size={22} color="#fff" />
+                    <FontAwesome5 name="arrow-left" size={30} color="#fff" />
                 </TouchableOpacity>
 
                 <View style={styles.container}>
@@ -39,7 +39,7 @@ export default function ReportHeader() {
 const styles = StyleSheet.create({
     background: {
         width: "100%",
-        height: 160, 
+        height: 180, 
         justifyContent: "flex-end",
         alignItems: "center",
         paddingBottom: 20, 
@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
         fontSize: 36, 
         fontWeight: "bold",
         color: "#fff",
+        paddingBottom: 70
     },
     noticeContainer: {
         flexDirection: "row",
