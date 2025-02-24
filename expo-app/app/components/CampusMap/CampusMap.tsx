@@ -24,6 +24,7 @@ import NextClassModal from "./modals/NextClassModal";
 import HamburgerWidget from "./HamburgerWidget";
 import NavigateModal from "./modals/NavigateModal";
 import { StyleSheet } from "react-native";
+import TransitModal from "./modals/TransitModal";
 interface CampusMapProps {
   pressedOptimizeRoute: boolean;
 }
@@ -283,7 +284,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
       />
 
       {/* Search Modal -- Shows up when Navigate is pressed */}
-      <NavigateModal
+      {/* <NavigateModal
         visible={isNavigateModalVisible}
         onClose={onCloseNavigateModal}
         onSelectBuilding={(building) => {
@@ -302,7 +303,11 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
           fetchRoute();
           onCloseNavigateModal();
         }}
-      />
+      /> */}
+
+      {/* Transit Modal -- Screen to select starting and final destination with mode of transportation */}
+      <TransitModal onClose={() => {setIsNavigateModalVisible(false)}} visible={isNavigateModalVisible} />
+      
 
       <NextClassModal
         visible={isNextClassModalVisible}
