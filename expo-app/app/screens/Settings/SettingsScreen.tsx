@@ -45,7 +45,7 @@ export default function SettingsScreen() {
             <ScrollView contentContainerStyle={styles.settingsList}>
 
                 {/* Schedule */}
-                <TouchableOpacity style={styles.settingOption} onPress={() => router.push("/screens/Shuttle/ShuttleScreen")}>
+                <TouchableOpacity style={styles.settingOption} onPress={() => router.push("/screens/Settings/ScheduleScreen")}>
                     <FontAwesome5 name="clock" size={18} color="#912338" />
                     <Text style={styles.settingText}>Schedule</Text>
                     <FontAwesome5 name="chevron-right" size={16} color="#912338" />
