@@ -131,7 +131,7 @@ const TransitModal = ({ visible, onClose, origin, destination, setDestination, s
             <TouchableOpacity onPress={onSwitchPress}>
               <FontAwesome5
                 name="exchange-alt"
-                size={16}
+                size={22}
                 color="#fff"
                 style={{ marginLeft: 5, transform: [{ rotate: "90deg" }] }}
               />
@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     height: "30%",
     padding: 16,
     backgroundColor: concordiaBurgendyColor,
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignContent: "center",
     height: "50%",
-    marginLeft: 10,
+    width: "80%",
   },
   seperationLine: {
     borderBottomColor: "#fff",
