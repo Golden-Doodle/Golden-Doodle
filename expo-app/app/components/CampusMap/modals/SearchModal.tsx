@@ -11,7 +11,7 @@ import {
 import { Building, Coordinates, CustomMarkerType } from "@/app/utils/types";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-interface NavigateModalProps {
+interface SearchModalProps {
   visible: boolean;
   onClose: () => void;
   buildings: Building[];
@@ -22,7 +22,7 @@ interface NavigateModalProps {
   onGetDirections: () => void;
 }
 
-const NavigateModal: React.FC<NavigateModalProps> = ({
+const SearchModal: React.FC<SearchModalProps> = ({
   visible,
   onClose,
   buildings,
@@ -203,4 +203,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NavigateModal;
+export default SearchModal;

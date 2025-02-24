@@ -6,7 +6,7 @@ import { Building, SelectedBuildingType, Campus } from "@/app/utils/types";
 interface NavTabProps {
   campus: Campus;
   selectedBuilding: SelectedBuildingType;
-  onNavigatePress?: () => void;
+  onSearchPress?: () => void;
   onTravelPress?: () => void;
   onEatPress?: () => void;
   onNextClassPress?: () => void;
@@ -19,7 +19,7 @@ interface NavTabProps {
 const NavTab: React.FC<NavTabProps> = ({
   campus,
   selectedBuilding,
-  onNavigatePress,
+  onSearchPress,
   onTravelPress,
   onEatPress,
   onNextClassPress,
@@ -40,7 +40,7 @@ const NavTab: React.FC<NavTabProps> = ({
         { label: "Info", icon: "info-circle", action: onInfoPress },
         { label: "Directions", icon: "route", action: onDirectionsPress },
       ] : [
-        { label: "Navigate", icon: "compass", action: onNavigatePress },
+        { label: "Search", icon: "search", action: onSearchPress },
         {
           label: campus === "SGW" ? "SGW" : "LOY",
           icon: "location-arrow",
