@@ -179,7 +179,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
   }, [selectedBuilding, fetchRouteWithDestination]);
 
   // Handle closing search modal
-  const onCloseNavigateModal = useCallback(() => {
+  const onCloseSearchModal = useCallback(() => {
     setIsSearchModalVisible(false);
   }, []);
 
@@ -282,7 +282,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
       {/* Search Modal -- Shows up when Search is pressed */}
       <SearchModal
         visible={isSearchModalVisible}
-        onClose={onCloseNavigateModal}
+        onClose={onCloseSearchModal}
         onSelectBuilding={(building) => {
           setSelectedBuilding(building);
           setDestination(building.coordinates[0]); // Set destination
@@ -292,12 +292,12 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         markers={markers}
         onPressSelectOnMap={() => {
           setIsSelectingDestination(true);
-          onCloseNavigateModal();
+          onCloseSearchModal();
         }}
         destination={destination}
         onGetDirections={() => {
           fetchRoute();
-          onCloseNavigateModal();
+          onCloseSearchModal();
         }}
       />
 
