@@ -74,6 +74,12 @@ export default function HomePageScreen() {
     return () => {};
   }, [refreshCalendarEvents]); 
   
+  // Must make sure this was the intended function (Megered Conflict)
+  const toggleCampus = async () => {
+    const newCampus = campus === "LOY" ? "SGW" : "LOY";
+    setCampus(newCampus);
+    await AsyncStorage.setItem("selectedCampus", newCampus);
+  };
 
   return (
     <View style={styles.container}>
