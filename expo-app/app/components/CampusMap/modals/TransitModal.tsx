@@ -1,4 +1,4 @@
-import { concordiaBurgendyColor } from "@/app/utils/types";
+import { concordiaBurgendyColor, LocationType } from "@/app/utils/types";
 import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -55,9 +55,13 @@ const routes = [
 interface TransitModalProps {
   visible: boolean;
   onClose: () => void;
+  origin: LocationType;
+  destination: LocationType;
+  setOrigin: (location: LocationType) => void;
+  setDestination: (location: LocationType) => void;
 }
 
-const TransitModal = ({ visible, onClose }: TransitModalProps) => {
+const TransitModal = ({ visible, onClose, origin, destination, setDestination, setOrigin}: TransitModalProps) => {
   const getTransportIcon = (type: string) => {
     switch (type) {
       case "public":
@@ -73,6 +77,31 @@ const TransitModal = ({ visible, onClose }: TransitModalProps) => {
       default:
         return null;
     }
+  };
+
+  const onSwitchPress = () => {
+    // Switch the location
+    const temp = origin;
+    setOrigin(destination);
+    setDestination(temp);
+  }
+
+
+  // Need to test
+  const destinationToDisplay = (location: LocationType) => {
+    if(!location) return "Select a location";
+
+    if(location.userLocation) return "Current Location";
+
+    if(location.room) return `${location.room.room}, ${location.room.building.name}`;
+
+    if(location.building) return location.building.name;
+
+    if(location.campus) return `${location.campus} Campus`;
+    
+    if(location.coordinates) return `${location.coordinates.latitude}, ${location.coordinates.longitude}`;
+
+    throw new Error("Invalid location type");
   };
 
   return (
@@ -91,18 +120,22 @@ const TransitModal = ({ visible, onClose }: TransitModalProps) => {
 
           <View style={styles.locationContainer}>
             <Text style={styles.title}>
-              Concordia University - Loyola Ca...
+              {destinationToDisplay(origin)}
             </Text>
             <View style={styles.seperationLine}></View>
-            <Text style={styles.title}>1455 De Maisonneuve W., Montr...</Text>
+            <Text style={styles.title}>
+              {destinationToDisplay(destination)}
+            </Text>
           </View>
           <View style={styles.switchContainer}>
-            <FontAwesome5
-              name="exchange-alt"
-              size={16}
-              color="#fff"
-              style={{ marginLeft: 5, transform: [{ rotate: "90deg" }] }}
-            />
+            <TouchableOpacity onPress={onSwitchPress}>
+              <FontAwesome5
+                name="exchange-alt"
+                size={16}
+                color="#fff"
+                style={{ marginLeft: 5, transform: [{ rotate: "90deg" }] }}
+              />
+            </TouchableOpacity>
           </View>
         </View>
         <FlatList

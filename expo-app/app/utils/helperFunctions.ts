@@ -1,12 +1,12 @@
-import { Building, SelectedBuildingType } from "./types";
+import { Building, LocationType } from "./types";
 
 // Get fill color with opacity
 export const getFillColorWithOpacity = (
   building: Building,
-  selectedBuilding: SelectedBuildingType
+  destination: LocationType,
 ) => {
 
-  if (selectedBuilding === "markerOnMap" || selectedBuilding === null) {
+  if (destination === null || destination.building === null) {
     return building.fillColor;
   }
   const fillColor = building.fillColor;
@@ -20,6 +20,6 @@ export const getFillColorWithOpacity = (
     };
     rgbaColor = hexToRgb(fillColor);
   }
-  const opacity = building.id === selectedBuilding?.id ? 1 : 0.4;
+  const opacity = building.id === destination.building?.id ? 1 : 0.4;
   return rgbaColor.replace(/[\d\.]+\)$/, `${opacity})`);
 };

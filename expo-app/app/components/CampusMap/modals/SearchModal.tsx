@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { Building, concordiaBurgendyColor, Coordinates, CustomMarkerType } from "@/app/utils/types";
+import { Building, concordiaBurgendyColor, Coordinates, CustomMarkerType, LocationType } from "@/app/utils/types";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 interface SearchModalProps {
@@ -18,7 +18,7 @@ interface SearchModalProps {
   onSelectBuilding: (building: Building) => void;
   markers: CustomMarkerType[];
   onPressSelectOnMap: () => void;
-  destination: Coordinates | null;
+  destination: LocationType;
   onGetDirections: () => void;
 }
 

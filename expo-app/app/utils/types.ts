@@ -25,7 +25,7 @@ export type CustomMarkerType = {
 
 export type RoomLocation = {
   room: string;
-  building: string;
+  building: Building;
   campus: Campus;
 }
 
@@ -56,9 +56,11 @@ export type SelectedBuildingType = Building | null | "markerOnMap";
 export const concordiaBurgendyColor = "#8C2633";
 
 export type LocationType = {
-  coordinates?: Coordinates;
+  userLocation?: boolean;
+  coordinates: Coordinates;
   building?: Building;
-  room?: string;
+  room?: RoomLocation;
   floor?: number;
-  campus?: Campus;
+  campus?: Campus;  
+  selectedBuilding?: boolean;
 } | null;

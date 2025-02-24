@@ -13,9 +13,10 @@ import NavTab from "./CampusMapNavTab";
 import * as Location from "expo-location";
 import {
   Building,
+  Campus,
   Coordinates,
   CustomMarkerType,
-  SelectedBuildingType,
+  LocationType,
 } from "../../utils/types";
 import BuildingInfoModal from "./modals/BuildingInfoModal";
 import { getFillColorWithOpacity } from "../../utils/helperFunctions";
@@ -25,23 +26,23 @@ import HamburgerWidget from "./HamburgerWidget";
 import { StyleSheet } from "react-native";
 import TransitModal from "./modals/TransitModal";
 import SearchModal from "./modals/SearchModal";
+
 interface CampusMapProps {
   pressedOptimizeRoute: boolean;
 }
 
 const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
-  const [campus, setCampus] = useState<"SGW" | "LOY">("SGW");
+  const [campus, setCampus] = useState<Campus>("SGW");
   const [routeCoordinates, setRouteCoordinates] = useState<Coordinates[]>([]);
-  const [destination, setDestination] = useState<Coordinates | null>(null);
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
+  const [destination, setDestination] = useState<LocationType>(null);
+  const [origin, setOrigin] = useState<LocationType>(null);
   const [viewCampusMap, setViewCampusMap] = useState<boolean>(true);
-  const [selectedBuilding, setSelectedBuilding] = useState<SelectedBuildingType>(null);
   const [isBuildingInfoModalVisible, setIsBuildingInfoModalVisible] = useState<boolean>(false);
   const [isNextClassModalVisible, setIsNextClassModalVisible] = useState<boolean>(false);
   const [viewEatingOnCampus, setViewEatingOnCampus] = useState<boolean>(false);
   const [isSearchModalVisible, setIsSearchModalVisible] = useState<boolean>(false);
-  const [isTransitModalVisible, setIsTransitModalVisible] = useState<boolean>(false);
-  const [isSelectingDestination, setIsSelectingDestination] = useState<boolean>(false); // Used for allowing user to select any destination on map
+  const [isTransitModalVisible, setIsTransitModalVisible] = useState<boolean>(true);
 
   const markers = campus === "SGW" ? SGWMarkers : LoyolaMarkers;
   const buildings = campus === "SGW" ? SGWBuildings : LoyolaBuildings;
@@ -56,14 +57,19 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      setUserLocation({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+      setUserLocation(location.coords);
+      setOrigin({
+        userLocation: true,
+        coordinates: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        },
       });
     })();
   }, []);
 
   // Open the modal if the user pressed the optimize route button
+  // Need to see if i can just set default value to pressOptimizeRoute
   useEffect(() => {
     if (pressedOptimizeRoute) {
       setIsNextClassModalVisible(true);
@@ -74,62 +80,39 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
   const resetDirections = () => {
     setRouteCoordinates([]);
     setDestination(null);
-    setSelectedBuilding(null);
   };
 
+  // MAY DEPRICATE THIS FUNCTION
   // Fetch route from user's location to destination
   const fetchRoute = useCallback(async () => {
-    const origin = userLocation; // Use selected or user location
     if (!origin) {
       Alert.alert("Cannot fetch route without a starting location");
       return;
     }
 
-    let targetDestination = destination;
-
-    // If no destination is set, use selected building
-    if (!targetDestination && selectedBuilding) {
-      if (selectedBuilding === "markerOnMap") {
-        targetDestination = userLocation;
-      } else {
-        targetDestination = selectedBuilding.coordinates[0];
-      }
-    }
-
-    if (!targetDestination) {
+    if (!destination) {
       Alert.alert("Select a destination point");
       return;
     }
 
-    const route = await getDirections(origin, targetDestination);
+    const route = await getDirections(
+      origin.coordinates,
+      destination.coordinates
+    );
 
     if (route) {
       setRouteCoordinates(route);
     }
-  }, [userLocation, destination, selectedBuilding]);
+  }, [origin, destination]);
 
-  const fetchRouteWithDestination = useCallback(
-    async (destination: Coordinates) => {
-      if (!userLocation) {
-        Alert.alert("Cannot fetch route without user location");
-        return;
-      }
-
-      const route = await getDirections(userLocation, destination);
-
-      if (!route || route.length === 0) {
-        setIsNextClassModalVisible(true); // Show modal for invalid directions
-        return;
-      }
-
-      setRouteCoordinates(route);
-    },
-    [userLocation, destination]
-  );
+  // HandleSetDestination
+  // TODO: Implement this to handle new structure
+  // Potentially use a factory builder to create the destination
+  const HandleSetDestination = () => {};
 
   // Handle marker press to set destination
   const handleMarkerPress = useCallback((marker: CustomMarkerType) => {
-    const makerToBuilding: Building = {
+    const markerToBuilding: Building = {
       id: marker.id,
       name: marker.title,
       description: marker.description,
@@ -139,7 +122,11 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
       campus: "SGW",
     };
 
-    setSelectedBuilding(makerToBuilding);
+    setDestination({
+      building: markerToBuilding,
+      coordinates: marker.coordinate,
+      selectedBuilding: true,
+    });
     setIsBuildingInfoModalVisible(true);
   }, []);
 
@@ -151,19 +138,13 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
 
   // Handle building press to show building info
   const handleBuildingPressed = (building: Building) => () => {
-    if (
-      selectedBuilding !== null &&
-      selectedBuilding !== "markerOnMap" &&
-      selectedBuilding.id === building.id
-    ) {
-      setSelectedBuilding(null);
+    if (destination !== null && destination.building?.id === building.id) {
+      setDestination(null);
       setIsBuildingInfoModalVisible(false);
       return;
     }
 
-    // console.log("Building pressed:", building);
-    setDestination(null);
-    setSelectedBuilding(building);
+    setDestination({building, coordinates: building.coordinates[0], selectedBuilding: true});
     setIsBuildingInfoModalVisible(true);
   };
 
@@ -171,12 +152,9 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
   // TODO:
   // Add logic to open transit modal
   const onDirectionsPress = useCallback(() => {
-    if (selectedBuilding === "markerOnMap") {
-      fetchRoute();
-    } else if (selectedBuilding) {
-      fetchRouteWithDestination(selectedBuilding.coordinates[0]);
-    }
-  }, [selectedBuilding, fetchRouteWithDestination]);
+    // Set Origin to user location
+    setIsTransitModalVisible(true);
+  }, []);
 
   // Handle closing search modal
   const onCloseSearchModal = useCallback(() => {
@@ -188,8 +166,13 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     const coordinates: Coordinates = { latitude, longitude };
 
-    setDestination(coordinates);
-    setSelectedBuilding("markerOnMap");
+    setDestination({ coordinates } as LocationType);
+  };
+
+  const onTravelPress = () => {
+    const coordinates: Coordinates = initialRegion[campus];
+    setDestination({ coordinates, campus } as LocationType);
+    setIsTransitModalVisible(true);
   };
 
   return (
@@ -230,7 +213,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
               <Polygon
                 key={building.id}
                 coordinates={building.coordinates}
-                fillColor={getFillColorWithOpacity(building, selectedBuilding)}
+                fillColor={getFillColorWithOpacity(building, destination)}
                 strokeColor={building.strokeColor}
                 strokeWidth={2}
                 tappable={true}
@@ -264,8 +247,12 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
           />
         )}
         {/* Render Destination Marker */}
-        {destination && (
-          <Marker coordinate={destination} pinColor="red" title="Destination" />
+        {destination && !(destination.selectedBuilding) && (
+          <Marker
+            coordinate={destination.coordinates}
+            pinColor="red"
+            title="Destination"
+          />
         )}
       </MapView>
 
@@ -273,10 +260,8 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
       <BuildingInfoModal
         visible={isBuildingInfoModalVisible}
         onClose={() => setIsBuildingInfoModalVisible(false)}
-        selectedBuilding={selectedBuilding}
-        onNavigate={(latitude, longitude) => {
-          setDestination({ latitude, longitude });
-        }}
+        selectedBuilding={destination?.building}
+        onNavigate={onDirectionsPress}
       />
 
       {/* Search Modal -- Shows up when Search is pressed */}
@@ -284,16 +269,16 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         visible={isSearchModalVisible}
         onClose={onCloseSearchModal}
         onSelectBuilding={(building) => {
-          setSelectedBuilding(building);
-          setDestination(building.coordinates[0]); // Set destination
+          setDestination({
+            coordinates: building.coordinates[0],
+            building,
+            campus: building.campus,
+          }); // Set destination
           setIsSearchModalVisible(false);
         }}
         buildings={buildings}
         markers={markers}
-        onPressSelectOnMap={() => {
-          setIsSelectingDestination(true);
-          onCloseSearchModal();
-        }}
+        onPressSelectOnMap={onCloseSearchModal}
         destination={destination}
         onGetDirections={() => {
           fetchRoute();
@@ -307,20 +292,25 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
           setIsTransitModalVisible(false);
         }}
         visible={isTransitModalVisible}
+        origin={origin}
+        destination={destination}
+        setOrigin={setOrigin}
+        setDestination={setDestination}
       />
 
       <NextClassModal
         visible={isNextClassModalVisible}
         onClose={() => setIsNextClassModalVisible(false)}
-        fetchRouteWithDestination={fetchRouteWithDestination}
+        destination={destination}
+        setDestination={setDestination}
       />
 
       <NavTab
         campus={campus}
-        selectedBuilding={selectedBuilding}
+        destination={destination}
         // onNavigatePress={fetchRoute}
         onSearchPress={() => setIsSearchModalVisible(true)}
-        onTravelPress={() => fetchRouteWithDestination(initialRegion[campus])}
+        onTravelPress={onTravelPress}
         onEatPress={() => setViewEatingOnCampus((prevValue) => !prevValue)}
         onNextClassPress={() => setIsNextClassModalVisible(true)}
         onMoreOptionsPress={() => Alert.alert("More Options pressed")}

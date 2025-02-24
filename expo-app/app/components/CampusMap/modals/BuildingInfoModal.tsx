@@ -8,12 +8,12 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { SelectedBuildingType } from "@/app/utils/types";
+import { Building } from "@/app/utils/types";
 
 type BuildingInfoModalProps = {
   visible: boolean;
   onClose: () => void;
-  selectedBuilding: SelectedBuildingType;
+  selectedBuilding: Building | null | undefined;
   onNavigate?: (latitude: number, longitude: number) => void;
 };
 
@@ -23,7 +23,7 @@ const BuildingInfoModal: React.FC<BuildingInfoModalProps> = ({
   selectedBuilding,
   onNavigate,
 }) => {
-  if (selectedBuilding === 'markerOnMap' || selectedBuilding === null ) return null;
+  if (selectedBuilding === null || selectedBuilding === undefined || !selectedBuilding) return null;
 
   const handleNavigate = () => {
     if (onNavigate && selectedBuilding?.coordinates?.length) {
