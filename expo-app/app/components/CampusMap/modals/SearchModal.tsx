@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { Building, Coordinates, CustomMarkerType } from "@/app/utils/types";
+import { Building, concordiaBurgendyColor, Coordinates, CustomMarkerType } from "@/app/utils/types";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 interface SearchModalProps {
@@ -57,7 +57,12 @@ const SearchModal: React.FC<SearchModalProps> = ({
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           {/* Header */}
-          <Text style={styles.title}>Select Destination</Text>
+          <View style={styles.header}>
+            <Text style={styles.title}>Select Destination</Text>
+            <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
+              <MaterialIcons name="close" size={24} color="#333" />
+            </TouchableOpacity>
+          </View>
 
           {/* Destination Input */}
           <View style={styles.inputContainer}>
@@ -84,8 +89,11 @@ const SearchModal: React.FC<SearchModalProps> = ({
                   setSearchQuery(item.name); // Set the selected destination
                 }}
               >
-                <MaterialIcons name="location-on" size={20} color="#007AFF" />
-                <Text style={styles.resultText}>{item.name}</Text>
+                <MaterialIcons name="location-on" size={24} color="#007AFF" />
+                <View style={styles.resultTextContainer}>
+                  <Text style={styles.resultText}>{item.name}</Text>
+                  <Text style={styles.resultSubtext}>Building Details</Text>
+                </View>
               </TouchableOpacity>
             )}
             ListEmptyComponent={
@@ -113,11 +121,6 @@ const SearchModal: React.FC<SearchModalProps> = ({
               </TouchableOpacity>
             )}
           </View>
-
-          {/* Close Button */}
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -142,12 +145,19 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
   },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
   title: {
     fontSize: 22,
     fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
     color: "#333",
+  },
+  closeIcon: {
+    padding: 8,
   },
   inputContainer: {
     flexDirection: "row",
@@ -172,10 +182,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
+  resultTextContainer: {
+    marginLeft: 10,
+  },
   resultText: {
     fontSize: 16,
-    marginLeft: 10,
     color: "#333",
+  },
+  resultSubtext: {
+    fontSize: 14,
+    color: "#888",
   },
   noResultsText: {
     textAlign: "center",
@@ -191,7 +207,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 14,
-    backgroundColor: "#007AFF",
+    backgroundColor: concordiaBurgendyColor,
     borderRadius: 12,
     elevation: 3,
   },
@@ -215,19 +231,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: 10,
-  },
-  closeButton: {
-    marginTop: 16,
-    padding: 14,
-    backgroundColor: "#D9534F",
-    borderRadius: 12,
-    alignItems: "center",
-    elevation: 3,
-  },
-  closeButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
   },
 });
 
