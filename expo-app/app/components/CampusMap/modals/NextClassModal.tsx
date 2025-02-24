@@ -40,7 +40,7 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
 
       setIsLoading(true);
       try {
-        const events = await fetchCalendarEvents();
+        const { events } = await fetchCalendarEvents();
         if (!events || events.length === 0) {
           setNextClass(null);
           setIsLoading(false);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
     View,
     Text,
@@ -6,80 +6,114 @@ import {
     TouchableOpacity,
     StyleSheet,
     Image,
+    ScrollView,
+    Switch,
+    Alert
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { AuthContext } from "../../contexts/AuthContext";
+import { fetchAllCalendars } from "@/app/services/GoogleCalendar/fetchingUserCalendarData";
 
 export default function AccountScreen() {
     const router = useRouter();
+    const authContext = useContext(AuthContext);
 
-    const [email, setEmail] = useState("");
-    const [profilePicture, setProfilePicture] = useState(null);
+    if (!authContext) {
+        throw new Error("AuthContext must be used within an AuthProvider.");
+    }
+
+    const { user } = authContext;
+    const [selectedCalendarId, setSelectedCalendarId] = useState<string | null>(null);
+    const [availableSchedules, setAvailableSchedules] = useState<any[]>([]);
+    const [initialCalendarId, setInitialCalendarId] = useState<string | null>(null);
+    const [hasChanges, setHasChanges] = useState(false);
 
     useEffect(() => {
-        const loadAccountData = async () => {
-            const savedUser = await AsyncStorage.getItem("user");
-            if (savedUser) {
-                const parsedUser = JSON.parse(savedUser);
-                if (parsedUser.email) setEmail(parsedUser.email);
-                if (parsedUser.photoURL) setProfilePicture(parsedUser.photoURL);
-                console.log()
-            }
+        const loadUserData = async () => {
+            const allCalendars = await fetchAllCalendars();
+            const storedSelectedCalendarId = await AsyncStorage.getItem("selectedScheduleID");
+            
+            setAvailableSchedules(allCalendars);
+            setSelectedCalendarId(storedSelectedCalendarId);
+            setInitialCalendarId(storedSelectedCalendarId);
         };
-        loadAccountData();
+
+        loadUserData();
     }, []);
 
+    const selectCalendar = (calendarId: string) => {
+        setSelectedCalendarId(calendarId);
+        setHasChanges(calendarId !== initialCalendarId);
+    };
+
+    const saveChanges = async () => {
+        if (!selectedCalendarId) return;
+
+        await AsyncStorage.setItem("selectedScheduleID", selectedCalendarId);
+        const selectedCalendar = availableSchedules.find((cal) => cal.id === selectedCalendarId);
+        if (selectedCalendar) {
+            await AsyncStorage.setItem("selectedScheduleName", selectedCalendar.summary);
+        }
+        
+        setInitialCalendarId(selectedCalendarId);
+        setHasChanges(false);
+        Alert.alert("Success", "Calendar selection updated successfully!");
+    };
+
     return (
-        <View style={styles.container}>
-            {/* Header */}
+        <ScrollView style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <FontAwesome5 name="arrow-left" size={24} color="#333" />
+                    <FontAwesome5 name="arrow-left" size={30} color="#333" />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Account Settings</Text>
             </View>
 
             <View style={styles.formContainer}>
-                {/* Profile Picture */}
                 <View style={styles.profileContainer}>
-                    {profilePicture ? (
-                        <Image source={{ uri: profilePicture }} style={styles.profileImage} />
+                    {user?.photoURL ? (
+                        <Image source={{ uri: user.photoURL }} style={styles.profileImage} />
                     ) : (
                         <FontAwesome5 name="user-circle" size={80} color="#888" />
                     )}
                 </View>
 
-                {/* Email Field */}
                 <Text style={styles.label}>Email</Text>
                 <TextInput
-                    style={[styles.input, { backgroundColor: "#EAEAEA", color: "#333", fontWeight: "bold" }]} 
-                    value={email} 
-                    placeholderTextColor="#777"
-                    keyboardType="email-address"
-                    editable={false} 
-                    autoCapitalize="none"
+                    style={[styles.input, { backgroundColor: "#EAEAEA", color: "#333", fontWeight: "bold" }]}
+                    value={user?.email || ""}
+                    editable={false}
                 />
 
-                {/* Divider */}
                 <View style={styles.divider} />
 
-                {/* Password Field */}
-                <Text style={styles.label}>Password</Text>
-                <TextInput
-                    style={[styles.input, { backgroundColor: "#EAEAEA", color: "#777" }]} 
-                    placeholder="Google Sign-In does not use a password"
-                    placeholderTextColor="#777"
-                    editable={false} 
-                    secureTextEntry
-                />
+                <Text style={styles.label}>Select Schedule</Text>
+                {availableSchedules.length > 0 ? (
+                    availableSchedules.map((calendar) => (
+                        <View key={calendar.id} style={styles.scheduleOption}>
+                            <Text style={styles.scheduleText}>{calendar.summary}</Text>
+                            <Switch
+                                value={selectedCalendarId === calendar.id}
+                                onValueChange={() => selectCalendar(calendar.id)}
+                            />
+                        </View>
+                    ))
+                ) : (
+                    <Text style={styles.noCalendarText}>No schedules found</Text>
+                )}
 
-                {/* Save Changes Button */}
-                <TouchableOpacity style={styles.saveButton} activeOpacity={0.8}>
+                <TouchableOpacity
+                    style={[styles.saveButton, { opacity: hasChanges ? 1 : 0.5 }]}
+                    activeOpacity={0.8}
+                    disabled={!hasChanges}
+                    onPress={saveChanges}
+                >
                     <Text style={styles.saveButtonText}>Save Changes</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
@@ -169,5 +203,24 @@ const styles = StyleSheet.create({
         color: "#FFF",
         fontWeight: "bold",
         letterSpacing: 0.5,
+    },
+    scheduleOption: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 10,
+        backgroundColor: "#F2F2F2",
+        width: "100%",
+    },
+    scheduleText: {
+        fontSize: 16,
+    },
+    noCalendarText: {
+        fontSize: 16,
+        color: "#888",
+        textAlign: "center",
+        marginTop: 10,
     },
 });
