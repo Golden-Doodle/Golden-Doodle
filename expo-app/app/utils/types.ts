@@ -76,10 +76,21 @@ export type RouteOption = {
   id: string;
   mode: TransportMode;
   duration: string; // Estimated travel time (e.g., "15 min")
+  durationValue: number; // Duration in seconds
   distance: string; // Distance (e.g., "3.2 km")
   steps: string[]; // Turn-by-turn instructions (HTML formatted)
   routeCoordinates: Coordinates[]; // Decoded polyline route coordinates
   cost?: string; // Cost of the route (e.g., "$3.25")
   frequency?: string; // Frequency of the shuttle (e.g., "Every 15 min")
   transport?: string; // Transport type (e.g., "Bus 105 & 24")
+  arrival_time?: { // ['Walking'] does not have arrival time
+    text: string; // Arrival time (e.g., "14:10")
+    value: number; // Arrival time in seconds
+    time_zone: string; // Time zone (e.g., "America/Toronto")
+  }
+  departure_time?: { // ['Walking'] does not have departure time
+    text: string; // Departure time (e.g., "13:32")
+    value: number; // Departure time in seconds
+    time_zone: string; // Time zone (e.g., "America/Toronto")
+  }
 };

@@ -109,16 +109,37 @@ export const fetchAllRoutes = async (
       if (data.status === "OK") {
         const route = data.routes[0];
         const legs = route.legs[0];
+        const transportDetails: string[] = [];
+
+        if (mode ==='transit') console.log('steps', route.legs[0].steps[1].transit_details.line);
+        // Extract transport details from steps (for transit mode)
+        if (mode === "transit") {
+          legs.steps.forEach((step: any) => {
+            if (step.transit_details) {
+              const line = step.transit_details.line;
+              if (line) {
+                transportDetails.push(
+                  `${line.vehicle.name} ${line.short_name}`
+                );
+              }
+            }
+          });
+        }
 
         routesData.push({
           id: `${index++}`,
           mode,
           duration: legs.duration.text,
+          durationValue: legs.duration.value, 
           distance: legs.distance.text,
           steps: legs.steps.map((step: any) => step.html_instructions),
           routeCoordinates: polyline
             .decode(route.overview_polyline.points)
             .map(([lat, lng]) => ({ latitude: lat, longitude: lng })),
+          transport: mode === 'transit' ? transportDetails.join(" & ") : undefined,
+          departure_time: mode === 'transit' ? legs.departure_time : undefined,
+          arrival_time: mode === 'transit' ? legs.arrival_time : undefined,
+          cost: mode === 'transit' ? legs.fare?.text : undefined,
         });
       }
     });
@@ -130,6 +151,7 @@ export const fetchAllRoutes = async (
         id: `${index++}`,
         mode: "shuttle",
         duration: "25 min",
+        durationValue: 1500,
         distance: "N/A",
         steps: [
           "Board the Concordia Shuttle at Loyola Campus",
@@ -145,6 +167,8 @@ export const fetchAllRoutes = async (
             longitude: destination.coordinates.longitude,
           },
         ],
+        cost: "Free for students",
+        frequency: "Every 15 min",
       });
     };
 
@@ -153,6 +177,7 @@ export const fetchAllRoutes = async (
 
     // Update state with all route options
     setRouteOptions(routesData);
+
   } catch (error) {
     console.error("Error fetching routes:", error);
   }

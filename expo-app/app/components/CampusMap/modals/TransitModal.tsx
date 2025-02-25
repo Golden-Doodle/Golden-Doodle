@@ -18,7 +18,6 @@ import {
 import { Card } from "react-native-paper";
 import { fetchAllRoutes } from "@/app/utils/directions";
 
-
 interface TransitModalProps {
   visible: boolean;
   onClose: () => void;
@@ -38,16 +37,14 @@ const TransitModal = ({
   setOrigin,
   setRouteCoordinates,
 }: TransitModalProps) => {
-
   const [routeOptions, setRouteOptions] = React.useState<RouteOption[]>([]);
 
   useEffect(() => {
     // Fetch all available routes
-    if(!origin || !destination) return;
+    if (!origin || !destination) return;
 
     fetchAllRoutes(origin, destination, setRouteOptions);
-  }, [origin, destination]); 
-
+  }, [origin, destination]);
 
   const getTransportIcon = (mode: TransportMode) => {
     switch (mode) {
@@ -140,15 +137,49 @@ const TransitModal = ({
                     {getTransportIcon(item.mode)}
                   </View>
                   <View style={styles.textContainer}>
-                    <Text style={styles.time}>{}</Text>
-                    <Text style={styles.details}>
-                      {item.duration} minutes - {item.transport}
+                    <Text style={styles.time}>
+                      {item?.arrival_time && item?.departure_time
+                        ? `${item.departure_time.text} - ${item.arrival_time.text}`
+                        : `${new Date().toLocaleTimeString("us-EN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })} - ${new Date(
+                            Date.now() + item.durationValue * 1000 
+                          ).toLocaleTimeString("us-EN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}`}{" "}
                     </Text>
+                    <Text style={styles.details}>
+                      {item.distance !== "N/A"
+                        ? `Distance: ${item.distance}`
+                        : ""}
+                    </Text>
+                    <Text style={styles.details}>
+                      {item.duration} - Mode: {item.mode}
+                    </Text>
+                    <Text style={styles.details}>
+                      {item.transport ? `Transport: ${item.transport}` : ""}
+                    </Text>
+
+                    {/* {item.steps && (
+                      <View style={styles.stepsContainer}>
+                        {item.steps.map((step, index) => (
+                          <Text key={index} style={styles.stepText}>
+                            {step}
+                          </Text>
+                        ))}
+                      </View>
+                    )} */}
+
                     {item.cost && (
-                      // TODO: Add cost to the route option
-                      <Text style={styles.details}>{item.cost}</Text>
+                      <Text style={styles.details}>Cost: {item.cost}</Text>
                     )}
-                    {item.frequency && <Text style={styles.details}>{item.frequency}</Text>}
+                    {item.frequency && (
+                      <Text style={styles.details}>
+                        Frequency: {item.frequency}
+                      </Text>
+                    )}
                   </View>
                 </Card.Content>
               </Card>
@@ -239,6 +270,16 @@ const styles = StyleSheet.create({
   details: {
     fontSize: 14,
     color: "gray",
+    marginBottom: 5,
+  },
+  stepsContainer: {
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  stepText: {
+    fontSize: 12,
+    color: "gray",
+    marginBottom: 5,
   },
 });
 
