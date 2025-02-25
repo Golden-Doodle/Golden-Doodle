@@ -129,9 +129,17 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
 
   // Toggle between SGW and Loyola campuses
   const toggleCampus = useCallback(() => {
-    setCampus((prevCampus) => (prevCampus === "SGW" ? "LOY" : "SGW"));
-    resetDirections();
+    setCampus((prevCampus) => {
+      const newCampus = prevCampus === "SGW" ? "LOY" : "SGW";
+
+      // Update map region based on the new campus value
+      setMapRegion(initialRegion[newCampus]);
+
+      resetDirections();
+      return newCampus;
+    });
   }, []);
+
 
   // Handle building press to show building info
   const handleBuildingPressed = (building: Building) => () => {
