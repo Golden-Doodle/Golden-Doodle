@@ -105,11 +105,6 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
     }
   }, [origin, destination]);
 
-  // HandleSetDestination
-  // TODO: Implement this to handle new structure
-  // Potentially use a factory builder to create the destination
-  const HandleSetDestination = () => {};
-
   // Handle marker press to set destination
   const handleMarkerPress = useCallback((marker: CustomMarkerType) => {
     const markerToBuilding: Building = {

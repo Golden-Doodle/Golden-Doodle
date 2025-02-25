@@ -21,7 +21,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({
   isFoodLocation = false, // Default is false
   onPress,
 }) => (
-  <Marker coordinate={coordinate} onPress={onPress}tappable={true}>
+  <Marker coordinate={coordinate} onPress={onPress} tappable={true}>
     <View style={[styles.marker, isFoodLocation && styles.foodMarker]}>
       {isFoodLocation ? (
         <MaterialIcons name="restaurant" size={20} color="white" /> // ✅ Restaurant icon for food places

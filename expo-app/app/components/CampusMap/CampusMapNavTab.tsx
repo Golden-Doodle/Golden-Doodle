@@ -30,13 +30,13 @@ const NavTab: React.FC<NavTabProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
-  const getNAV_ITEMS = () => {
+  const getNavItems = () => {
 
     // No Destination
     if (!destination) return [
         { label: "Search", icon: "search", action: onSearchPress },
         {
-          label: campus === "SGW" ? "SGW" : "LOY",
+          label: campus,
           icon: "location-arrow",
           action: onTravelPress,
         },
@@ -60,7 +60,7 @@ const NavTab: React.FC<NavTabProps> = ({
     return [];
   };
 
-  const NAV_ITEMS = getNAV_ITEMS();
+  const NAV_ITEMS = getNavItems();
 
   return (
     <View style={styles.navContainer}>
