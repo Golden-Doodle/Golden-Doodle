@@ -144,23 +144,27 @@ const TransitModal = ({
                             hour: "2-digit",
                             minute: "2-digit",
                           })} - ${new Date(
-                            Date.now() + item.durationValue * 1000 
+                            Date.now() + item.durationValue * 1000
                           ).toLocaleTimeString("us-EN", {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}`}{" "}
                     </Text>
-                    <Text style={styles.details}>
-                      {item.distance !== "N/A"
-                        ? `Distance: ${item.distance}`
-                        : ""}
-                    </Text>
-                    <Text style={styles.details}>
-                      {item.duration} - Mode: {item.mode}
-                    </Text>
-                    <Text style={styles.details}>
-                      {item.transport ? `Transport: ${item.transport}` : ""}
-                    </Text>
+                    {item.distance !== "N/A" && (
+                      <Text style={styles.details}>
+                        Distance: {item.distance}
+                      </Text>
+                    )}
+                    {item.duration && (
+                      <Text style={styles.details}>
+                        {item.duration} - Mode: {item.mode}
+                      </Text>
+                    )}
+                    {item.transport && (
+                      <Text style={styles.details}>
+                        Transport: {item.transport}
+                      </Text>
+                    )}
 
                     {/* {item.steps && (
                       <View style={styles.stepsContainer}>
@@ -200,7 +204,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    height: "30%",
+    height: "25%",
     padding: 16,
     backgroundColor: concordiaBurgendyColor,
   },
@@ -246,8 +250,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   card: {
-    margin: 8,
-    padding: 8,
+    margin: 4,
+    padding: 5,
     borderRadius: 8,
     elevation: 3,
     backgroundColor: "#fff",
