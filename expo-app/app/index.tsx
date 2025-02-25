@@ -33,35 +33,58 @@ export default function SignInScreen() {
 
   const { handleGoogleSignIn, handleSignInAsGuest, loading } = authContext;
 
-  const animation1 = useRef(new Animated.Value(0)).current;
-  const animation2 = useRef(new Animated.Value(0)).current;
-  const animation3 = useRef(new Animated.Value(0)).current;
-  const animation4 = useRef(new Animated.Value(0)).current;
+  const animatedX1 = useRef(new Animated.Value(0)).current;
+  const animatedY1 = useRef(new Animated.Value(0)).current;
+
+  const animatedX2 = useRef(new Animated.Value(0)).current;
+  const animatedY2 = useRef(new Animated.Value(0)).current;
+
+  const animatedX3 = useRef(new Animated.Value(0)).current;
+  const animatedY3 = useRef(new Animated.Value(0)).current;
+
+  const animatedX4 = useRef(new Animated.Value(0)).current;
+  const animatedY4 = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const animateCircle = (animation: Animated.Value, duration: number) => {
-      return Animated.loop(
+    const createSmoothAnimation = (animatedX: Animated.Value, animatedY: Animated.Value, xRange: number, yRange: number, duration: number) => {
+      Animated.loop(
         Animated.sequence([
-          Animated.timing(animation, {
-            toValue: 20,
-            duration,
-            easing: Easing.linear,
-            useNativeDriver: true,
-          }),
-          Animated.timing(animation, {
-            toValue: 0,
-            duration,
-            easing: Easing.linear,
-            useNativeDriver: true,
-          }),
+          Animated.parallel([
+            Animated.timing(animatedX, {
+              toValue: xRange,
+              duration: duration,
+              easing: Easing.inOut(Easing.sin),
+              useNativeDriver: false,
+            }),
+            Animated.timing(animatedY, {
+              toValue: yRange,
+              duration: duration,
+              easing: Easing.inOut(Easing.sin),
+              useNativeDriver: false,
+            }),
+          ]),
+          Animated.parallel([
+            Animated.timing(animatedX, {
+              toValue: 0, 
+              duration: duration,
+              easing: Easing.inOut(Easing.sin),
+              useNativeDriver: false,
+            }),
+            Animated.timing(animatedY, {
+              toValue: 0,
+              duration: duration,
+              easing: Easing.inOut(Easing.sin),
+              useNativeDriver: false,
+            }),
+          ]),
         ])
       ).start();
     };
 
-    animateCircle(animation1, 3000);
-    animateCircle(animation2, 4000);
-    animateCircle(animation3, 5000);
-    animateCircle(animation4, 6000);
+    createSmoothAnimation(animatedX1, animatedY1, 40, 30, 5000);
+    createSmoothAnimation(animatedX2, animatedY2, 50, 20, 4500);
+    createSmoothAnimation(animatedX3, animatedY3, 35, 40, 6000);
+    createSmoothAnimation(animatedX4, animatedY4, 45, 25, 5500);
   }, []);
 
   if (loading) return <View style={{ flex: 1, backgroundColor: "#FFF" }} />;
@@ -70,36 +93,32 @@ export default function SignInScreen() {
     <View style={styles.container}>
       <Svg style={StyleSheet.absoluteFillObject}>
         <AnimatedCircle
-          cx={150}
-          cy={150}
-          r="130"
+            cx={animatedX1.interpolate({ inputRange: [40, 40], outputRange: [0, 40] })}
+            cy={animatedY1.interpolate({ inputRange: [-30, 30], outputRange: [50, 100] })}
+            r="120"
+            fill="#731b2b"
+            opacity="0.6"
+          />
+        <AnimatedCircle
+            cx={animatedX2.interpolate({ inputRange: [50, 150], outputRange: [400, 450] })}
+            cy={animatedY2.interpolate({ inputRange: [-20, 20], outputRange: [275, 295] })}
+            r="180"
+            fill="#731b2b"
+            opacity="0.5"
+          />
+        <AnimatedCircle
+          cx={animatedX3.interpolate({ inputRange: [-35, 35], outputRange: [80, 115] })}
+          cy={animatedY3.interpolate({ inputRange: [-40, 40], outputRange: [500, 540] })}
+          r="180"
+          fill="#731b2b"
+          opacity="0.4"
+        />
+        <AnimatedCircle
+          cx={animatedX4.interpolate({ inputRange: [-45, 45], outputRange: [330, 375] })}
+          cy={animatedY4.interpolate({ inputRange: [-25, 25], outputRange: [800, 820] })}
+          r="120"
           fill="#731b2b"
           opacity="0.6"
-          transform={[{ translateY: animation1 }]}
-        />
-        <AnimatedCircle
-          cx={320}
-          cy={375}
-          r="100"
-          fill="#912338"
-          opacity="0.5"
-          transform={[{ translateY: animation2 }]}
-        />
-        <AnimatedCircle
-          cx={120}
-          cy={550}
-          r="110"
-          fill="#b52e45"
-          opacity="0.4"
-          transform={[{ translateY: animation3 }]}
-        />
-        <AnimatedCircle
-          cx={320}
-          cy={750}
-          r="130"
-          fill="#d0465b"
-          opacity="0.3"
-          transform={[{ translateY: animation4 }]}
         />
       </Svg>
 

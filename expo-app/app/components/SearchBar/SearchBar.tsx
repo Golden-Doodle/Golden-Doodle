@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons"; // Search icon
 
 export default function SearchBar() {
+
+  const [searchText, setSearchText] = useState("");
+
   return (
     <View style={styles.searchContainer}>
       <Feather name="search" size={20} color="#999" style={styles.icon} />
@@ -11,10 +14,13 @@ export default function SearchBar() {
         placeholderTextColor="#999"
         style={styles.searchInput}
         testID="search-input"
+        value={searchText} // Controlled input
+        onChangeText={setSearchText} // Updates state on change
       />
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   searchContainer: {

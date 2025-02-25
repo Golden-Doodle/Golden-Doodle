@@ -1,5 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { View, StyleSheet, ActivityIndicator } from "react-native";
+import React, { useState, useEffect, useCallback, useContext } from "react";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  Text,
+  Switch
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "../../components/Header/Header";
 import ButtonSection from "../../components/ButtonSection/ButtonSection";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -8,56 +16,102 @@ import HottestSpots from "../../components/HottestSpots/HottestSpots";
 import ShuttleSchedule from "../../components/ShuttleSchedule/ShuttleSchedule";
 import BottomNavigation from "../../components/BottomNavigation/BottomNavigation";
 import { AuthContext } from "@/app/contexts/AuthContext";
-import { fetchSameDayCalendarEvents } from "@/app/services/GoogleCalendar/fetchingUserCalendarData"; 
+import { fetchGoogleCalendarEvents } from "@/app/services/GoogleCalendar/fetchingUserCalendarData";
 import { GoogleCalendarEvent } from "@/app/utils/types";
 
 export default function HomePageScreen() {
-  const auth = React.useContext(AuthContext);
+  const auth = useContext(AuthContext);
   const user = auth?.user;
 
   const [isLoading, setIsLoading] = useState(false);
   const [calendarEvents, setCalendarEvents] = useState<GoogleCalendarEvent[]>([]);
+  const [campus, setCampus] = useState<"LOY" | "SGW">("LOY")
+
+  // Load stored campus selection
+  useEffect(() => {
+    const loadCampus = async () => {
+      const storedCampus = await AsyncStorage.getItem("selectedCampus");
+      
+      // Ensure storedCampus is either "LOY" or "SGW"
+      if (storedCampus === "LOY" || storedCampus === "SGW") {
+        setCampus(storedCampus);
+      }
+    };
+  
+    loadCampus();
+  }, []);
 
   const refreshCalendarEvents = useCallback(async () => {
     if (!user) return;
-  
     setIsLoading(true);
+
     try {
       console.log("Refreshing calendar events...");
-      const events = await fetchSameDayCalendarEvents();
+
+      // Retrieve the selected calendar ID from AsyncStorage
+      const selectedCalendarId = await AsyncStorage.getItem("selectedScheduleID");
+
+      if (!selectedCalendarId) {
+        console.warn("No calendar selected. Please choose a calendar in settings.");
+        return;
+      }
+
+      // Fetch events for the selected calendar (next 7 days)
+      const events = await fetchGoogleCalendarEvents(selectedCalendarId, 7);
       setCalendarEvents(events);
     } catch (error) {
       console.error("Failed to refresh calendar:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [user]); 
-  
+  }, [user]);
+
   useEffect(() => {
     refreshCalendarEvents();
     const interval = setInterval(refreshCalendarEvents, 30000);
-    
     return () => clearInterval(interval);
-  }, [refreshCalendarEvents]); 
-  
+  }, [refreshCalendarEvents]);
 
+  // Toggle function for campus switch
+  const toggleCampus = async () => {
+    const newCampus: "LOY" | "SGW" = campus === "LOY" ? "SGW" : "LOY"; // Explicitly define type
+    setCampus(newCampus);
+    await AsyncStorage.setItem("selectedCampus", newCampus);
+  };
+  
   return (
     <View style={styles.container}>
-      {/* Pass calendarEvents to Header */}
-      <View style={styles.headerContainer}>
-        <Header refreshCalendarEvents={refreshCalendarEvents} isLoading={isLoading} calendarEvents={calendarEvents} />
-      </View>
-
-      {/* Main Content */}
-      <View style={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refreshCalendarEvents} />}
+      >
+        <Header
+          refreshCalendarEvents={refreshCalendarEvents}
+          isLoading={isLoading}
+          calendarEvents={calendarEvents}
+        />
         <ButtonSection />
         <SearchBar />
         <QuickShortcuts />
         <HottestSpots />
-        <ShuttleSchedule />
-      </View>
 
-      {/* Bottom Navigation */}
+        {/* Shuttle Schedule Toggle */}
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>SGW</Text>
+          <Switch
+            value={campus === "LOY"}
+            onValueChange={toggleCampus}
+            trackColor={{ false: "#912338", true: "#D3D3D3" }} 
+            thumbColor={campus === "LOY" ? "#912338" : "#D3D3D3"} 
+          />
+
+          <Text style={styles.switchLabel}>LOY</Text>
+        </View>
+
+        {/* Shuttle Schedule Component */}
+        <ShuttleSchedule route={campus} />
+      </ScrollView>
+
       <BottomNavigation />
     </View>
   );
@@ -69,9 +123,28 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
     justifyContent: "space-between",
   },
-  headerContainer: {},
   content: {
-    marginTop: 250,
     alignItems: "center",
   },
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 15,
+    padding: 10,
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  switchLabel: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginHorizontal: 10,
+    color: "#333",
+  },
 });
+

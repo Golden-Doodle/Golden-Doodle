@@ -1,6 +1,6 @@
 import Constants from "expo-constants";
 import { decode } from "@mapbox/polyline";
-import { Coordinates } from "./types";
+import { Coordinates, RoomLocation, Building, Campus } from "@/app/utils/types";
 
 const GOOGLE_MAPS_API_KEY = Constants.expoConfig?.extra?.googleMapsApiKey;
 
@@ -29,4 +29,45 @@ export const getDirections = async (
     console.error("Error fetching directions:", error);
     return [];
   }
+};
+
+export const coordinatesFromRoomLocation = (
+  location: RoomLocation | null,
+  SGWBuildings: Building[],
+  LoyolaBuildings: Building[]
+): Coordinates | undefined => {
+  if (!location) {
+    return;
+  }
+
+  if (!location.campus) return;
+
+  const validateCampus = () => {
+    if (location.campus !== "SGW" && location.campus !== "LOY") {
+      
+      const newCampus = ( location.campus as string).toUpperCase();
+
+      if(newCampus=== "SGW" || newCampus === "LOY") {
+
+        location.campus = newCampus as Campus;
+      }
+
+    }
+  }
+
+  validateCampus(); 
+
+  const coordinates: Coordinates | undefined =
+    location.campus === "SGW"
+      ? SGWBuildings.find((building : Building) => building.name === location.building)
+          ?.coordinates[0]
+      : LoyolaBuildings.find((building) => building.name === location.building)
+          ?.coordinates[0];
+
+  if (!coordinates) {
+    console.error("Building coordinates not found");
+    return;
+  }
+
+  return coordinates;
 };

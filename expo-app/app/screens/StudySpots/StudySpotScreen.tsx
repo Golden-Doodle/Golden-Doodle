@@ -2,13 +2,13 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
-export default function ShuttleScheduleScreen() {
+export default function StudySpots() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Shuttle Schedule</Text>
-      <Text style={styles.infoText}>Upcoming shuttle times will be displayed here.</Text>
+      <Text style={styles.title}>Study Spots</Text>
+      <Text style={styles.infoText}>Nearby study spots will be displayed here.</Text>
       
       {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
