@@ -42,6 +42,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
   const [isNextClassModalVisible, setIsNextClassModalVisible] =
     useState<boolean>(false);
   const [viewEatingOnCampus, setViewEatingOnCampus] = useState<boolean>(false);
+  const [mapRegion, setMapRegion] = useState(initialRegion[campus]); // Store region in state
 
   const markers = campus === "SGW" ? SGWMarkers : LoyolaMarkers;
   const buildings = campus === "SGW" ? SGWBuildings : LoyolaBuildings;
@@ -68,7 +69,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
     if (pressedOptimizeRoute) {
       setIsNextClassModalVisible(true);
     }
-  },[]);
+  }, []);
 
   // Reset destination and route
   const resetDirections = () => {
@@ -108,19 +109,18 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         Alert.alert("Cannot fetch route without user location");
         return;
       }
-  
+
       const route = await getDirections(userLocation, destination);
-  
+
       if (!route || route.length === 0) {
         setIsNextClassModalVisible(true); // Show modal for invalid directions
         return;
       }
-  
+
       setRouteCoordinates(route);
     },
     [userLocation, destination]
   );
-  
 
   // Handle marker press to set destination
   const handleMarkerPress = useCallback((coordinate: Coordinates) => {
@@ -142,6 +142,14 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
     }
     setSelectedBuilding(building);
     setIsModalVisible(true);
+
+    // Update map region to center on the selected building
+    setMapRegion({
+      latitude: building.coordinates[0].latitude, // Adjust to building center
+      longitude: building.coordinates[0].longitude,
+      latitudeDelta: 0.005, // Zoom level
+      longitudeDelta: 0.005,
+    });
   };
 
   // Handle directions press
@@ -164,7 +172,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
       <MapView
         key={viewCampusMap ? "map-visible" : "map-hidden"} // Re-render map when viewCampusMap changes
         style={styles.map}
-        region={initialRegion[campus]}
+        region={mapRegion}
         showsUserLocation={true}
         loadingEnabled={true}
         scrollEnabled={true}
