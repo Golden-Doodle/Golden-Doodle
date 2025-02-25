@@ -14,40 +14,45 @@ export default function TimePicker({ selectedTime, setSelectedTime }: TimePicker
 
     const handleTimeChange = (_event: any, newTime?: Date) => {
         if (newTime) {
-            setTempTime(newTime); 
+            setTempTime(newTime);
         }
     };
 
-
     const confirmTimeSelection = () => {
-        setSelectedTime(tempTime); 
-        setShowPicker(false); 
+        setSelectedTime(tempTime);
+        setShowPicker(false);
     };
 
     return (
         <View style={styles.container}>
-
-            <TouchableOpacity style={styles.timeButton} onPress={() => setShowPicker(true)}>
+            <TouchableOpacity
+                style={styles.timeButton}
+                onPress={() => setShowPicker(true)}
+                testID="time-button"
+            >
                 <FontAwesome5 name="clock" size={18} color="#990000" />
-                <Text style={styles.timeText}>
-                    {selectedTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true })}
+                <Text style={styles.timeText} testID="selected-time-text">
+                    {selectedTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
                 </Text>
             </TouchableOpacity>
 
-
             {showPicker && (
-                <Modal transparent animationType="fade">
+                <Modal transparent animationType="fade" testID="time-picker-modal">
                     <View style={styles.overlay}>
                         <View style={styles.modalContainer}>
                             <DateTimePicker
-                                value={tempTime} 
+                                value={tempTime}
                                 mode="time"
                                 display={Platform.OS === "ios" ? "spinner" : "default"}
-                                textColor="#000" 
-                                onChange={handleTimeChange} 
+                                textColor="#000"
+                                onChange={handleTimeChange}
+                                testID="date-time-picker"
                             />
-
-                            <TouchableOpacity style={styles.doneButton} onPress={confirmTimeSelection}>
+                            <TouchableOpacity
+                                style={styles.doneButton}
+                                onPress={confirmTimeSelection}
+                                testID="confirm-button"
+                            >
                                 <Text style={styles.doneButtonText}>Done</Text>
                             </TouchableOpacity>
                         </View>

@@ -5,7 +5,7 @@ import {
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
 import * as ImagePicker from "expo-image-picker";  
-import TimePicker from "../TimePicker";            
+import TimePicker from "../TimePicker/TimePicker";            
 
 export default function ReportForm() {
     const [date, setDate] = useState<Date>(new Date());
