@@ -15,7 +15,7 @@ export type Building = {
   campus: Campus;
 };
 
-export type CustomMarker = {
+export type CustomMarkerType = {
   id: number;
   title: string;
   description: string;
