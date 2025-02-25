@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import MapView, { Polygon, Polyline, Marker } from "react-native-maps";
-import { View, Alert, Text, TouchableOpacity } from "react-native";
+import { View, Alert } from "react-native";
 import CustomMarker from "./CustomMarker";
 import { SGWBuildings, LoyolaBuildings } from "./data/buildingData";
 import { getDirections } from "../../utils/directions";
@@ -175,6 +175,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
     setIsTransitModalVisible(true);
   };
 
+ 
   return (
     <View style={styles.container}>
       {/* Movable Hamburger Widget */}
@@ -296,6 +297,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         destination={destination}
         setOrigin={setOrigin}
         setDestination={setDestination}
+        setRouteCoordinates={setRouteCoordinates}
       />
 
       <NextClassModal

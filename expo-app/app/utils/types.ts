@@ -64,3 +64,22 @@ export type LocationType = {
   campus?: Campus;  
   selectedBuilding?: boolean;
 } | null;
+
+export type TransportMode =
+  | "transit"   // Google maps   
+  | "walking"   // Google maps
+  | "driving"   // Google maps
+  | "bicycling" // Google maps
+  | "shuttle";  // Concordia shuttle
+
+export type RouteOption = {
+  id: string;
+  mode: TransportMode;
+  duration: string; // Estimated travel time (e.g., "15 min")
+  distance: string; // Distance (e.g., "3.2 km")
+  steps: string[]; // Turn-by-turn instructions (HTML formatted)
+  routeCoordinates: Coordinates[]; // Decoded polyline route coordinates
+  cost?: string; // Cost of the route (e.g., "$3.25")
+  frequency?: string; // Frequency of the shuttle (e.g., "Every 15 min")
+  transport?: string; // Transport type (e.g., "Bus 105 & 24")
+};

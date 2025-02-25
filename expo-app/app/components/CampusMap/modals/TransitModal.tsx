@@ -1,6 +1,12 @@
-import { concordiaBurgendyColor, LocationType } from "@/app/utils/types";
+import {
+  concordiaBurgendyColor,
+  Coordinates,
+  LocationType,
+  RouteOption,
+  TransportMode,
+} from "@/app/utils/types";
 import { FontAwesome5 } from "@expo/vector-icons";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -10,47 +16,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Card } from "react-native-paper";
+import { fetchAllRoutes } from "@/app/utils/directions";
 
-const routes = [
-  {
-    id: "1",
-    time: "13:32 - 14:10",
-    duration: "39 min",
-    transport: "Bus 105 & 24",
-    type: "public", // Added type for public transport
-    cost: "CA$3.25",
-    frequency: "Every 8 min",
-  },
-  {
-    id: "2",
-    time: "13:32 - 14:12",
-    duration: "41 min",
-    transport: "Shuttle",
-    type: "shuttle", // Added type for school shuttle
-    frequency: "Every 15 min",
-  },
-  {
-    id: "3",
-    time: "13:35 - 14:12",
-    duration: "37 min",
-    transport: "Bus 162 & Walk",
-    type: "walking", // Added type for walking
-  },
-  {
-    id: "4",
-    time: "13:40 - 14:20",
-    duration: "40 min",
-    transport: "Drive",
-    type: "driving", // Added type for driving
-  },
-  {
-    id: "5",
-    time: "13:45 - 14:15",
-    duration: "30 min",
-    transport: "Bike",
-    type: "biking", // Added type for biking
-  },
-];
 
 interface TransitModalProps {
   visible: boolean;
@@ -59,12 +26,32 @@ interface TransitModalProps {
   destination: LocationType;
   setOrigin: (location: LocationType) => void;
   setDestination: (location: LocationType) => void;
+  setRouteCoordinates: React.Dispatch<React.SetStateAction<Coordinates[]>>;
 }
 
-const TransitModal = ({ visible, onClose, origin, destination, setDestination, setOrigin}: TransitModalProps) => {
-  const getTransportIcon = (type: string) => {
-    switch (type) {
-      case "public":
+const TransitModal = ({
+  visible,
+  onClose,
+  origin,
+  destination,
+  setDestination,
+  setOrigin,
+  setRouteCoordinates,
+}: TransitModalProps) => {
+
+  const [routeOptions, setRouteOptions] = React.useState<RouteOption[]>([]);
+
+  useEffect(() => {
+    // Fetch all available routes
+    if(!origin || !destination) return;
+
+    fetchAllRoutes(origin, destination, setRouteOptions);
+  }, [origin, destination]); 
+
+
+  const getTransportIcon = (mode: TransportMode) => {
+    switch (mode) {
+      case "transit":
         return <FontAwesome5 name="bus" size={24} color="#007BFF" />;
       case "shuttle":
         return <FontAwesome5 name="shuttle-van" size={24} color="#28A745" />;
@@ -72,7 +59,7 @@ const TransitModal = ({ visible, onClose, origin, destination, setDestination, s
         return <FontAwesome5 name="walking" size={24} color="#6C757D" />;
       case "driving":
         return <FontAwesome5 name="car" size={24} color="#DC3545" />;
-      case "biking":
+      case "bicycling":
         return <FontAwesome5 name="bicycle" size={24} color="#FFC107" />;
       default:
         return null;
@@ -84,22 +71,23 @@ const TransitModal = ({ visible, onClose, origin, destination, setDestination, s
     const temp = origin;
     setOrigin(destination);
     setDestination(temp);
-  }
-
+  };
 
   // Need to test
   const destinationToDisplay = (location: LocationType) => {
-    if(!location) return "Select a location";
+    if (!location) return "Select a location";
 
-    if(location.userLocation) return "Current Location";
+    if (location.userLocation) return "Current Location";
 
-    if(location.room) return `${location.room.room}, ${location.room.building.name}`;
+    if (location.room)
+      return `${location.room.room}, ${location.room.building.name}`;
 
-    if(location.building) return location.building.name;
+    if (location.building) return location.building.name;
 
-    if(location.campus) return `${location.campus} Campus`;
-    
-    if(location.coordinates) return `${location.coordinates.latitude}, ${location.coordinates.longitude}`;
+    if (location.campus) return `${location.campus} Campus`;
+
+    if (location.coordinates)
+      return `${location.coordinates.latitude}, ${location.coordinates.longitude}`;
 
     throw new Error("Invalid location type");
   };
@@ -119,9 +107,7 @@ const TransitModal = ({ visible, onClose, origin, destination, setDestination, s
           </View>
 
           <View style={styles.locationContainer}>
-            <Text style={styles.title}>
-              {destinationToDisplay(origin)}
-            </Text>
+            <Text style={styles.title}>{destinationToDisplay(origin)}</Text>
             <View style={styles.seperationLine}></View>
             <Text style={styles.title}>
               {destinationToDisplay(destination)}
@@ -139,24 +125,34 @@ const TransitModal = ({ visible, onClose, origin, destination, setDestination, s
           </View>
         </View>
         <FlatList
-          data={routes}
+          data={routeOptions}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <Card style={styles.card}>
-              <Card.Content style={styles.cardContent}>
-                <View style={styles.iconContainer}>
-                  {getTransportIcon(item.type)}
-                </View>
-                <View style={styles.textContainer}>
-                  <Text style={styles.time}>{item.time}</Text>
-                  <Text style={styles.details}>
-                    {item.duration} - {item.transport}
-                  </Text>
-                  {item.cost && <Text style={styles.details}>{item.cost}</Text>}
-                  <Text style={styles.details}>{item.frequency}</Text>
-                </View>
-              </Card.Content>
-            </Card>
+            <TouchableOpacity
+              onPress={() => {
+                setRouteCoordinates(item.routeCoordinates);
+                onClose();
+              }}
+            >
+              <Card style={styles.card}>
+                <Card.Content style={styles.cardContent}>
+                  <View style={styles.iconContainer}>
+                    {getTransportIcon(item.mode)}
+                  </View>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.time}>{}</Text>
+                    <Text style={styles.details}>
+                      {item.duration} minutes - {item.transport}
+                    </Text>
+                    {item.cost && (
+                      // TODO: Add cost to the route option
+                      <Text style={styles.details}>{item.cost}</Text>
+                    )}
+                    {item.frequency && <Text style={styles.details}>{item.frequency}</Text>}
+                  </View>
+                </Card.Content>
+              </Card>
+            </TouchableOpacity>
           )}
         />
       </View>
