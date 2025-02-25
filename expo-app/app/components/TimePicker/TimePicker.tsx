@@ -6,9 +6,10 @@ import { FontAwesome5 } from "@expo/vector-icons";
 interface TimePickerProps {
     selectedTime: Date;
     setSelectedTime: (time: Date) => void;
+    testID?: string; 
 }
 
-export default function TimePicker({ selectedTime, setSelectedTime }: TimePickerProps) {
+export default function TimePicker({ selectedTime, setSelectedTime, testID }: TimePickerProps) {
     const [showPicker, setShowPicker] = useState(false);
     const [tempTime, setTempTime] = useState<Date>(selectedTime);
 
@@ -24,36 +25,38 @@ export default function TimePicker({ selectedTime, setSelectedTime }: TimePicker
     };
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container} testID={testID}>
             <TouchableOpacity
                 style={styles.timeButton}
                 onPress={() => setShowPicker(true)}
-                testID="time-button"
+                testID={`${testID}-time-button`}
             >
                 <FontAwesome5 name="clock" size={18} color="#990000" />
-                <Text style={styles.timeText} testID="selected-time-text">
+                <Text style={styles.timeText} testID={`${testID}-selected-time-text`}>
                     {selectedTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
                 </Text>
             </TouchableOpacity>
 
             {showPicker && (
-                <Modal transparent animationType="fade" testID="time-picker-modal">
-                    <View style={styles.overlay}>
-                        <View style={styles.modalContainer}>
+                <Modal transparent animationType="fade" testID={`${testID}-time-picker-modal`}>
+                    <View style={styles.overlay} testID={`${testID}-modal-overlay`}>
+                        <View style={styles.modalContainer} testID={`${testID}-modal-container`}>
                             <DateTimePicker
                                 value={tempTime}
                                 mode="time"
                                 display={Platform.OS === "ios" ? "spinner" : "default"}
                                 textColor="#000"
                                 onChange={handleTimeChange}
-                                testID="date-time-picker"
+                                testID={`${testID}-date-time-picker`}
                             />
                             <TouchableOpacity
                                 style={styles.doneButton}
                                 onPress={confirmTimeSelection}
-                                testID="confirm-button"
+                                testID={`${testID}-confirm-button`}
                             >
-                                <Text style={styles.doneButtonText}>Done</Text>
+                                <Text style={styles.doneButtonText} testID={`${testID}-done-button-text`}>
+                                    Done
+                                </Text>
                             </TouchableOpacity>
                         </View>
                     </View>
