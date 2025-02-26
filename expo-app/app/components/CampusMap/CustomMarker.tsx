@@ -21,7 +21,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({
   isFoodLocation = false, // Default is false
   onPress,
 }) => (
-  <Marker coordinate={coordinate} onPress={onPress}>
+  <Marker coordinate={coordinate} onPress={onPress} tappable={true}>
     <View style={[styles.marker, isFoodLocation && styles.foodMarker]}>
       {isFoodLocation ? (
         <MaterialIcons name="restaurant" size={20} color="white" /> // ✅ Restaurant icon for food places
@@ -29,14 +29,14 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({
         <Text style={styles.markerText}>{title[0] || "?"}</Text> // Default marker
       )}
     </View>
-    <Callout>
+    {/* <Callout>
       <View style={styles.callout}>
         <Text style={styles.calloutTitle}>
           {title} {isFoodLocation ? "🍽" : ""}
         </Text>
-        <Text>{description}</Text>
+        <Text>{description}</Text> */}
         {/* Navigate Button */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.navigateButton}
           onPress={() => {
             if (onPress) {
@@ -49,7 +49,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({
           <Text style={styles.navigateButtonText}>Navigate Here</Text>
         </TouchableOpacity>
       </View>
-    </Callout>
+    </Callout> */}
   </Marker>
 );
 
@@ -71,8 +71,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   callout: {
-    width: 160,
-    padding: 5,
+    width: 200, // Increase the width
+    padding: 10, // Add padding to ensure content doesn't touch the edges
+    
   },
   calloutTitle: {
     fontWeight: "bold",

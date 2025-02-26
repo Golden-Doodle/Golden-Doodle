@@ -68,17 +68,19 @@ export default function HomePageScreen() {
 
   useEffect(() => {
     refreshCalendarEvents();
-    const interval = setInterval(refreshCalendarEvents, 30000);
-    return () => clearInterval(interval);
-  }, [refreshCalendarEvents]);
-
-  // Toggle function for campus switch
+    // const interval = setInterval(refreshCalendarEvents, 30000);
+    
+    // return () => clearInterval(interval);
+    return () => {};
+  }, [refreshCalendarEvents]); 
+  
+  // Must make sure this was the intended function (Megered Conflict)
   const toggleCampus = async () => {
-    const newCampus: "LOY" | "SGW" = campus === "LOY" ? "SGW" : "LOY"; // Explicitly define type
+    const newCampus = campus === "LOY" ? "SGW" : "LOY";
     setCampus(newCampus);
     await AsyncStorage.setItem("selectedCampus", newCampus);
   };
-  
+
   return (
     <View style={styles.container}>
       <ScrollView
