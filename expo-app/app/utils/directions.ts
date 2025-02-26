@@ -83,8 +83,7 @@ export const coordinatesFromRoomLocation = (
 export const fetchAllRoutes = async (
   origin: LocationType,
   destination: LocationType,
-  setRouteOptions: React.Dispatch<React.SetStateAction<RouteOption[]>>
-) => {
+) : Promise<RouteOption[]> => {
   if (
     !origin ||
     !destination ||
@@ -92,7 +91,7 @@ export const fetchAllRoutes = async (
     !destination.coordinates
   ) {
     console.error("Invalid origin or destination");
-    return;
+    return [];
   }
 
   const modes: TransportMode[] = ["walking", "driving", "transit", "bicycling"];
@@ -111,7 +110,8 @@ export const fetchAllRoutes = async (
         const legs = route.legs[0];
         const transportDetails: string[] = [];
 
-        if (mode ==='transit') console.log('steps', route.legs[0].steps[1].transit_details.line);
+        if (mode === "transit")
+          console.log("steps", route.legs[0].steps[1].transit_details.line);
         // Extract transport details from steps (for transit mode)
         if (mode === "transit") {
           legs.steps.forEach((step: any) => {
@@ -130,16 +130,17 @@ export const fetchAllRoutes = async (
           id: `${index++}`,
           mode,
           duration: legs.duration.text,
-          durationValue: legs.duration.value, 
+          durationValue: legs.duration.value,
           distance: legs.distance.text,
           steps: legs.steps.map((step: any) => step.html_instructions),
           routeCoordinates: polyline
             .decode(route.overview_polyline.points)
             .map(([lat, lng]) => ({ latitude: lat, longitude: lng })),
-          transport: mode === 'transit' ? transportDetails.join(" & ") : undefined,
-          departure_time: mode === 'transit' ? legs.departure_time : undefined,
-          arrival_time: mode === 'transit' ? legs.arrival_time : undefined,
-          cost: mode === 'transit' ? legs.fare?.text : undefined,
+          transport:
+            mode === "transit" ? transportDetails.join(" & ") : undefined,
+          departure_time: mode === "transit" ? legs.departure_time : undefined,
+          arrival_time: mode === "transit" ? legs.arrival_time : undefined,
+          cost: mode === "transit" ? legs.fare?.text : undefined,
         });
       }
     });
@@ -176,9 +177,10 @@ export const fetchAllRoutes = async (
     await Promise.all([...requests, handleShuttleRoute()]);
 
     // Update state with all route options
-    setRouteOptions(routesData);
-
+    return routesData;
   } catch (error) {
     console.error("Error fetching routes:", error);
   }
+
+  return [];
 };
