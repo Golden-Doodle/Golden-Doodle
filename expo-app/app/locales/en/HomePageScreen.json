@@ -1,0 +1,8 @@
+{
+  "refreshing": "Refreshing calendar events...",
+  "no_calendar_selected": "No calendar selected. Please choose a calendar in settings.",
+  "failed_refresh": "Failed to refresh calendar:",
+  "campus_sgw": "SGW",
+  "campus_loy": "LOY",
+  "shuttle_schedule": "Shuttle Schedule"
+}
