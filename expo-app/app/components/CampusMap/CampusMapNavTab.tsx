@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Building, Campus } from "../../utils/types";
+import { Building, Campus, LocationType } from "@/app/utils/types";
 
 interface NavTabProps {
   campus: Campus;
-  selectedBuilding: Building | null;
-  onNavigatePress?: () => void;
+  destination: LocationType;
+  onSearchPress?: () => void;
   onTravelPress?: () => void;
   onEatPress?: () => void;
   onNextClassPress?: () => void;
@@ -18,8 +18,8 @@ interface NavTabProps {
 
 const NavTab: React.FC<NavTabProps> = ({
   campus,
-  selectedBuilding,
-  onNavigatePress,
+  destination,
+  onSearchPress,
   onTravelPress,
   onEatPress,
   onNextClassPress,
@@ -30,16 +30,13 @@ const NavTab: React.FC<NavTabProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
-  const NAV_ITEMS = selectedBuilding
-    ? [
-        { label: "Back", icon: "arrow-left", action: onBackPress },
-        { label: "Info", icon: "info-circle", action: onInfoPress },
-        { label: "Directions", icon: "route", action: onDirectionsPress },
-      ]
-    : [
-        { label: "Navigate", icon: "compass", action: onNavigatePress },
+  const getNavItems = () => {
+
+    // No Destination
+    if (!destination) return [
+        { label: "Search", icon: "search", action: onSearchPress },
         {
-          label: campus === "SGW" ? "SGW" : "LOY",
+          label: campus,
           icon: "location-arrow",
           action: onTravelPress,
         },
@@ -47,6 +44,23 @@ const NavTab: React.FC<NavTabProps> = ({
         { label: "Class", icon: "calendar-alt", action: onNextClassPress },
         { label: "More", icon: "ellipsis-h", action: onMoreOptionsPress },
       ];
+      
+    // Selected Building
+    if (destination.building) return [
+        { label: "Back", icon: "arrow-left", action: onBackPress },
+        { label: "Info", icon: "info-circle", action: onInfoPress },
+        { label: "Directions", icon: "route", action: onDirectionsPress },
+      ];
+    
+    if (destination.coordinates) return [
+        { label: "Back", icon: "arrow-left", action: onBackPress },
+        { label: "Directions", icon: "route", action: onDirectionsPress },
+      ];
+
+    return [];
+  };
+
+  const NAV_ITEMS = getNavItems();
 
   return (
     <View style={styles.navContainer}>

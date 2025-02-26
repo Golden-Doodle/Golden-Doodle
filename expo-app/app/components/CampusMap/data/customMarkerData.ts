@@ -1,4 +1,4 @@
-import { CustomMarker } from "@/app/utils/types";
+import { CustomMarkerType } from "@/app/utils/types";
 
 const initialRegion = {
   SGW: {
@@ -15,30 +15,30 @@ const initialRegion = {
   },
 };
 
-const SGWMarkers: CustomMarker[] = [
+const SGWMarkers: CustomMarkerType[] = [
   {
-    id: 1,
+    id: '1',
     title: "Concordia University - SGW",
     description: "SGW Campus",
     coordinate: { latitude: 45.4971, longitude: -73.5792 },
   },
   {
-    id: 2,
+    id: '2',
     title: "Guy-Concordia Metro",
     description: "Public transport near campus",
     coordinate: { latitude: 45.4958, longitude: -73.5781 },
   },
 ];
 
-const LoyolaMarkers: CustomMarker[] = [
+const LoyolaMarkers: CustomMarkerType[] = [
   {
-    id: 1,
+    id: '1',
     title: "Concordia University - Loyola",
     description: "Loyola Campus",
     coordinate: { latitude: 45.458, longitude: -73.64 },
   },
   {
-    id: 2,
+    id: '2',
     title: "Loyola Chapel",
     description: "Historic chapel on Loyola Campus",
     coordinate: { latitude: 45.459, longitude: -73.641 },
