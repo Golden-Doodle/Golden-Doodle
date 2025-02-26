@@ -4,6 +4,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 
 export default function BottomNavigation() {
+  
   const { t } = useTranslation("HomePageScreen");
   const router = useRouter();
 
