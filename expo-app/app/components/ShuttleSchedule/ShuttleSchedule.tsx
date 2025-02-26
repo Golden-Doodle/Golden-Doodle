@@ -9,12 +9,15 @@ import {
 
 /** NEW: Import FontAwesome5 for the ID card icon */
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 /** Props */
 interface ShuttleScheduleProps {
   route: "LOY" | "SGW"; // Which route is selected
 }
 
+
+// TODO: Move this to function helper file
 /**
  * Helper: Parse a 12-hour time string like "9:15 AM" → Date object (today).
  */
@@ -34,6 +37,9 @@ function parseTime12ToDate(time12: string): Date {
 }
 
 export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
+
+  const {t} = useTranslation("HomePageScreen");
+
   // All times for the selected route
   const [schedule, setSchedule] = useState<string[]>([]);
 
@@ -74,17 +80,17 @@ export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
   /** Render the info panel that appears directly below the selected time. */
   const renderInfoPanel = () => (
     <View style={styles.infoPanel}>
-      <Text style={styles.infoPanelTitle}>Pickup Location</Text>
+      <Text style={styles.infoPanelTitle}>{t("pickup_location")}</Text>
       <Text style={styles.infoPanelDetails}>Henry F Hall building, front doors</Text>
       <Text style={styles.infoPanelDetails}>1455 De Maisonneuve Blvd. W</Text>
 
       {/* Status badges */}
       <View style={styles.badgeRow}>
         <View style={[styles.badge, styles.badgeYellow]}>
-          <Text style={styles.badgeText}>Limited Seats</Text>
+          <Text style={styles.badgeText}>{t("limited_seats")}</Text>
         </View>
         <View style={[styles.badge, styles.badgeGreen]}>
-          <Text style={styles.badgeText}>On Time</Text>
+          <Text style={styles.badgeText}>{t("on_time")}</Text>
         </View>
       </View>
     </View>
@@ -93,28 +99,26 @@ export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
   if (!schedule || schedule.length === 0) {
     return (
       <View style={styles.noScheduleContainer}>
-        <Text style={styles.errorText}>No schedule available.</Text>
+        <Text style={styles.errorText}>{t("no_schedule_available")}</Text>
       </View>
     );
   }
 
   return (
     <View style={{ flex: 1 }}>
-      
       {/* NEW: ID Card Notice at top */}
       <View style={styles.idCardNotice}>
-        <FontAwesome5 
-          name="id-card" 
-          size={18} 
-          color="#666" 
-          style={styles.idCardIcon} 
-          testID="id-card-icon" 
+        <FontAwesome5
+          name="id-card"
+          size={18}
+          color="#666"
+          style={styles.idCardIcon}
+          testID="id-card-icon"
         />
         <Text style={styles.idCardNoticeText}>
-          ID Card is obligatory to board the shuttle
+          {t("id_card_is_obligatory_to_board_the_shuttle")}
         </Text>
       </View>
-
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/**

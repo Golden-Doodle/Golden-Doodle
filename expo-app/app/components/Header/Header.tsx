@@ -7,6 +7,7 @@ import { AuthContext } from "@/app/contexts/AuthContext";
 import NextClassComponent from "./NextClassComponent";
 import { GoogleCalendarEvent } from "@/app/utils/types";
 import { ImageBackground } from "react-native";
+import { useTranslation } from "react-i18next";
 
 interface HeaderProps {
   refreshCalendarEvents: () => void;
@@ -19,6 +20,9 @@ export default function Header({
   isLoading,
   calendarEvents,
 }: HeaderProps) {
+
+  const { t } = useTranslation('HomePageScreen'); // Used for tranlation
+
   const router = useRouter();
   const auth = React.useContext(AuthContext);
   const user = auth?.user || null;
@@ -50,7 +54,11 @@ export default function Header({
             style={styles.logoutButton}
             onPress={!user ? () => router.push("/") : signOut}
           >
-            <Feather name={!user ? "log-in" : "log-out"} size={22} color="white" />
+            <Feather
+              name={!user ? "log-in" : "log-out"}
+              size={22}
+              color="white"
+            />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -64,7 +72,9 @@ export default function Header({
         {/* Header Content */}
         <View style={styles.headerContent}>
           <Text style={styles.welcomeText}>
-            {user?.displayName ? `Welcome Back, ${user.displayName}` : "Welcome!"}
+            {user?.displayName
+              ? `${t("welcome_back")}, ${user.displayName}`
+              : `${t("welcome")}!`}
           </Text>
           <NextClassComponent
             calendarEvents={calendarEvents}
@@ -83,12 +93,12 @@ export default function Header({
               onPress={onOptimizeRoutePress}
               disabled={!nextClass} // Disable if no class today
             >
-              <Text style={styles.routeButtonText}>Optimize Route</Text>
+              <Text style={styles.routeButtonText}>{t("optimize_route")}</Text>
             </TouchableOpacity>
           )}
 
           <Text style={styles.studySpotText}>
-            Find your next study spot or coffee stop.
+            {t("find_your_next_study_spot_or_coffee_stop")}
           </Text>
         </View>
       </View>

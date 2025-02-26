@@ -2,6 +2,7 @@ import { AuthContext } from "@/app/contexts/AuthContext";
 import React, { useEffect, useState } from "react";
 import { Text } from "react-native";
 import { GoogleCalendarEvent } from "@/app/utils/types";
+import { useTranslation } from "react-i18next";
 
 interface NextClassComponentProps {
   calendarEvents: GoogleCalendarEvent[];
@@ -11,21 +12,23 @@ interface NextClassComponentProps {
 }
 
 export default function NextClassComponent({ calendarEvents, style, nextClass, setNextClass }: NextClassComponentProps) {
+
+  const { t } = useTranslation('HomePageScreen');
+  
   const auth = React.useContext(AuthContext);
   const user = auth?.user ?? null; 
-  
   
   const [timeUntilNextClass, setTimeUntilNextClass] = useState<string | null>(null);
   useEffect(() => {
     if (!user) {
       setNextClass(null);
-      setTimeUntilNextClass("Please login to see the next class");
+      setTimeUntilNextClass(t("please_login_to_see_the_next_class"));
       return;
     }
 
     if (!calendarEvents || calendarEvents.length === 0) {
       setNextClass(null);
-      setTimeUntilNextClass("No classes scheduled for today.");
+      setTimeUntilNextClass(t("no_classes_scheduled_for_today"));
       return;
     }
 
@@ -39,7 +42,7 @@ export default function NextClassComponent({ calendarEvents, style, nextClass, s
       setTimeUntilNextClass(timeDiff);
     } else {
       setNextClass(null);
-      setTimeUntilNextClass("No classes scheduled for today.");
+      setTimeUntilNextClass(t("no_classes_scheduled_for_today"));
     }
   }, [calendarEvents, user]); 
 
@@ -49,18 +52,18 @@ export default function NextClassComponent({ calendarEvents, style, nextClass, s
     const classEnd = new Date(endTime);
 
     if (classStart <= now && classEnd > now) {
-      return `Class is ongoing (Started at ${classStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`;
+      return `${t("class_is_ongoing")} (${t("started_at")} ${classStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`;
     }
 
     const timeDiffMs = classStart.getTime() - now.getTime();
     const timeDiffMinutes = Math.floor(timeDiffMs / (1000 * 60));
 
     if (timeDiffMinutes <= 0) {
-      return `Class started ${Math.abs(timeDiffMinutes)} minutes ago`;
+      return `${t("class_started")} ${Math.abs(timeDiffMinutes)} minutes ago`; // Need to fix for translation
     } else if (timeDiffMinutes < 60 || timeDiffMinutes === 60) {
-      return `Next class in ${timeDiffMinutes} minutes at ${classStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      return `${t("next_class_in")} ${timeDiffMinutes} minutes at ${classStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`; // Need to fix for translation
     } else {
-      return `Next class in ${Math.floor(timeDiffMinutes / 60)} hours at ${classStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      return `${t("next_class_in")} ${Math.floor(timeDiffMinutes / 60)} hours at ${classStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`; // Need to fix for translation
     }
   };
 
