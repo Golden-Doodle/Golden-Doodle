@@ -205,12 +205,11 @@ const TransitModal = ({
           // Display the search Results
           <>
             <TouchableOpacity onPress={handleSetLocationToUserLocation()}>
-              <FontAwesome5 name="location-arrow" size={24} color="#007BFF" />
               <Card style={styles.card}>
                 <Card.Content style={styles.cardContent}>
                   <View style={styles.iconContainer}>
                     <FontAwesome5
-                      name="map-marker-alt"
+                      name="location-arrow"
                       size={24}
                       color="#007BFF"
                     />
