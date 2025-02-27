@@ -17,6 +17,7 @@ import {
 } from "react-native";
 import { Card } from "react-native-paper";
 import { fetchAllRoutes } from "@/app/utils/directions";
+import useLocationDisplay from "@/app/hooks/useLocationDisplay";
 
 interface TransitModalProps {
   visible: boolean;
@@ -73,25 +74,6 @@ const TransitModal = ({
     setDestination(temp);
   };
 
-  // Need to test
-  const destinationToDisplay = (location: LocationType) => {
-    if (!location) return "Select a location";
-
-    if (location.userLocation) return "Current Location";
-
-    if (location.room)
-      return `${location.room.room}, ${location.room.building.name}`;
-
-    if (location.building) return location.building.name;
-
-    if (location.campus) return `${location.campus} Campus`;
-
-    if (location.coordinates)
-      return `${location.coordinates.latitude}, ${location.coordinates.longitude}`;
-
-    throw new Error("Invalid location type");
-  };
-
   return (
     <Modal visible={visible} animationType="slide" transparent={false}>
       <View style={styles.container}>
@@ -107,10 +89,10 @@ const TransitModal = ({
           </View>
 
           <View style={styles.locationContainer}>
-            <Text style={styles.title}>{destinationToDisplay(origin)}</Text>
+            <Text style={styles.title}>{useLocationDisplay(origin)}</Text>
             <View style={styles.seperationLine}></View>
             <Text style={styles.title}>
-              {destinationToDisplay(destination)}
+              {useLocationDisplay(destination)}
             </Text>
           </View>
           <View style={styles.switchContainer}>
