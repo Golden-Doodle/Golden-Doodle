@@ -6,18 +6,14 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-
-/** NEW: Import FontAwesome5 for the ID card icon */
 import { FontAwesome5 } from "@expo/vector-icons";
 
-/** Props */
 interface ShuttleScheduleProps {
-  route: "LOY" | "SGW"; // Which route is selected
+  route: "LOY" | "SGW"; 
+  testID?: string; 
 }
 
-/**
- * Helper: Parse a 12-hour time string like "9:15 AM" → Date object (today).
- */
+
 function parseTime12ToDate(time12: string): Date {
   const [time, modifier] = time12.split(" ");
   let [hours, minutes] = time.split(":").map(Number);
@@ -33,14 +29,12 @@ function parseTime12ToDate(time12: string): Date {
   return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
 }
 
-export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
-  // All times for the selected route
+export default function ShuttleSchedule({ route, testID }: ShuttleScheduleProps) {
+
   const [schedule, setSchedule] = useState<string[]>([]);
 
-  // Which time is expanded to show the info panel
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
-  // Hard-coded schedules for demonstration; replace with real data or API
   const schedules: Record<"LOY" | "SGW", string[]> = {
     LOY: [
       "9:15 AM", "9:45 AM", "10:15 AM", "11:15 AM", "11:45 AM",
@@ -56,7 +50,6 @@ export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
     ],
   };
 
-  /** Load the schedule whenever route changes */
   useEffect(() => {
     setSelectedTime(null);
     if (route in schedules) {
@@ -64,21 +57,20 @@ export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
     }
   }, [route]);
 
-  /** Check if a given time is already in the past */
+
   const isPastTime = (timeStr: string): boolean => {
     const now = new Date();
     const shuttleTime = parseTime12ToDate(timeStr);
     return shuttleTime < now;
   };
 
-  /** Render the info panel that appears directly below the selected time. */
+
   const renderInfoPanel = () => (
-    <View style={styles.infoPanel}>
+    <View style={styles.infoPanel} testID={testID ? `${testID}-info-panel` : undefined}>
       <Text style={styles.infoPanelTitle}>Pickup Location</Text>
       <Text style={styles.infoPanelDetails}>Henry F Hall building, front doors</Text>
       <Text style={styles.infoPanelDetails}>1455 De Maisonneuve Blvd. W</Text>
 
-      {/* Status badges */}
       <View style={styles.badgeRow}>
         <View style={[styles.badge, styles.badgeYellow]}>
           <Text style={styles.badgeText}>Limited Seats</Text>
@@ -92,31 +84,30 @@ export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
 
   if (!schedule || schedule.length === 0) {
     return (
-      <View style={styles.noScheduleContainer}>
+      <View style={styles.noScheduleContainer} testID={testID ? `${testID}-no-schedule-container` : undefined}>
         <Text style={styles.errorText}>No schedule available.</Text>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }} testID={testID ? `${testID}-shuttle-schedule-container` : undefined}>
       
       {/* NEW: ID Card Notice at top */}
-      <View style={styles.idCardNotice}>
+      <View style={styles.idCardNotice} testID={testID ? `${testID}-id-card-notice` : undefined}>
         <FontAwesome5 
           name="id-card" 
           size={18} 
           color="#666" 
           style={styles.idCardIcon} 
-          testID="id-card-icon" 
+          testID={testID ? `${testID}-id-card-icon` : undefined}
         />
-        <Text style={styles.idCardNoticeText}>
+        <Text style={styles.idCardNoticeText} testID={testID ? `${testID}-id-card-notice-text` : undefined}>
           ID Card is obligatory to board the shuttle
         </Text>
       </View>
 
-
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent} testID={testID ? `${testID}-schedule-scrollview` : undefined}>
         {/**
          * Map over all times. For each time:
          * - If it's in the past, show grey (and disable).
@@ -129,7 +120,7 @@ export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
           const past = isPastTime(time);
           const isSelected = time === selectedTime;
           return (
-            <View key={idx} style={styles.timeRow}>
+            <View key={idx} style={styles.timeRow} testID={testID ? `${testID}-time-row-${time}` : undefined}>
               <TouchableOpacity
                 style={[
                   styles.timeButton,
@@ -143,8 +134,12 @@ export default function ShuttleSchedule({ route }: ShuttleScheduleProps) {
                     setSelectedTime(time);
                   }
                 }}
+                testID={testID ? `${testID}-time-button-${time}` : undefined}
               >
-                <Text style={[styles.timeText, past && styles.timeTextPast]}>
+                <Text
+                  style={[styles.timeText, past && styles.timeTextPast]}
+                  testID={testID ? `${testID}-time-text-${time}` : undefined}
+                >
                   {time}
                 </Text>
               </TouchableOpacity>
@@ -175,7 +170,6 @@ const styles = StyleSheet.create({
     color: "#912338",
   },
 
-  // ID Card Notice
   idCardNotice: {
     flexDirection: "row",
     alignItems: "center",
