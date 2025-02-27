@@ -96,11 +96,9 @@ const TransitModal = ({
           </View>
 
           <View style={styles.locationContainer}>
-            <Text style={styles.title}>{useLocationDisplay(origin)}</Text>
+            <Text style={styles.title}>{useLocationDisplay(origin)}</Text> {/* Display the origin */}
             <View style={styles.seperationLine}></View>
-            <Text style={styles.title}>
-              {useLocationDisplay(destination)}
-            </Text>
+            <Text style={styles.title}>{useLocationDisplay(destination)}</Text> {/* Display the destination */}
           </View>
           <View style={styles.switchContainer}>
             <TouchableOpacity onPress={onSwitchPress}>
