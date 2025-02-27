@@ -9,6 +9,8 @@ import {
 
 /** NEW: Import FontAwesome5 for the ID card icon */
 import { FontAwesome5 } from "@expo/vector-icons";
+import { fetchBusLocations } from "@/app/services/ConcordiaShuttle/ConcordiaApiShuttle";
+import { AuthContext } from "@/app/contexts/AuthContext";
 
 /** Props */
 interface ShuttleScheduleProps {
