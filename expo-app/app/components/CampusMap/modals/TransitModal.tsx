@@ -165,7 +165,7 @@ const TransitModal = ({
               }
               onChangeText={setSearchQuery}
               onSubmitEditing={() => {
-                searchQuery.trim() === "" && searchQuery.trim() === "";
+                searchQuery.trim() === "" && handleStopSearching();
               }} // Close search when empty
             />
             <View style={styles.seperationLine}></View>
@@ -177,7 +177,7 @@ const TransitModal = ({
                 setIsSearching("destination");
                 setSearchQuery(useLocationDisplay(destination));
               }}
-              onBlur={() => setIsSearching(null)}
+              onBlur={handleStopSearching}
               value={
                 isSearching === "destination"
                   ? searchQuery
@@ -185,7 +185,7 @@ const TransitModal = ({
               }
               onChangeText={setSearchQuery}
               onSubmitEditing={() => {
-                searchQuery.trim() === "" && setIsSearching(null);
+                searchQuery.trim() === "" && handleStopSearching();
               }} // Close search when empty
             />
           </View>
