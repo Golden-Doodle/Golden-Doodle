@@ -21,7 +21,7 @@ interface SearchModalProps {
   visible: boolean;
   onClose: () => void;
   buildings: Building[];
-  onSelectBuilding: (building: Building) => void;
+  onSelectLocation: (building: Building) => void;
   markers: CustomMarkerType[];
   onPressSelectOnMap: () => void;
   destination: LocationType;
@@ -32,7 +32,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
   visible,
   onClose,
   buildings,
-  onSelectBuilding,
+  onSelectLocation,
   markers,
   onPressSelectOnMap,
   destination,
@@ -80,7 +80,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
               <TouchableOpacity
                 style={styles.resultItem}
                 onPress={() => {
-                  onSelectBuilding(item);
+                  onSelectLocation(item);
                   setSearchQuery(item.name); // Set the selected destination
                 }}
               >

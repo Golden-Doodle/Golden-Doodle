@@ -281,7 +281,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
       <SearchModal
         visible={isSearchModalVisible}
         onClose={onCloseSearchModal}
-        onSelectBuilding={(building) => {
+        onSelectLocation={(building) => {
           setDestination({
             coordinates: building.coordinates[0],
             building,
