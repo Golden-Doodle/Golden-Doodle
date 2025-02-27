@@ -58,7 +58,7 @@ const TransitModal = ({
   });
 
   const originInputRef = useRef<TextInput>(null);
-  const destinationInputRef = useRef<typeof PaperTextInput>(null);
+  const destinationInputRef = useRef<TextInput>(null);
   
   useEffect(() => {
     // Fetch all available routes
@@ -160,7 +160,6 @@ const TransitModal = ({
           <View style={styles.locationContainer}>
             <TextInput
               ref={originInputRef}
-              // textColor="#fff"
               style={styles.titleInput}
               onFocus={() => {
                 setIsSearching("origin");
@@ -180,7 +179,6 @@ const TransitModal = ({
             <View style={styles.seperationLine}></View>
             <TextInput
               ref={destinationInputRef}
-              textColor="#fff"
               style={styles.titleInput}
               onFocus={() => {
                 setIsSearching("destination");
