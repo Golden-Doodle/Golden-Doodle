@@ -16,10 +16,13 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
-import { Card } from "react-native-paper";
+import { Card, TextInput } from "react-native-paper";
 import { fetchAllRoutes } from "@/app/utils/directions";
 import useLocationDisplay from "@/app/hooks/useLocationDisplay";
+import useSearch from "@/app/hooks/useSearch";
 
 interface TransitModalProps {
   visible: boolean;
@@ -31,6 +34,7 @@ interface TransitModalProps {
   setRouteCoordinates: React.Dispatch<React.SetStateAction<Coordinates[]>>;
   buildingData: Building[];
   markerData: CustomMarkerType[];
+  userLocation: Coordinates | null;
 }
 
 const TransitModal = ({
@@ -43,8 +47,16 @@ const TransitModal = ({
   setRouteCoordinates,
   buildingData,
   markerData,
+  userLocation,
 }: TransitModalProps) => {
   const [routeOptions, setRouteOptions] = React.useState<RouteOption[]>([]);
+  const [isSearching, setIsSearching] = React.useState<
+    "origin" | "destination" | null
+  >(null);
+  const { filteredData, searchQuery, setSearchQuery } = useSearch({
+    data: buildingData,
+    searchKey: "name",
+  });
 
   useEffect(() => {
     // Fetch all available routes
@@ -52,7 +64,7 @@ const TransitModal = ({
     const fetchRoutes = async () => {
       const routes = await fetchAllRoutes(origin, destination);
       setRouteOptions(routes);
-    }
+    };
     fetchRoutes();
   }, [origin, destination]);
 
@@ -73,15 +85,56 @@ const TransitModal = ({
     }
   };
 
- const onSwitchPress = () => {
-   setOrigin((prevOrigin: LocationType) => {
-     const newOrigin: LocationType = destination;
-     setDestination(prevOrigin);
-     return newOrigin;
-   });
- };
+  const onSwitchPress = () => {
+    setOrigin((prevOrigin: LocationType) => {
+      const newOrigin: LocationType = destination;
+      setDestination(prevOrigin);
+      return newOrigin;
+    });
+  };
+
+  const handleOnSelectLocation = (location: Building) => () => {
+    if (isSearching === "origin") {
+      setOrigin({
+        coordinates: location.coordinates[0],
+        building: location,
+        campus: location.campus,
+      });
+    } else if (isSearching === "destination") {
+      setDestination({
+        coordinates: location.coordinates[0],
+        building: location,
+        campus: location.campus,
+        selectedBuilding: true,
+      });
+    }
+    handleStopSearching();
+  };
+
+  const handleSetLocationToUserLocation = () => () => {
+    // Set the location to the user's current location
+    if (isSearching === "origin") {
+      setOrigin({
+        coordinates: userLocation || { latitude: 0, longitude: 0 },
+        userLocation: true,
+      });
+    } else if (isSearching === "destination") {
+      setDestination({
+        coordinates: userLocation || { latitude: 0, longitude: 0 },
+        userLocation: true,
+      });
+    } else return;
+    setIsSearching(null);
+    setSearchQuery("");
+  };
+
+  const handleStopSearching = () => {
+    setIsSearching(null);
+    setSearchQuery("");
+  };
 
   return (
+    // <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <Modal visible={visible} animationType="slide" transparent={false}>
       <View style={styles.container}>
         <View style={styles.header}>
@@ -96,9 +149,45 @@ const TransitModal = ({
           </View>
 
           <View style={styles.locationContainer}>
-            <Text style={styles.title}>{useLocationDisplay(origin)}</Text> {/* Display the origin */}
+            <TextInput
+              placeholderTextColor="#fff"
+              textColor="#fff"
+              style={styles.titleInput}
+              onFocus={() => {
+                setIsSearching("origin");
+                setSearchQuery(useLocationDisplay(origin));
+              }}
+              onBlur={handleStopSearching}
+              value={
+                isSearching === "origin"
+                  ? searchQuery
+                  : useLocationDisplay(origin)
+              }
+              onChangeText={setSearchQuery}
+              onSubmitEditing={() => {
+                searchQuery.trim() === "" && searchQuery.trim() === "";
+              }} // Close search when empty
+            />
             <View style={styles.seperationLine}></View>
-            <Text style={styles.title}>{useLocationDisplay(destination)}</Text> {/* Display the destination */}
+            <TextInput
+              placeholderTextColor="#fff"
+              textColor="#fff"
+              style={styles.titleInput}
+              onFocus={() => {
+                setIsSearching("destination");
+                setSearchQuery(useLocationDisplay(destination));
+              }}
+              onBlur={() => setIsSearching(null)}
+              value={
+                isSearching === "destination"
+                  ? searchQuery
+                  : useLocationDisplay(destination)
+              }
+              onChangeText={setSearchQuery}
+              onSubmitEditing={() => {
+                searchQuery.trim() === "" && setIsSearching(null);
+              }} // Close search when empty
+            />
           </View>
           <View style={styles.switchContainer}>
             <TouchableOpacity onPress={onSwitchPress}>
@@ -111,77 +200,125 @@ const TransitModal = ({
             </TouchableOpacity>
           </View>
         </View>
-        <FlatList
-          data={routeOptions}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => {
-                setRouteCoordinates(item.routeCoordinates);
-                onClose();
-              }}
-            >
+
+        {isSearching ? (
+          // Display the search Results
+          <>
+            <TouchableOpacity onPress={handleSetLocationToUserLocation()}>
+              <FontAwesome5 name="location-arrow" size={24} color="#007BFF" />
               <Card style={styles.card}>
                 <Card.Content style={styles.cardContent}>
                   <View style={styles.iconContainer}>
-                    {getTransportIcon(item.mode)}
+                    <FontAwesome5
+                      name="map-marker-alt"
+                      size={24}
+                      color="#007BFF"
+                    />
                   </View>
                   <View style={styles.textContainer}>
-                    <Text style={styles.time}>
-                      {item?.arrival_time && item?.departure_time
-                        ? `${item.departure_time.text} - ${item.arrival_time.text}`
-                        : `${new Date().toLocaleTimeString("us-EN", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })} - ${new Date(
-                            Date.now() + item.durationValue * 1000
-                          ).toLocaleTimeString("us-EN", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}`}{" "}
-                    </Text>
-                    {item.distance !== "N/A" && (
-                      <Text style={styles.details}>
-                        Distance: {item.distance}
-                      </Text>
-                    )}
-                    {item.duration && (
-                      <Text style={styles.details}>
-                        {item.duration} - Mode: {item.mode}
-                      </Text>
-                    )}
-                    {item.transport && (
-                      <Text style={styles.details}>
-                        Transport: {item.transport}
-                      </Text>
-                    )}
-
-                    {/* {item.steps && (
-                      <View style={styles.stepsContainer}>
-                        {item.steps.map((step, index) => (
-                          <Text key={index} style={styles.stepText}>
-                            {step}
-                          </Text>
-                        ))}
-                      </View>
-                    )} */}
-
-                    {item.cost && (
-                      <Text style={styles.details}>Cost: {item.cost}</Text>
-                    )}
-                    {item.frequency && (
-                      <Text style={styles.details}>
-                        Frequency: {item.frequency}
-                      </Text>
-                    )}
+                    <Text style={styles.time}>Use Current Location</Text>
                   </View>
                 </Card.Content>
               </Card>
             </TouchableOpacity>
-          )}
-        />
+            <FlatList
+              data={filteredData}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={handleOnSelectLocation(item)}>
+                  <Card style={styles.card}>
+                    <Card.Content style={styles.cardContent}>
+                      <View style={styles.iconContainer}>
+                        <FontAwesome5
+                          name="map-marker-alt"
+                          size={24}
+                          color="#007BFF"
+                        />
+                      </View>
+                      <View style={styles.textContainer}>
+                        <Text style={styles.time}>{item.name}</Text>
+                      </View>
+                    </Card.Content>
+                  </Card>
+                </TouchableOpacity>
+              )}
+            />
+          </>
+        ) : (
+          // Display the route options
+          <FlatList
+            data={routeOptions}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  setRouteCoordinates(item.routeCoordinates);
+                  onClose();
+                }}
+              >
+                <Card style={styles.card}>
+                  <Card.Content style={styles.cardContent}>
+                    <View style={styles.iconContainer}>
+                      {getTransportIcon(item.mode)}
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Text style={styles.time}>
+                        {item?.arrival_time && item?.departure_time
+                          ? `${item.departure_time.text} - ${item.arrival_time.text}`
+                          : `${new Date().toLocaleTimeString("us-EN", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })} - ${new Date(
+                              Date.now() + item.durationValue * 1000
+                            ).toLocaleTimeString("us-EN", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}`}{" "}
+                      </Text>
+                      {item.distance !== "N/A" && (
+                        <Text style={styles.details}>
+                          Distance: {item.distance}
+                        </Text>
+                      )}
+                      {item.duration && (
+                        <Text style={styles.details}>
+                          {item.duration} - Mode: {item.mode}
+                        </Text>
+                      )}
+                      {item.transport && (
+                        <Text style={styles.details}>
+                          Transport: {item.transport}
+                        </Text>
+                      )}
+
+                      {/* {item.steps && (
+                        <View style={styles.stepsContainer}>
+                          {item.steps.map((step, index) => (
+                            <Text key={index} style={styles.stepText}>
+                              {step}
+                            </Text>
+                          ))}
+                        </View>
+                      )} */}
+
+                      {item.cost && (
+                        <Text style={styles.details}>Cost: {item.cost}</Text>
+                      )}
+                      {item.frequency && (
+                        <Text style={styles.details}>
+                          Frequency: {item.frequency}
+                        </Text>
+                      )}
+                    </View>
+                  </Card.Content>
+                </Card>
+              </TouchableOpacity>
+            )}
+          />
+        )}
       </View>
     </Modal>
+    // </TouchableWithoutFeedback>
   );
 };
 
@@ -234,6 +371,17 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 20,
     fontWeight: "bold",
+  },
+  titleInput: {
+    color: "#fff", // Force text color to white
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlignVertical: "center",
+    backgroundColor: "transparent",
+    padding: 0,
+    borderBottomWidth: 0, // Ensure no unwanted borders
+    includeFontPadding: false, // Prevent extra spacing
+    borderWidth: 0,
   },
   subtitle: {
     color: "#ddd",

@@ -57,6 +57,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         return;
       }
 
+      // Might be worth changing to Location.watchPositionAsync
       let location = await Location.getCurrentPositionAsync({});
       setUserLocation(location.coords);
       setOrigin({
@@ -313,6 +314,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         setRouteCoordinates={setRouteCoordinates}
         buildingData={buildings}
         markerData={markers}
+        userLocation={userLocation}
       />
 
       <NextClassModal

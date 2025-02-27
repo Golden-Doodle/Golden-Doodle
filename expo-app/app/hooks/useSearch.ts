@@ -11,7 +11,7 @@ const useSearch = <T extends {}>({
   searchKey,
   debounceTime = 300,
 }: UseSearchProps<T>) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredData, setFilteredData] = useState<T[]>([]);
 
   useEffect(() => {
