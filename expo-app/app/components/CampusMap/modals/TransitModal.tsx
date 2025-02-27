@@ -8,7 +8,7 @@ import {
   TransportMode,
 } from "@/app/utils/types";
 import { FontAwesome5 } from "@expo/vector-icons";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -16,8 +16,9 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
-import { Card, TextInput } from "react-native-paper";
+import { Card, TextInput as PaperTextInput} from "react-native-paper";
 import { fetchAllRoutes } from "@/app/utils/directions";
 import useLocationDisplay from "@/app/hooks/useLocationDisplay";
 import useSearch from "@/app/hooks/useSearch";
@@ -56,6 +57,9 @@ const TransitModal = ({
     searchKey: "name",
   });
 
+  const originInputRef = useRef<TextInput>(null);
+  const destinationInputRef = useRef<typeof PaperTextInput>(null);
+  
   useEffect(() => {
     // Fetch all available routes
     if (!origin || !destination) return;
@@ -84,14 +88,12 @@ const TransitModal = ({
   };
 
   const onSwitchPress = () => {
+    resetIsSearching();
     setOrigin((prevOrigin: LocationType) => {
       const newOrigin: LocationType = destination;
       setDestination(prevOrigin);
       return newOrigin;
     });
-    setIsSearching((prevIsSearching) =>
-      prevIsSearching === "origin" ? "destination" : "origin" // Switch the search focus
-    );
   };
 
   const handleOnSelectLocation = (location: Building) => () => {
@@ -131,6 +133,8 @@ const TransitModal = ({
   const resetIsSearching = () => {
     setIsSearching(null);
     setSearchQuery("");
+    originInputRef.current?.blur();
+    destinationInputRef.current?.blur();
   };
 
   return (
@@ -139,7 +143,12 @@ const TransitModal = ({
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.closeButtonContainer}>
-            <TouchableOpacity onPress={() => {onClose(); resetIsSearching();}}>
+            <TouchableOpacity
+              onPress={() => {
+                onClose();
+                resetIsSearching();
+              }}
+            >
               <FontAwesome5 name="arrow-left" size={24} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -150,8 +159,8 @@ const TransitModal = ({
 
           <View style={styles.locationContainer}>
             <TextInput
-              placeholderTextColor="#fff"
-              textColor="#fff"
+              ref={originInputRef}
+              // textColor="#fff"
               style={styles.titleInput}
               onFocus={() => {
                 setIsSearching("origin");
@@ -170,7 +179,7 @@ const TransitModal = ({
             />
             <View style={styles.seperationLine}></View>
             <TextInput
-              placeholderTextColor="#fff"
+              ref={destinationInputRef}
               textColor="#fff"
               style={styles.titleInput}
               onFocus={() => {
@@ -195,7 +204,7 @@ const TransitModal = ({
                 name="exchange-alt"
                 size={22}
                 color="#fff"
-                style={{ marginLeft: 5, transform: [{ rotate: "90deg" }] }}
+                style={{ marginLeft: 0, transform: [{ rotate: "90deg" }] }}
               />
             </TouchableOpacity>
           </View>
@@ -355,21 +364,17 @@ const styles = StyleSheet.create({
   seperationLine: {
     borderBottomColor: "#fff",
     borderBottomWidth: 1,
-    width: "95%",
+    width: "100%",
     alignSelf: "center",
     height: 0,
+    marginVertical: 10,
   },
   switchContainer: {
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
     height: "50%",
-  },
-  title: {
-    marginLeft: 10,
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "bold",
+    padding: 0,
   },
   titleInput: {
     color: "#fff", // Force text color to white
@@ -377,9 +382,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlignVertical: "center",
     backgroundColor: "transparent",
-    padding: 0,
     borderBottomWidth: 0, // Ensure no unwanted borders
-    includeFontPadding: false, // Prevent extra spacing
     borderWidth: 0,
   },
   subtitle: {
