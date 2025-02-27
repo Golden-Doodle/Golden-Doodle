@@ -1,6 +1,8 @@
 import {
+  Building,
   concordiaBurgendyColor,
   Coordinates,
+  CustomMarkerType,
   LocationType,
   RouteOption,
   TransportMode,
@@ -27,6 +29,8 @@ interface TransitModalProps {
   setOrigin: React.Dispatch<React.SetStateAction<LocationType>>;
   setDestination: React.Dispatch<React.SetStateAction<LocationType>>;
   setRouteCoordinates: React.Dispatch<React.SetStateAction<Coordinates[]>>;
+  buildingData: Building[];
+  markerData: CustomMarkerType[];
 }
 
 const TransitModal = ({
@@ -37,6 +41,8 @@ const TransitModal = ({
   setDestination,
   setOrigin,
   setRouteCoordinates,
+  buildingData,
+  markerData,
 }: TransitModalProps) => {
   const [routeOptions, setRouteOptions] = React.useState<RouteOption[]>([]);
 
@@ -74,7 +80,6 @@ const TransitModal = ({
      return newOrigin;
    });
  };
-
 
   return (
     <Modal visible={visible} animationType="slide" transparent={false}>

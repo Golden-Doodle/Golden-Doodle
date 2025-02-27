@@ -20,9 +20,9 @@ import useSearch from "@/app/hooks/useSearch";
 interface SearchModalProps {
   visible: boolean;
   onClose: () => void;
-  buildings: Building[];
+  buildingData: Building[];
+  markerData: CustomMarkerType[];
   onSelectLocation: (building: Building) => void;
-  markers: CustomMarkerType[];
   onPressSelectOnMap: () => void;
   destination: LocationType;
   onGetDirections: () => void;
@@ -31,9 +31,9 @@ interface SearchModalProps {
 const SearchModal: React.FC<SearchModalProps> = ({
   visible,
   onClose,
-  buildings,
+  buildingData,
   onSelectLocation,
-  markers,
+  markerData,
   onPressSelectOnMap,
   destination,
   onGetDirections,
@@ -43,7 +43,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
     setSearchQuery,
     filteredData: filteredBuildings,
   } = useSearch({
-    data: buildings,
+    data: buildingData,
     searchKey: "name", // The key to search by in the Building object
   });
 
@@ -87,7 +87,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
                 <MaterialIcons name="location-on" size={24} color="#007AFF" />
                 <View style={styles.resultTextContainer}>
                   <Text style={styles.resultText}>{item.name}</Text>
-                  <Text style={styles.resultSubtext}>Building Details</Text>
+                  <Text style={styles.resultSubtext}>{item.description}</Text>
                 </View>
               </TouchableOpacity>
             )}
