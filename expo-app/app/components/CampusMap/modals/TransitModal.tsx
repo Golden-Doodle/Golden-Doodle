@@ -24,8 +24,8 @@ interface TransitModalProps {
   onClose: () => void;
   origin: LocationType;
   destination: LocationType;
-  setOrigin: (location: LocationType) => void;
-  setDestination: (location: LocationType) => void;
+  setOrigin: React.Dispatch<React.SetStateAction<LocationType>>;
+  setDestination: React.Dispatch<React.SetStateAction<LocationType>>;
   setRouteCoordinates: React.Dispatch<React.SetStateAction<Coordinates[]>>;
 }
 
@@ -67,12 +67,14 @@ const TransitModal = ({
     }
   };
 
-  const onSwitchPress = () => {
-    // Switch the location
-    const temp = origin;
-    setOrigin(destination);
-    setDestination(temp);
-  };
+ const onSwitchPress = () => {
+   setOrigin((prevOrigin: LocationType) => {
+     const newOrigin: LocationType = destination;
+     setDestination(prevOrigin);
+     return newOrigin;
+   });
+ };
+
 
   return (
     <Modal visible={visible} animationType="slide" transparent={false}>
