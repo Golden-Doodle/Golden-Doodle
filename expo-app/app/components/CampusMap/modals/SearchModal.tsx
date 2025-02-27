@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Modal,
   View,
@@ -8,8 +8,14 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { Building, concordiaBurgendyColor, Coordinates, CustomMarkerType, LocationType } from "@/app/utils/types";
+import {
+  Building,
+  concordiaBurgendyColor,
+  CustomMarkerType,
+  LocationType,
+} from "@/app/utils/types";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import useSearch from "@/app/hooks/useSearch"; 
 
 interface SearchModalProps {
   visible: boolean;
@@ -32,25 +38,14 @@ const SearchModal: React.FC<SearchModalProps> = ({
   destination,
   onGetDirections,
 }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredBuildings, setFilteredBuildings] = useState<Building[]>([]);
-
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredBuildings([]); // Reset results when input is empty
-      return;
-    }
-
-    const timeout = setTimeout(() => {
-      // Filter buildings based on the search query
-      const results = buildings.filter((building) =>
-        building.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredBuildings(results);
-    }, 300); // Debounce time: 300ms
-
-    return () => clearTimeout(timeout);
-  }, [searchQuery, buildings]);
+  const {
+    searchQuery,
+    setSearchQuery,
+    filteredData: filteredBuildings,
+  } = useSearch({
+    data: buildings,
+    searchKey: "name", // The key to search by in the Building object
+  });
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
