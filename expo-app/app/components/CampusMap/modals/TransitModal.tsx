@@ -16,8 +16,6 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  Keyboard,
 } from "react-native";
 import { Card, TextInput } from "react-native-paper";
 import { fetchAllRoutes } from "@/app/utils/directions";
@@ -91,6 +89,9 @@ const TransitModal = ({
       setDestination(prevOrigin);
       return newOrigin;
     });
+    setIsSearching((prevIsSearching) =>
+      prevIsSearching === "origin" ? "destination" : "origin" // Switch the search focus
+    );
   };
 
   const handleOnSelectLocation = (location: Building) => () => {
@@ -108,7 +109,7 @@ const TransitModal = ({
         selectedBuilding: true,
       });
     }
-    handleStopSearching();
+    resetIsSearching();
   };
 
   const handleSetLocationToUserLocation = () => () => {
@@ -124,11 +125,10 @@ const TransitModal = ({
         userLocation: true,
       });
     } else return;
-    setIsSearching(null);
-    setSearchQuery("");
+    resetIsSearching();
   };
 
-  const handleStopSearching = () => {
+  const resetIsSearching = () => {
     setIsSearching(null);
     setSearchQuery("");
   };
@@ -139,7 +139,7 @@ const TransitModal = ({
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.closeButtonContainer}>
-            <TouchableOpacity onPress={onClose}>
+            <TouchableOpacity onPress={() => {onClose(); resetIsSearching();}}>
               <FontAwesome5 name="arrow-left" size={24} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -157,7 +157,7 @@ const TransitModal = ({
                 setIsSearching("origin");
                 setSearchQuery(useLocationDisplay(origin));
               }}
-              onBlur={handleStopSearching}
+              onBlur={resetIsSearching}
               value={
                 isSearching === "origin"
                   ? searchQuery
@@ -165,7 +165,7 @@ const TransitModal = ({
               }
               onChangeText={setSearchQuery}
               onSubmitEditing={() => {
-                searchQuery.trim() === "" && handleStopSearching();
+                searchQuery.trim() === "" && resetIsSearching();
               }} // Close search when empty
             />
             <View style={styles.seperationLine}></View>
@@ -177,7 +177,7 @@ const TransitModal = ({
                 setIsSearching("destination");
                 setSearchQuery(useLocationDisplay(destination));
               }}
-              onBlur={handleStopSearching}
+              onBlur={resetIsSearching}
               value={
                 isSearching === "destination"
                   ? searchQuery
@@ -185,7 +185,7 @@ const TransitModal = ({
               }
               onChangeText={setSearchQuery}
               onSubmitEditing={() => {
-                searchQuery.trim() === "" && handleStopSearching();
+                searchQuery.trim() === "" && resetIsSearching();
               }} // Close search when empty
             />
           </View>
