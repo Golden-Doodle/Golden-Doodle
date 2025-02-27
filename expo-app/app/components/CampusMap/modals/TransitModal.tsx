@@ -153,7 +153,8 @@ const TransitModal = ({
             </TouchableOpacity>
           </View>
           <View style={styles.mapPinContainer}>
-            <FontAwesome5 name="map-marker-alt" size={24} color="#fff" />
+            <FontAwesome5 name="dot-circle" size={26} color="#fff" />
+            <FontAwesome5 name="ellipsis-v" size={16} color="#fff" />
             <FontAwesome5 name="map-marker-alt" size={24} color="#fff" />
           </View>
 
