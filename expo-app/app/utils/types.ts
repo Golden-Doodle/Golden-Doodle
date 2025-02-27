@@ -16,7 +16,7 @@ export type Building = {
 };
 
 export type CustomMarkerType = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   coordinate: Coordinates;
