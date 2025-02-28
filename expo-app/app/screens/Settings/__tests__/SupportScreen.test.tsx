@@ -35,8 +35,6 @@ describe("SupportScreen", () => {
     expect(mockBack).toHaveBeenCalled();
   });
 
-  
-
   it("displays the FAQ section", () => {
     render(<SupportScreen />);
 
@@ -44,5 +42,13 @@ describe("SupportScreen", () => {
     expect(screen.getByTestId("infoText2")).toHaveTextContent(
       "Visit our FAQ section for common questions and answers."
     );
+  });
+
+  it("renders the support email correctly and allows email interaction", () => {
+    render(<SupportScreen />);
+    const emailLink = screen.getByTestId("contactEmail");
+    
+    expect(emailLink).toHaveTextContent("support@example.com");
+    fireEvent.press(emailLink); 
   });
 });
