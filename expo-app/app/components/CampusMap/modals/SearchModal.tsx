@@ -59,7 +59,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Select Destination</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
+            <TouchableOpacity onPress={onClose} style={styles.closeIcon} testID="close-icon">
               <MaterialIcons name="close" size={24} color="#333" />
             </TouchableOpacity>
           </View>
