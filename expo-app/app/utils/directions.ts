@@ -22,11 +22,9 @@ export const getDirections = async (
       }));
       return decodedPoints;
     } else {
-      console.error("No routes found");
       return [];
     }
   } catch (error) {
-    console.error("Error fetching directions:", error);
     return [];
   }
 };
@@ -65,7 +63,6 @@ export const coordinatesFromRoomLocation = (
           ?.coordinates[0];
 
   if (!coordinates) {
-    console.error("Building coordinates not found");
     return;
   }
 
