@@ -103,7 +103,6 @@ describe('SearchModal', () => {
 
     const input = getByPlaceholderText('Search for destination...');
 
-    // Wrap fireEvent in act to handle state updates properly
     await act(async () => {
         fireEvent.changeText(input, 'Building 1');
     })
@@ -134,7 +133,6 @@ describe('SearchModal', () => {
     });
 
     await waitFor(() => {
-      // Ensure that only filtered results are displayed
       expect(getByText('Building 1')).toBeTruthy();
       expect(queryByText('Building 2')).toBeNull();
       expect(queryByText('Building 3')).toBeNull();
