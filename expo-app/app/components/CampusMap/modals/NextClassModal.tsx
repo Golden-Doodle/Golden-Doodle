@@ -10,6 +10,7 @@ import {
 import {
   Coordinates,
   GoogleCalendarEvent,
+  LocationType,
   RoomLocation,
 } from "@/app/utils/types";
 import { SGWBuildings, LoyolaBuildings } from "../data/buildingData";
@@ -19,13 +20,15 @@ import { coordinatesFromRoomLocation } from "@/app/utils/directions";
 interface NextClassModalProps {
   visible: boolean;
   onClose: () => void;
-  fetchRouteWithDestination: (coordinates: Coordinates) => void;
+  destination: LocationType;
+  setDestination: React.Dispatch<React.SetStateAction<LocationType>>;
 }
 
 const NextClassModal: React.FC<NextClassModalProps> = ({
   visible,
   onClose,
-  fetchRouteWithDestination,
+  destination,
+  setDestination,
 }) => {
   const [nextClass, setNextClass] = useState<GoogleCalendarEvent | null>(null);
   const [location, setLocation] = useState<RoomLocation | null>(null);
@@ -62,6 +65,8 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
     fetchNextClass();
   }, [visible]);
 
+
+  // Have to revisit this function
   const handleGetDirections = () => {
     if (!location) return;
 
@@ -73,7 +78,7 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
 
     if (!coordinates) return;
 
-    fetchRouteWithDestination(coordinates);
+    setDestination({coordinates: coordinates, room: location, building: location.building, campus:location.campus} as LocationType);
     onClose();
   };
 
@@ -116,7 +121,7 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
               </View>
               <View style={styles.infoContainer}>
                 <Text style={styles.label}>Building:</Text>
-                <Text style={styles.value}>{location?.building || "N/A"}</Text>
+                <Text style={styles.value}>{location?.building.name || "N/A"}</Text>
               </View>
               <View style={styles.infoContainer}>
                 <Text style={styles.label}>Campus:</Text>

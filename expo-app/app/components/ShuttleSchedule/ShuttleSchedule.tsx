@@ -7,6 +7,8 @@ import {
   ScrollView,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { fetchBusLocations } from "@/app/services/ConcordiaShuttle/ConcordiaApiShuttle";
+import { AuthContext } from "@/app/contexts/AuthContext";
 
 interface ShuttleScheduleProps {
   route: "LOY" | "SGW"; 

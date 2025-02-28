@@ -8,61 +8,69 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { Building } from "@/app/utils/types";
 
 type BuildingInfoModalProps = {
   visible: boolean;
   onClose: () => void;
-  title: string;
-  description?: string;
-  children?: React.ReactNode;
-  footerContent?: React.ReactNode;
-  showCloseButton?: boolean;
+  selectedBuilding: Building | null | undefined;
+  onNavigate?: (latitude: number, longitude: number) => void;
 };
 
 const BuildingInfoModal: React.FC<BuildingInfoModalProps> = ({
   visible,
   onClose,
-  title,
-  description,
-  children,
-  footerContent,
-  showCloseButton = true,
+  selectedBuilding,
+  onNavigate,
 }) => {
+  if (selectedBuilding === null || selectedBuilding === undefined || !selectedBuilding) return null;
+
+  const handleNavigate = () => {
+    if (onNavigate && selectedBuilding?.coordinates?.length) {
+      const { latitude, longitude } = selectedBuilding.coordinates[0];
+      onNavigate(latitude, longitude);
+      onClose();
+    }
+  };
+
   return (
     <Modal
       visible={visible}
-      transparent={true}
+      transparent
       animationType="slide"
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose} testID="close-button">
+      <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalOverlay}>
           <TouchableWithoutFeedback>
             <View style={styles.modalContent}>
-              {/* Modal Header */}
+              {/* Header */}
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>{title}</Text>
-                {showCloseButton && (
-                  <TouchableOpacity
-                    onPress={onClose}
-                    style={styles.closeButton}
-                  >
-                    <MaterialIcons name="close" size={24} color="#000" />
-                  </TouchableOpacity>
-                )}
+                <Text style={styles.modalTitle}>{selectedBuilding.name}</Text>
+                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                  <MaterialIcons name="close" size={24} color="#000" />
+                </TouchableOpacity>
               </View>
 
-              {/* Modal Body */}
+              {/* Body */}
               <View style={styles.modalBody}>
-                {description && (
-                  <Text style={styles.modalDescription}>{description}</Text>
-                )}
-                {children}
+                <Text style={styles.modalDescription}>
+                  {selectedBuilding.description || "No description available"}
+                </Text>
               </View>
 
-              {/* Modal Footer */}
-              {footerContent && (
-                <View style={styles.modalFooter}>{footerContent}</View>
+              {/* Footer */}
+              {onNavigate && selectedBuilding.coordinates.length > 0 && (
+                <View style={styles.modalFooter}>
+                  <TouchableOpacity
+                    style={styles.navigateButton}
+                    onPress={handleNavigate}
+                  >
+                    <Text style={styles.navigateButtonText}>
+                      Navigate to this Building
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               )}
             </View>
           </TouchableWithoutFeedback>
@@ -116,6 +124,18 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
+    alignItems: "center",
+  },
+  navigateButton: {
+    backgroundColor: "#912338",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  navigateButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
 
