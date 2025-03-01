@@ -29,6 +29,4 @@ describe("ChatBotScreen", () => {
     expect(screen.getByText("Hello from the test!")).toBeTruthy();
   });
 
-  // If you want to test the loading indicator ("Cony is typing...") or network error, 
-  // you can mock the API call or handle the error scenario similarly.
 });
