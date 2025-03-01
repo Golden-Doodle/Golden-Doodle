@@ -295,7 +295,7 @@ export default function ChatBotScreen() {
       </KeyboardAvoidingView>
 
       {/* Bottom Navigation for consistent layout */}
-      <BottomNavigation />
+      <BottomNavigation testID="bottom-navigation"/>
     </SafeAreaView>
   );
 }

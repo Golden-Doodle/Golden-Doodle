@@ -25,7 +25,7 @@ export default function HomeMenuScreen() {
       </TouchableOpacity>
 
 
-      TouchableOpacity 
+      <TouchableOpacity 
         style={styles.menuItem} 
         activeOpacity={0.8} 
         onPress={() => router.push("/screens/Chatbot/ChatBotScreen")}
