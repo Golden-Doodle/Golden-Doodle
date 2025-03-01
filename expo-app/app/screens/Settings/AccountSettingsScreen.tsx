@@ -8,7 +8,8 @@ import {
     Image,
     ScrollView,
     Switch,
-    Alert
+    Alert,
+    ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -29,15 +30,22 @@ export default function AccountScreen() {
     const [availableSchedules, setAvailableSchedules] = useState<any[]>([]);
     const [initialCalendarId, setInitialCalendarId] = useState<string | null>(null);
     const [hasChanges, setHasChanges] = useState(false);
+    const [loading, setLoading] = useState(true); // Adding loading state for fetching data
 
     useEffect(() => {
         const loadUserData = async () => {
-            const allCalendars = await fetchAllCalendars();
-            const storedSelectedCalendarId = await AsyncStorage.getItem("selectedScheduleID");
-            
-            setAvailableSchedules(allCalendars);
-            setSelectedCalendarId(storedSelectedCalendarId);
-            setInitialCalendarId(storedSelectedCalendarId);
+            try {
+                const allCalendars = await fetchAllCalendars();
+                const storedSelectedCalendarId = await AsyncStorage.getItem("selectedScheduleID");
+
+                setAvailableSchedules(allCalendars);
+                setSelectedCalendarId(storedSelectedCalendarId);
+                setInitialCalendarId(storedSelectedCalendarId);
+            } catch (error) {
+                Alert.alert("Error", "Failed to load calendar data.");
+            } finally {
+                setLoading(false); // Turn off loading indicator once data is fetched
+            }
         };
 
         loadUserData();
@@ -51,57 +59,72 @@ export default function AccountScreen() {
     const saveChanges = async () => {
         if (!selectedCalendarId) return;
 
-        await AsyncStorage.setItem("selectedScheduleID", selectedCalendarId);
-        const selectedCalendar = availableSchedules.find((cal) => cal.id === selectedCalendarId);
-        if (selectedCalendar) {
-            await AsyncStorage.setItem("selectedScheduleName", selectedCalendar.summary);
+        try {
+            await AsyncStorage.setItem("selectedScheduleID", selectedCalendarId);
+            const selectedCalendar = availableSchedules.find((cal) => cal.id === selectedCalendarId);
+            if (selectedCalendar) {
+                await AsyncStorage.setItem("selectedScheduleName", selectedCalendar.summary);
+            }
+
+            setInitialCalendarId(selectedCalendarId);
+            setHasChanges(false);
+            Alert.alert("Success", "Calendar selection updated successfully!");
+        } catch (error) {
+            Alert.alert("Error", "Failed to save changes.");
         }
-        
-        setInitialCalendarId(selectedCalendarId);
-        setHasChanges(false);
-        Alert.alert("Success", "Calendar selection updated successfully!");
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <ScrollView style={styles.container} testID="account-screen">
+            <View style={styles.header} testID="header">
+                <TouchableOpacity
+                    onPress={() => router.back()}
+                    style={styles.backButton}
+                    accessibilityLabel="Back to previous screen"
+                    testID="back-button"
+                >
                     <FontAwesome5 name="arrow-left" size={30} color="#333" />
                 </TouchableOpacity>
-                <Text style={styles.headerText}>Account Settings</Text>
+                <Text style={styles.headerText} testID="header-text">Account Settings</Text>
             </View>
 
-            <View style={styles.formContainer}>
-                <View style={styles.profileContainer}>
+            <View style={styles.formContainer} testID="form-container">
+                <View style={styles.profileContainer} testID="profile-container">
                     {user?.photoURL ? (
-                        <Image source={{ uri: user.photoURL }} style={styles.profileImage} />
+                        <Image source={{ uri: user.photoURL }} style={styles.profileImage} testID="profile-image" />
                     ) : (
-                        <FontAwesome5 name="user-circle" size={80} color="#888" />
+                        <FontAwesome5 name="user-circle" size={80} color="#888" testID="profile-icon" />
                     )}
                 </View>
 
-                <Text style={styles.label}>Email</Text>
+                <Text style={styles.label} testID="email-label">Email</Text>
                 <TextInput
                     style={[styles.input, { backgroundColor: "#EAEAEA", color: "#333", fontWeight: "bold" }]}
                     value={user?.email || ""}
                     editable={false}
+                    accessibilityLabel="User Email"
+                    testID="email-input"
                 />
 
-                <View style={styles.divider} />
+                <View style={styles.divider} testID="divider" />
 
-                <Text style={styles.label}>Select Schedule</Text>
-                {availableSchedules.length > 0 ? (
+                <Text style={styles.label} testID="schedule-label">Select Schedule</Text>
+                {loading ? (
+                    <ActivityIndicator size="large" color="#912338" testID="loading-indicator" />
+                ) : availableSchedules.length > 0 ? (
                     availableSchedules.map((calendar) => (
-                        <View key={calendar.id} style={styles.scheduleOption}>
-                            <Text style={styles.scheduleText}>{calendar.summary}</Text>
+                        <View key={calendar.id} style={styles.scheduleOption} testID={`schedule-option-${calendar.id}`}>
+                            <Text style={styles.scheduleText} testID={`schedule-text-${calendar.id}`}>{calendar.summary}</Text>
                             <Switch
                                 value={selectedCalendarId === calendar.id}
                                 onValueChange={() => selectCalendar(calendar.id)}
+                                accessibilityLabel={`Select ${calendar.summary}`}
+                                testID={`schedule-switch-${calendar.id}`}
                             />
                         </View>
                     ))
                 ) : (
-                    <Text style={styles.noCalendarText}>No schedules found</Text>
+                    <Text style={styles.noCalendarText} testID="no-calendar-text">No schedules found</Text>
                 )}
 
                 <TouchableOpacity
@@ -109,8 +132,10 @@ export default function AccountScreen() {
                     activeOpacity={0.8}
                     disabled={!hasChanges}
                     onPress={saveChanges}
+                    accessibilityLabel="Save changes"
+                    testID="save-button"
                 >
-                    <Text style={styles.saveButtonText}>Save Changes</Text>
+                    <Text style={styles.saveButtonText} testID="save-button-text">Save Changes</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>

@@ -45,7 +45,7 @@ const TransitModal = ({
     const fetchRoutes = async () => {
       const routes = await fetchAllRoutes(origin, destination);
       setRouteOptions(routes);
-    }
+    };
     fetchRoutes();
   }, [origin, destination]);
 
@@ -73,7 +73,6 @@ const TransitModal = ({
     setDestination(temp);
   };
 
-  // Need to test
   const destinationToDisplay = (location: LocationType) => {
     if (!location) return "Select a location";
 
@@ -97,7 +96,7 @@ const TransitModal = ({
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.closeButtonContainer}>
-            <TouchableOpacity onPress={onClose}>
+            <TouchableOpacity onPress={onClose} testID="close-button">
               <FontAwesome5 name="arrow-left" size={24} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -106,15 +105,17 @@ const TransitModal = ({
             <FontAwesome5 name="map-marker-alt" size={24} color="#fff" />
           </View>
 
-          <View style={styles.locationContainer}>
-            <Text style={styles.title}>{destinationToDisplay(origin)}</Text>
+          <View style={styles.locationContainer} testID="location-container">
+            <Text style={styles.title} testID="origin-location">
+              {destinationToDisplay(origin)}
+            </Text>
             <View style={styles.seperationLine}></View>
-            <Text style={styles.title}>
+            <Text style={styles.title} testID="destination-location">
               {destinationToDisplay(destination)}
             </Text>
           </View>
-          <View style={styles.switchContainer}>
-            <TouchableOpacity onPress={onSwitchPress}>
+          <View style={styles.switchContainer} testID="switch-container">
+            <TouchableOpacity onPress={onSwitchPress} testID="switch-button">
               <FontAwesome5
                 name="exchange-alt"
                 size={22}
@@ -133,14 +134,15 @@ const TransitModal = ({
                 setRouteCoordinates(item.routeCoordinates);
                 onClose();
               }}
+              testID={`route-option-${item.id}`}
             >
               <Card style={styles.card}>
                 <Card.Content style={styles.cardContent}>
-                  <View style={styles.iconContainer}>
+                  <View style={styles.iconContainer} testID="icon-container">
                     {getTransportIcon(item.mode)}
                   </View>
-                  <View style={styles.textContainer}>
-                    <Text style={styles.time}>
+                  <View style={styles.textContainer} testID="text-container">
+                    <Text style={styles.time} testID="route-time">
                       {item?.arrival_time && item?.departure_time
                         ? `${item.departure_time.text} - ${item.arrival_time.text}`
                         : `${new Date().toLocaleTimeString("us-EN", {
@@ -154,36 +156,28 @@ const TransitModal = ({
                           })}`}{" "}
                     </Text>
                     {item.distance !== "N/A" && (
-                      <Text style={styles.details}>
+                      <Text style={styles.details} testID="route-distance">
                         Distance: {item.distance}
                       </Text>
                     )}
                     {item.duration && (
-                      <Text style={styles.details}>
+                      <Text style={styles.details} testID="route-duration">
                         {item.duration} - Mode: {item.mode}
                       </Text>
                     )}
                     {item.transport && (
-                      <Text style={styles.details}>
+                      <Text style={styles.details} testID="route-transport">
                         Transport: {item.transport}
                       </Text>
                     )}
 
-                    {/* {item.steps && (
-                      <View style={styles.stepsContainer}>
-                        {item.steps.map((step, index) => (
-                          <Text key={index} style={styles.stepText}>
-                            {step}
-                          </Text>
-                        ))}
-                      </View>
-                    )} */}
-
                     {item.cost && (
-                      <Text style={styles.details}>Cost: {item.cost}</Text>
+                      <Text style={styles.details} testID="route-cost">
+                        Cost: {item.cost}
+                      </Text>
                     )}
                     {item.frequency && (
-                      <Text style={styles.details}>
+                      <Text style={styles.details} testID="route-frequency">
                         Frequency: {item.frequency}
                       </Text>
                     )}

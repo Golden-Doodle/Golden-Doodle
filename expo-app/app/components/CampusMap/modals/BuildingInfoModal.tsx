@@ -40,14 +40,18 @@ const BuildingInfoModal: React.FC<BuildingInfoModalProps> = ({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
+      <TouchableWithoutFeedback onPress={onClose} testID="modal-overlay">
         <View style={styles.modalOverlay}>
           <TouchableWithoutFeedback>
             <View style={styles.modalContent}>
               {/* Header */}
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>{selectedBuilding.name}</Text>
-                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <TouchableOpacity
+                  onPress={onClose}
+                  style={styles.closeButton}
+                  testID="close-button"  // Add testID to close button
+                >
                   <MaterialIcons name="close" size={24} color="#000" />
                 </TouchableOpacity>
               </View>

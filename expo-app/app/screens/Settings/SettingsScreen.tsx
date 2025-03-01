@@ -20,14 +20,27 @@ export default function SettingsScreen() {
     const [notificationsEnabled, setNotificationsEnabled] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
 
-
     useEffect(() => {
         const loadSettings = async () => {
-            const savedNotifications = await AsyncStorage.getItem("notifications");
-            const savedDarkMode = await AsyncStorage.getItem("darkMode");
-
-            if (savedNotifications !== null) setNotificationsEnabled(JSON.parse(savedNotifications));
-            if (savedDarkMode !== null) setDarkMode(JSON.parse(savedDarkMode));
+            try {
+                const savedNotifications = await AsyncStorage.getItem("notifications");
+                const savedDarkMode = await AsyncStorage.getItem("darkMode");
+    
+                // Check if the saved values are valid before parsing
+                if (savedNotifications !== null && savedNotifications !== undefined) {
+                    setNotificationsEnabled(JSON.parse(savedNotifications));
+                } else {
+                    setNotificationsEnabled(false);  // default to false if not set
+                }
+    
+                if (savedDarkMode !== null && savedDarkMode !== undefined) {
+                    setDarkMode(JSON.parse(savedDarkMode));
+                } else {
+                    setDarkMode(false);  // default to false if not set
+                }
+            } catch (error) {
+                console.error("Error loading settings:", error);
+            }
         };
         loadSettings();
     }, []);
@@ -39,20 +52,24 @@ export default function SettingsScreen() {
     return (
         <View style={styles.container}>
             {/* Settings Header */}
-            <SettingsHeader />
+            <SettingsHeader testID="settings-header" />
 
             {/* Scrollable Settings List */}
-            <ScrollView contentContainerStyle={styles.settingsList}>
+            <ScrollView contentContainerStyle={styles.settingsList} testID="settings-list">
 
                 {/* Schedule */}
-                <TouchableOpacity style={styles.settingOption} onPress={() => router.push("/screens/Settings/ScheduleScreen")}>
+                <TouchableOpacity 
+                    style={styles.settingOption} 
+                    onPress={() => router.push("/screens/Settings/ScheduleScreen")} 
+                    testID="schedule-button"
+                >
                     <FontAwesome5 name="clock" size={18} color="#912338" />
                     <Text style={styles.settingText}>Schedule</Text>
                     <FontAwesome5 name="chevron-right" size={16} color="#912338" />
                 </TouchableOpacity>
 
                 {/* Notifications */}
-                <View style={styles.settingOption}>
+                <View style={styles.settingOption} testID="notifications-setting">
                     <FontAwesome5 name="bell" size={18} color="#912338" />
                     <Text style={styles.settingText}>Notifications</Text>
                     <Switch
@@ -61,18 +78,41 @@ export default function SettingsScreen() {
                             setNotificationsEnabled(value);
                             saveSetting("notifications", value);
                         }}
+                        testID="notifications-switch"
+                    />
+                </View>
+
+                {/* Dark Mode */}
+                <View style={styles.settingOption} testID="dark-mode-setting">
+                    <FontAwesome5 name="moon" size={18} color="#912338" />
+                    <Text style={styles.settingText}>Dark Mode</Text>
+                    <Switch
+                        value={darkMode}
+                        onValueChange={(value) => {
+                            setDarkMode(value);
+                            saveSetting("darkMode", value);
+                        }}
+                        testID="dark-mode-switch"  // This is the key part
                     />
                 </View>
 
                 {/* Account Details */}
-                <TouchableOpacity style={styles.settingOption} onPress={() => router.push("/screens/Settings/AccountSettingsScreen")}>
+                <TouchableOpacity 
+                    style={styles.settingOption} 
+                    onPress={() => router.push("/screens/Settings/AccountSettingsScreen")} 
+                    testID="account-details-button"
+                >
                     <FontAwesome5 name="user" size={18} color="#912338" />
                     <Text style={styles.settingText}>Account details</Text>
                     <FontAwesome5 name="chevron-right" size={16} color="#912338" />
                 </TouchableOpacity>
 
                 {/* Support */}
-                <TouchableOpacity style={styles.settingOption} onPress={() => router.push("/screens/Settings/SupportScreen")}>
+                <TouchableOpacity 
+                    style={styles.settingOption} 
+                    onPress={() => router.push("/screens/Settings/SupportScreen")} 
+                    testID="support-button"
+                >
                     <FontAwesome5 name="question-circle" size={18} color="#912338" />
                     <Text style={styles.settingText}>Support</Text>
                     <FontAwesome5 name="chevron-right" size={16} color="#912338" />
@@ -82,6 +122,7 @@ export default function SettingsScreen() {
                 <TouchableOpacity 
                     style={[styles.settingOption, styles.logout]} 
                     onPress={async () => {
+                        console.log("Logging out..."); 
                         try {
                             await auth().signOut(); 
                             await AsyncStorage.clear(); 
@@ -90,6 +131,7 @@ export default function SettingsScreen() {
                             console.error("Logout Error:", error);
                         }
                     }}
+                    testID="logout-button"
                 >
                     <FontAwesome5 name="sign-out-alt" size={18} color="#912338" />
                     <Text style={styles.settingText}>Logout</Text>
@@ -97,7 +139,11 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
 
                 {/* Delete Account */}
-                <TouchableOpacity style={[styles.settingOption, styles.deleteAccount]} onPress={() => console.log("Delete Account")}>
+                <TouchableOpacity 
+                    style={[styles.settingOption, styles.deleteAccount]} 
+                    onPress={() => console.log("Delete Account")} 
+                    testID="delete-account-button"
+                >
                     <FontAwesome5 name="trash-alt" size={18} color="red" />
                     <Text style={[styles.settingText, { color: "red" }]}>Delete Account</Text>
                     <FontAwesome5 name="chevron-right" size={16} color="red" />
@@ -106,7 +152,7 @@ export default function SettingsScreen() {
             </ScrollView>
 
             {/* Bottom Navigation */}
-            <BottomNavigation />
+            <BottomNavigation testID="bottom-navigation" />
         </View>
     );
 }

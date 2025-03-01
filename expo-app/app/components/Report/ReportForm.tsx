@@ -5,7 +5,7 @@ import {
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
 import * as ImagePicker from "expo-image-picker";  
-import TimePicker from "../TimePicker";            
+import TimePicker from "../TimePicker/TimePicker";            
 
 export default function ReportForm() {
     const [date, setDate] = useState<Date>(new Date());
@@ -57,14 +57,18 @@ export default function ReportForm() {
         <View style={styles.container}>
 
             {/* Date Selection */}
-            <Text style={styles.label}>Select Date</Text>
-            <TouchableOpacity style={styles.dateButton} onPress={() => setShowCalendar(!showCalendar)}>
+            <Text style={styles.label} testID="dateLabel">Select Date</Text>
+            <TouchableOpacity
+                style={styles.dateButton}
+                onPress={() => setShowCalendar(!showCalendar)}
+                testID="dateButton"
+            >
                 <FontAwesome5 name="calendar-alt" size={18} color="#990000" />
-                <Text style={styles.dateText}>{date.toISOString().split("T")[0]}</Text>
+                <Text style={styles.dateText} testID="selectedDate">{date.toISOString().split("T")[0]}</Text>
             </TouchableOpacity>
 
             {showCalendar && (
-                <View style={styles.calendarContainer}>
+                <View style={styles.calendarContainer} testID="calendarContainer">
                     <Calendar
                         current={date.toISOString().split("T")[0]}
                         onDayPress={handleDayPress}
@@ -86,42 +90,46 @@ export default function ReportForm() {
                             monthTextColor: "#990000",
                         }}
                         style={styles.calendar}
+                        testID="calendar"
                     />
                 </View>
             )}
 
             {/* Time Selection */}
-            <Text style={styles.label}>Select Time</Text>
-            <TimePicker selectedTime={time} setSelectedTime={setTime} />
+            <Text style={styles.label} testID="timeLabel">Select Time</Text>
+            <TimePicker selectedTime={time} setSelectedTime={setTime} testID="timePicker" />
 
             {/* Building Input */}
-            <Text style={styles.label}>Building</Text>
+            <Text style={styles.label} testID="buildingLabel">Building</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Enter building name"
                 placeholderTextColor="#999"
                 value={building}
                 onChangeText={setBuilding}
+                testID="buildingInput"
             />
 
             {/* Room Number */}
-            <Text style={styles.label}>Room # (If applicable)</Text>
+            <Text style={styles.label} testID="roomLabel">Room # (If applicable)</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Enter room number"
                 placeholderTextColor="#999"
                 value={room}
                 onChangeText={setRoom}
+                testID="roomInput"
             />
 
             {/* Category Dropdown */}
-            <Text style={styles.label}>Category</Text>
-            <View style={styles.categoryContainer}>
+            <Text style={styles.label} testID="categoryLabel">Category</Text>
+            <View style={styles.categoryContainer} testID="categoryContainer">
                 {["Lost Item", "Safety Issue", "Complaint", "Feedback"].map((item) => (
                     <TouchableOpacity
                         key={item}
                         style={[styles.categoryButton, category === item && styles.categorySelected]}
                         onPress={() => setCategory(item)}
+                        testID={`categoryButton-${item}`}
                     >
                         <Text style={[styles.categoryText, category === item && styles.categoryTextSelected]}>
                             {item}
@@ -131,15 +139,19 @@ export default function ReportForm() {
             </View>
 
             {/* Image Upload */}
-            <Text style={styles.label}>Attach Image (Optional)</Text>
-            <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
+            <Text style={styles.label} testID="imageLabel">Attach Image (Optional)</Text>
+            <TouchableOpacity
+                style={styles.imageButton}
+                onPress={pickImage}
+                testID="imageButton"
+            >
                 <FontAwesome5 name="camera" size={18} color="#990000" />
-                <Text style={styles.imageText}>{image ? "Change Image" : "Upload Image"}</Text>
+                <Text style={styles.imageText} testID="imageText">{image ? "Change Image" : "Upload Image"}</Text>
             </TouchableOpacity>
-            {image && <Image source={{ uri: image }} style={styles.previewImage} />}
+            {image && <Image source={{ uri: image }} style={styles.previewImage} testID="previewImage" />}
 
             {/* Report Details */}
-            <Text style={styles.label}>Report</Text>
+            <Text style={styles.label} testID="reportLabel">Report</Text>
             <TextInput
                 style={[styles.input, styles.reportInput]}
                 placeholder="Describe the on-campus incident"
@@ -147,6 +159,7 @@ export default function ReportForm() {
                 value={report}
                 onChangeText={setReport}
                 multiline
+                testID="reportInput"
             />
 
             {/* Submit Report Button */}
@@ -154,8 +167,9 @@ export default function ReportForm() {
                 style={[styles.submitButton, (!isFormValid() || isSubmitting) && styles.disabledButton]}
                 onPress={handleSubmit}
                 disabled={!isFormValid() || isSubmitting}
+                testID="submitButton"
             >
-                <Text style={styles.submitButtonText}>
+                <Text style={styles.submitButtonText} testID="submitButtonText">
                     {isSubmitting ? "Submitting..." : "Submit Report"}
                 </Text>
             </TouchableOpacity>
