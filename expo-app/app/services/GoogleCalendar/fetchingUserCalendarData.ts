@@ -114,4 +114,52 @@ export const fetchCalendarEvents = async () => {
   };
 };
 
+// Function to fetch today's events at the current time and later, but not tomorrow, based on selected schedule
+export const fetchTodaysEventsFromSelectedSchedule = async (): Promise<GoogleCalendarEvent[]> => {
+  try {
+    const accessToken = await AsyncStorage.getItem("googleAccessToken");
+
+    if (!accessToken) {
+      throw new Error("No access token found. Please sign in again.");
+    }
+
+    const now = new Date();
+
+    const timeMin = now.toISOString();
+
+    const timeMax = new Date(now);
+    timeMax.setHours(23, 59, 59, 999);
+    const timeMaxISOString = timeMax.toISOString();
+
+    console.log("Fetching events from: ", timeMin, "to: ", timeMaxISOString);
+
+    const storedCalendarID = await AsyncStorage.getItem("selectedScheduleID");
+    if (!storedCalendarID) {
+      throw new Error("No schedule calendar ID found. Please select a schedule.");
+    }
+
+    const response = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${storedCalendarID}/events?timeMin=${timeMin}&timeMax=${timeMaxISOString}&maxResults=10&orderBy=startTime&singleEvents=true`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Error fetching events from Google Calendar.");
+    }
+
+    const data = await response.json();
+    return data.items || [];
+  } catch (error) {
+    console.error("Error fetching today's events from selected schedule:", error);
+    return [];
+  }
+};
+
+
 export { fetchAllCalendars };
