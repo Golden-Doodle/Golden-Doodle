@@ -1,7 +1,7 @@
 import React from "react";
-import { Marker, Callout } from "react-native-maps";
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons"; 
+import { Marker } from "react-native-maps";
+import { View, Text, StyleSheet } from "react-native";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 type CustomMarkerProps = {
   coordinate: {
@@ -10,7 +10,7 @@ type CustomMarkerProps = {
   };
   title?: string;
   description?: string;
-  isFoodLocation?: boolean; 
+  isFoodLocation?: boolean;
   onPress?: () => void;
 };
 
@@ -22,37 +22,17 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({
   onPress,
 }) => (
   <Marker coordinate={coordinate} onPress={onPress} tappable={true}>
-    <View style={[styles.marker, isFoodLocation && styles.foodMarker]}>
+    <View
+      style={[styles.marker, isFoodLocation && styles.foodMarker]}
+      testID="marker-view"
+    >
       {isFoodLocation ? (
         <MaterialIcons name="restaurant" size={20} color="white" />
       ) : (
         <Text style={styles.markerText}>{title[0] || "?"}</Text>
       )}
     </View>
-    {/* <Callout>
-      <View style={styles.callout}>
-        <Text style={styles.calloutTitle}>
-          {title} {isFoodLocation ? "🍽" : ""}
-        </Text>
-        <Text>{description}</Text> */}
-        {/* Navigate Button */}
-        {/* <TouchableOpacity
-          style={styles.navigateButton}
-          onPress={() => {
-            if (onPress) {
-              onPress();
-            } else {
-              Alert.alert("Navigation", "Navigate to this location");
-            }
-          }}
-          testID="navigate-button" 
-        >
-          <Text style={styles.navigateButtonText}>Navigate Here</Text>
-        </TouchableOpacity>
-      </View>
-    </Callout> */}
   </Marker>
-
 );
 
 const styles = StyleSheet.create({
@@ -66,29 +46,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   foodMarker: {
-    backgroundColor: "red", 
+    backgroundColor: "red",
   },
   markerText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  callout: {
-    width: 200, // Increase the width
-    padding: 10, // Add padding to ensure content doesn't touch the edges
-    
-  },
-  calloutTitle: {
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  navigateButton: {
-    marginTop: 10,
-    backgroundColor: "#912338",
-    padding: 8,
-    borderRadius: 5,
-    alignItems: "center",
-  },
-  navigateButtonText: {
     color: "white",
     fontWeight: "bold",
   },

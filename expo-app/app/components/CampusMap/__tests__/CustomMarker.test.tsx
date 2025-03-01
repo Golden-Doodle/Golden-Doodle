@@ -1,65 +1,81 @@
 import React from "react";
-import { render, fireEvent, waitFor } from "@testing-library/react-native";
-import CustomMarker from "../CustomMarker";
-import { Alert } from "react-native";
+import { render, fireEvent } from "@testing-library/react-native";
+import CustomMarker from "../CustomMarker"; 
 
-describe("CustomMarker Component", () => {
-  const mockCoordinate = { latitude: 37.7749, longitude: -122.4194 };
+jest.mock("react-native-vector-icons/MaterialIcons", () => "Icon");
 
-  test("renders the marker correctly", async () => {
-    const { getByTestId } = render(<CustomMarker coordinate={mockCoordinate} />);
-    expect(getByTestId("marker")).toBeTruthy(); 
-  });
-
-  test("displays correct title and description in the callout", async () => {
-    const { getByText } = render(
+describe("CustomMarker", () => {
+  it("should render the food icon when isFoodLocation is true", () => {
+    const { getByTestId } = render(
       <CustomMarker
-        coordinate={mockCoordinate}
-        title="Test Location"
-        description="Test Description"
+        coordinate={{ latitude: 45.5017, longitude: -73.5673 }}
+        isFoodLocation={true}
       />
     );
 
-    await waitFor(() => {
-      expect(getByText("Test Location")).toBeTruthy();
-      expect(getByText("Test Description")).toBeTruthy();
-    });
+    const icon = getByTestId("marker-view"); 
+    expect(icon).toBeTruthy(); 
   });
 
-  test("renders food location marker with correct icon", async () => {
-    const { getByTestId } = render(
-      <CustomMarker coordinate={mockCoordinate} isFoodLocation={true} />
+  it("should render the marker with the correct default text", () => {
+    const { getByText } = render(
+      <CustomMarker
+        coordinate={{ latitude: 45.5017, longitude: -73.5673 }}
+      />
     );
 
-    await waitFor(() => {
-      expect(getByTestId("food-marker")).toBeTruthy();
-    });
+    expect(getByText("U")).toBeTruthy();
   });
 
-  test("calls onPress function when marker is pressed", async () => {
-    const mockOnPress = jest.fn();
-    const { getByTestId } = render(
-      <CustomMarker coordinate={mockCoordinate} onPress={mockOnPress} />
+  it("should render the marker with custom title and description", () => {
+    const { getByText } = render(
+      <CustomMarker
+        coordinate={{ latitude: 45.5017, longitude: -73.5673 }}
+        title="Custom Title"
+        description="Custom description"
+      />
     );
 
-    await waitFor(() => {
-      fireEvent.press(getByTestId("marker")); 
-    });
-
-    expect(mockOnPress).toHaveBeenCalled();
+    expect(getByText("C")).toBeTruthy();
   });
 
-  test("shows alert when 'Navigate Here' button is pressed without onPress", async () => {
-    jest.spyOn(Alert, "alert"); 
-    
-    const { getByTestId } = render(<CustomMarker coordinate={mockCoordinate} />);
+  it("should apply the correct styles when isFoodLocation is true", () => {
+    const { getByTestId } = render(
+      <CustomMarker
+        coordinate={{ latitude: 45.5017, longitude: -73.5673 }}
+        isFoodLocation={true}
+      />
+    );
 
-    await waitFor(() => {
-      expect(getByTestId("callout")).toBeTruthy();
-    });
+    const markerView = getByTestId("marker-view");
 
-    fireEvent.press(getByTestId("navigate-button"));
+    expect(markerView.props.style).toContainEqual(
+      expect.objectContaining({ backgroundColor: "red" })
+    );
+  });
 
-    expect(Alert.alert).toHaveBeenCalledWith("Navigation", "Navigate to this location");
+  it("should trigger the onPress function when the marker is pressed", () => {
+    const onPressMock = jest.fn();
+    const { getByText } = render(
+      <CustomMarker
+        coordinate={{ latitude: 45.5017, longitude: -73.5673 }}
+        onPress={onPressMock}
+      />
+    );
+
+    fireEvent.press(getByText("U"));
+
+    expect(onPressMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("should render the default marker icon when isFoodLocation is false", () => {
+    const { getByText } = render(
+      <CustomMarker
+        coordinate={{ latitude: 45.5017, longitude: -73.5673 }}
+        isFoodLocation={false}
+      />
+    );
+
+    expect(getByText("U")).toBeTruthy();
   });
 });

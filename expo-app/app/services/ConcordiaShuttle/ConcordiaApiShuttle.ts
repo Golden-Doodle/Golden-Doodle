@@ -16,5 +16,6 @@ export const fetchBusLocations = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching bus locations:", error);
+    throw error;
   }
 };

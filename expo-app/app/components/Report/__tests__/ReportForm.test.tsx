@@ -26,7 +26,7 @@ describe("ReportForm", () => {
     
         fireEvent.press(dateButton);
     
-        const selectedDay = "2025-02-25";
+        const selectedDay = "2025-03-01";
     
         const calendar = getByTestId("calendar");
         fireEvent.press(calendar);

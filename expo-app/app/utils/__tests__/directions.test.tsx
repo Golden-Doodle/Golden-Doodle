@@ -94,21 +94,41 @@ describe('coordinatesFromRoomLocation', () => {
     ];
   
     it('should return the correct coordinates for SGW campus', () => {
-      const location: RoomLocation = { campus: 'SGW', building: 'Building1', room: '101' }; 
-  
+      const building = SGWBuildings.find(building => building.name === 'Building1');
+      
+      if (!building) {
+        throw new Error('Building not found');
+      }
+    
+      const location: RoomLocation = { 
+        campus: 'SGW', 
+        building, 
+        room: '101' 
+      };
+    
       const result = coordinatesFromRoomLocation(location, SGWBuildings, LoyolaBuildings);
-  
+    
       expect(result).toEqual({ latitude: 45.0, longitude: -73.0 });
     });
-  
+    
     it('should return the correct coordinates for Loyola campus', () => {
-      const location: RoomLocation = { campus: 'LOY', building: 'BuildingA', room: '202' }; 
-  
+      const building = LoyolaBuildings.find(building => building.name === 'BuildingA');
+      
+      if (!building) {
+        throw new Error('Building not found');
+      }
+    
+      const location: RoomLocation = { 
+        campus: 'LOY', 
+        building,
+        room: '202' 
+      };
+    
       const result = coordinatesFromRoomLocation(location, SGWBuildings, LoyolaBuildings);
-  
+    
       expect(result).toEqual({ latitude: 45.2, longitude: -73.2 });
     });
-  
+    
     it('should handle null location', () => {
       const location = null;
   
@@ -118,21 +138,48 @@ describe('coordinatesFromRoomLocation', () => {
     });
   
     it('should handle invalid campus and update it', () => {
-        const location: RoomLocation = { campus: 'SGW', building: 'Building1', room: '101' }; 
-      
-        const result = coordinatesFromRoomLocation(location, SGWBuildings, LoyolaBuildings);
-      
-        expect(location.campus).toBe('SGW'); 
-        expect(result).toEqual({ latitude: 45.0, longitude: -73.0 });
-      });
-      
-  
-    it('should return undefined if building coordinates are not found', () => {
-      const location: RoomLocation = { campus: 'SGW', building: 'Building3', room: '303' };
-  
+      const building = SGWBuildings.find(building => building.name === 'Building1');
+    
+      if (!building) {
+        throw new Error('Building not found');
+      }
+    
+      const location: RoomLocation = { 
+        campus: 'SGW', 
+        building,  
+        room: '101' 
+      };
+    
       const result = coordinatesFromRoomLocation(location, SGWBuildings, LoyolaBuildings);
-  
-      expect(result).toBeUndefined();
+    
+      expect(location.campus).toBe('SGW'); 
+      expect(result).toEqual({ latitude: 45.0, longitude: -73.0 }); 
+    });
+    
+    it('should return undefined if building coordinates are not found', () => {
+      const building = SGWBuildings.find(building => building.name === 'Building3');
+    
+      if (!building) {
+        const location: RoomLocation = { 
+          campus: 'SGW', 
+          building: { id: 'default', name: 'Default Building', coordinates: [{ latitude: 0, longitude: 0 }], fillColor: '#FFFFFF', strokeColor: '#000000', campus: 'SGW' },  // Provide a default building here
+          room: '303' 
+        };
+    
+        const result = coordinatesFromRoomLocation(location, SGWBuildings, LoyolaBuildings);
+    
+        expect(result).toBeUndefined();
+        return; 
+      }
+    
+      const location: RoomLocation = { 
+        campus: 'SGW', 
+        building,  
+        room: '303' 
+      };
+    
+      const result = coordinatesFromRoomLocation(location, SGWBuildings, LoyolaBuildings);
+      expect(result).toBeUndefined(); 
     });
   });
   
