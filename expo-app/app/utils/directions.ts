@@ -102,6 +102,7 @@ export const fetchAllRoutes = async (
         const legs = route.legs[0];
         const transportDetails: string[] = [];
 
+        // Extract transport details from steps (for transit mode)
         if (mode === "transit") {
           legs.steps.forEach((step: any) => {
             if (step.transit_details) {

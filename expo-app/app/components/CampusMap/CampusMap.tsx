@@ -57,6 +57,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         return;
       }
 
+      // Might be worth changing to Location.watchPositionAsync
       let location = await Location.getCurrentPositionAsync({});
       setUserLocation(location.coords);
       setOrigin({
@@ -260,7 +261,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
           />
         )}
         {/* Render Destination Marker */}
-        {destination && !(destination.selectedBuilding) && (
+        {destination && !destination.selectedBuilding && (
           <Marker
             coordinate={destination.coordinates}
             pinColor="red"
@@ -281,7 +282,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
       <SearchModal
         visible={isSearchModalVisible}
         onClose={onCloseSearchModal}
-        onSelectBuilding={(building) => {
+        onSelectLocation={(building) => {
           setDestination({
             coordinates: building.coordinates[0],
             building,
@@ -289,14 +290,15 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
           }); // Set destination
           setIsSearchModalVisible(false);
         }}
-        buildings={buildings}
-        markers={markers}
         onPressSelectOnMap={onCloseSearchModal}
         destination={destination}
         onGetDirections={() => {
           fetchRoute();
           onCloseSearchModal();
         }}
+        // Passed Data
+        buildingData={buildings}
+        markerData={markers}
       />
 
       {/* Transit Modal -- Screen to select starting and final destination with mode of transportation */}
@@ -310,6 +312,9 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         setOrigin={setOrigin}
         setDestination={setDestination}
         setRouteCoordinates={setRouteCoordinates}
+        buildingData={buildings}
+        markerData={markers}
+        userLocation={userLocation}
       />
 
       <NextClassModal
