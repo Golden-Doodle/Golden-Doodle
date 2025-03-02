@@ -87,7 +87,7 @@ export default function SignInScreen() {
     createSmoothAnimation(animatedX4, animatedY4, 45, 25, 5500);
   }, []);
 
-  if (loading) return <View style={{ flex: 1, backgroundColor: "#FFF" }} />;
+  if (loading) return <View testID="loading-screen" style={{ flex: 1, backgroundColor: "#FFF" }} />;
 
   return (
     <View style={styles.container}>

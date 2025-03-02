@@ -2,7 +2,11 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-export default function BottomNavigation() {
+interface BottomNavigationProps {
+    testID: string; 
+}
+
+const BottomNavigation: React.FC<BottomNavigationProps> = ({ testID }) => {
   const router = useRouter(); 
 
   const TABS = [
@@ -11,14 +15,15 @@ export default function BottomNavigation() {
     { label: "Report", icon: "exclamation-circle", path: "/screens/Report/ReportScreen" },
     { label: "Settings", icon: "cog", path: "/screens/Settings/SettingsScreen"},
   ];
-  
+
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID={testID}>
       {TABS.map((tab) => (
         <TouchableOpacity
           key={tab.label}
           style={styles.tab}
           onPress={() => router.push(tab.path as any)} 
+          testID={`${testID}-${tab.label.toLowerCase()}-tab`} 
         >
           <FontAwesome5 name={tab.icon} size={22} color="#999" />
           <Text style={styles.label}>{tab.label}</Text>
@@ -46,3 +51,5 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
 });
+
+export default BottomNavigation;

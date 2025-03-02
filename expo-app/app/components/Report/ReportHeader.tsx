@@ -4,7 +4,6 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router"; 
 
 export default function ReportHeader() {
-    
     const router = useRouter(); 
 
     return (
@@ -12,25 +11,30 @@ export default function ReportHeader() {
             <ImageBackground
                 source={require("../../../assets/images/header-background.jpg")}
                 style={styles.background}
+                testID="background-image" 
             >
                 {/* Dark Overlay to Improve Text Readability */}
-                <View style={styles.overlay} />
+                <View style={styles.overlay} /> 
 
                 {/* Back Arrow Button */}
-                <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+                <TouchableOpacity 
+                    style={styles.backButton} 
+                    onPress={() => router.back()} 
+                    testID="back-button" 
+                >
                     <FontAwesome5 name="arrow-left" size={30} color="#fff" />
                 </TouchableOpacity>
 
                 <View style={styles.container}>
                     {/* Report Title */}
-                    <Text style={styles.reportTitle}>Report</Text>
+                    <Text style={styles.reportTitle} testID="report-title">Report</Text> 
                 </View>
             </ImageBackground>
 
             {/* Move Anonymous Notice BELOW the background */}
             <View style={styles.noticeContainer}>
                 <FontAwesome5 name="exclamation-circle" size={18} color="#990000" />
-                <Text style={styles.noticeText}>All reports remain anonymous.</Text>
+                <Text style={styles.noticeText} testID="notice-text">All reports remain anonymous.</Text>
             </View>
         </>
     );

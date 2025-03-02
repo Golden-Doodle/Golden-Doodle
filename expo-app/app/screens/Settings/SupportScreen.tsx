@@ -14,24 +14,28 @@ export default function SupportScreen() {
     const router = useRouter();
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <ScrollView style={styles.container} testID="scrollView">
+            <View style={styles.header} testID="header">
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton} testID="backButton">
                     <FontAwesome5 name="arrow-left" size={30} color="#333" />
                 </TouchableOpacity>
-                <Text style={styles.headerText}>Support</Text>
+                <Text style={styles.headerText} testID="headerText">Support</Text>
             </View>
 
-            <View style={styles.formContainer}>
-                <Text style={styles.label}>Need Help?</Text>
-                <Text style={styles.infoText}>For assistance, please contact:</Text>
-                <Text style={styles.infoText}>support@example.com</Text>
+            <View style={styles.formContainer} testID="formContainer">
+                <Text style={styles.label} testID="needHelpLabel">Need Help?</Text>
+                <Text style={styles.infoText} testID="infoText1">For assistance, please contact:</Text>
+                <Text style={styles.infoText} testID="contactEmail">support@example.com</Text>
 
-                <View style={styles.divider} />
-                <Text style={styles.label}>Frequently Asked Questions</Text>
-                <Text style={styles.infoText}>Visit our FAQ section for common questions and answers.</Text>
+                <View style={styles.divider} testID="divider" />
+                <Text style={styles.label} testID="faqLabel">Frequently Asked Questions</Text>
+                <Text style={styles.infoText} testID="infoText2">Visit our FAQ section for common questions and answers.</Text>
 
-                <TouchableOpacity style={styles.supportButton} onPress={() => Alert.alert("Report Issue", "Redirecting to issue reporting...") }>
+                <TouchableOpacity 
+                    style={styles.supportButton} 
+                    onPress={() => Alert.alert("Report Issue", "Redirecting to issue reporting...")}
+                    testID="reportProblemButton"
+                >
                     <FontAwesome5 name="bug" size={18} color="#fff" />
                     <Text style={styles.supportButtonText}>Report a Problem</Text>
                 </TouchableOpacity>

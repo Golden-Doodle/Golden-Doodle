@@ -1,12 +1,12 @@
+// Header.tsx
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ImageBackground } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { styles } from "./Header.styles";
 import { AuthContext } from "@/app/contexts/AuthContext";
 import NextClassComponent from "./NextClassComponent";
 import { GoogleCalendarEvent } from "@/app/utils/types";
-import { ImageBackground } from "react-native";
 
 interface HeaderProps {
   refreshCalendarEvents: () => void;
@@ -39,16 +39,18 @@ export default function Header({
     <ImageBackground
       source={require("@/assets/images/header-background.jpg")}
       style={styles.headerContainer}
+      testID="header-background"
     >
       <View style={styles.headerContainer}>
         {/* Overlay */}
-        <View style={styles.overlay} />
+        <View style={styles.overlay} testID="overlay" />
 
         {/* Header Top Row for Icons */}
-        <View style={styles.headerTopRow}>
+        <View style={styles.headerTopRow} testID="header-top-row">
           <TouchableOpacity
             style={styles.logoutButton}
             onPress={!user ? () => router.push("/") : signOut}
+            testID={!user ? "login-button" : "logout-button"}
           >
             <Feather name={!user ? "log-in" : "log-out"} size={22} color="white" />
           </TouchableOpacity>
@@ -56,14 +58,15 @@ export default function Header({
           <TouchableOpacity
             style={styles.menuButton}
             onPress={() => router.push("/screens/Home/HomeMenuScreen")}
+            testID="menu-button"
           >
             <Feather name="menu" size={26} color="white" />
           </TouchableOpacity>
         </View>
 
         {/* Header Content */}
-        <View style={styles.headerContent}>
-          <Text style={styles.welcomeText}>
+        <View style={styles.headerContent} testID="header-content">
+          <Text style={styles.welcomeText} testID="welcome-text">
             {user?.displayName ? `Welcome Back, ${user.displayName}` : "Welcome!"}
           </Text>
           <NextClassComponent
@@ -71,6 +74,7 @@ export default function Header({
             style={styles.timerText}
             nextClass={nextClass}
             setNextClass={setNextClass}
+            testID="next-class-component"
           />
 
           {/* Optimize Routes Button - Disabled if no classes */}
@@ -78,16 +82,17 @@ export default function Header({
             <TouchableOpacity
               style={[
                 styles.routeButton,
-                !nextClass && styles.disabledRouteButton, // Apply disabled style
+                !nextClass && styles.disabledRouteButton,
               ]}
               onPress={onOptimizeRoutePress}
-              disabled={!nextClass} // Disable if no class today
+              disabled={!nextClass}
+              testID="optimize-route-button"
             >
               <Text style={styles.routeButtonText}>Optimize Route</Text>
             </TouchableOpacity>
           )}
 
-          <Text style={styles.studySpotText}>
+          <Text style={styles.studySpotText} testID="study-spot-text">
             Find your next study spot or coffee stop.
           </Text>
         </View>

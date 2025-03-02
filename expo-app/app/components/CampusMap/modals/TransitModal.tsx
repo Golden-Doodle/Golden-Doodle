@@ -197,8 +197,8 @@ const TransitModal = ({
               }} // Close search when empty
             />
           </View>
-          <View style={styles.switchContainer}>
-            <TouchableOpacity onPress={onSwitchPress}>
+          <View style={styles.switchContainer} testID="switch-container">
+            <TouchableOpacity onPress={onSwitchPress} testID="switch-button">
               <FontAwesome5
                 name="exchange-alt"
                 size={22}

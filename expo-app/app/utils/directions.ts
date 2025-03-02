@@ -8,7 +8,7 @@ import {
   LocationType,
   TransportMode,
 } from "@/app/utils/types";
-import polyline from "@mapbox/polyline"; // Install via: npm install @mapbox/polyline
+import polyline from "@mapbox/polyline"; 
 import { RouteOption } from "@/app/utils/types";
 
 const GOOGLE_MAPS_API_KEY = Constants.expoConfig?.extra?.googleMapsApiKey;
@@ -31,11 +31,9 @@ export const getDirections = async (
       }));
       return decodedPoints;
     } else {
-      console.error("No routes found");
       return [];
     }
   } catch (error) {
-    console.error("Error fetching directions:", error);
     return [];
   }
 };
@@ -73,7 +71,6 @@ export const coordinatesFromRoomLocation = (
         )?.coordinates[0];
 
   if (!coordinates) {
-    console.error("Building coordinates not found");
     return;
   }
 
@@ -83,13 +80,8 @@ export const coordinatesFromRoomLocation = (
 export const fetchAllRoutes = async (
   origin: LocationType,
   destination: LocationType,
-) : Promise<RouteOption[]> => {
-  if (
-    !origin ||
-    !destination ||
-    !origin.coordinates ||
-    !destination.coordinates
-  ) {
+): Promise<RouteOption[]> => {
+  if (!origin || !destination || !origin.coordinates || !destination.coordinates) {
     console.error("Invalid origin or destination");
     return [];
   }
@@ -97,7 +89,7 @@ export const fetchAllRoutes = async (
   const modes: TransportMode[] = ["walking", "driving", "transit", "bicycling"];
   const routesData: RouteOption[] = [];
 
-  var index = 0;
+  let index = 0;
   try {
     const requests = modes.map(async (mode: TransportMode) => {
       const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.coordinates.latitude},${origin.coordinates.longitude}&destination=${destination.coordinates.latitude},${destination.coordinates.longitude}&mode=${mode}&key=${GOOGLE_MAPS_API_KEY}`;

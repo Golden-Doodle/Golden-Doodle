@@ -29,21 +29,23 @@ const HamburgerWidget: React.FC<HamburgerWidgetProps> = ({
 
   return (
     <View style={styles.container}>
+      
       {/* Hamburger Button Fixed on the Right */}
       <TouchableOpacity
         style={styles.hamburgerButton}
         onPress={toggleVisibility}
+        testID="hamburger-button"
       >
         <MaterialIcons name="menu" size={25} color="black" />
       </TouchableOpacity>
 
-      {/* Exposed Options (Aligned to the Right) */}
+      {/* The hidden menu options */}
       {isVisible && (
-        <View style={styles.exposedOptions}>
-          {/* View Campus Button */}
+        <View style={styles.exposedOptions} testID="menu-options">
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={toggleCampus}
+            testID="toggle-campus-button"
           >
             <View style={styles.row}>
               <MaterialIcons name="arrow-upward" size={16} color="black" />
@@ -59,19 +61,23 @@ const HamburgerWidget: React.FC<HamburgerWidgetProps> = ({
             <Text style={styles.switchText}>View Campus Map</Text>
             <Switch
               value={viewCampusMap}
-              onValueChange={() =>
-                setViewCampusMap((prevValue: boolean) => !prevValue)
-              }
+              onValueChange={() => setViewCampusMap((prevValue: boolean) => !prevValue)}
+              testID="campus-map-switch"
             />
           </View>
 
-          {/* Dark/Light Mode Switch */}
+          {/* Dark Mode Switch */}
           <View style={styles.switchContainer}>
             <Text style={styles.switchText}>Dark Mode</Text>
-            <Switch value={isDarkMode} onValueChange={handleThemeChange} />
+            <Switch
+              value={isDarkMode}
+              onValueChange={handleThemeChange}
+              testID="dark-mode-switch"
+            />
           </View>
         </View>
       )}
+
     </View>
   );
 };
