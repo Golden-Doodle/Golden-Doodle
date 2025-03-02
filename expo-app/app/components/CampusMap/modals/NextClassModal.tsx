@@ -13,7 +13,7 @@ import {
   RoomLocation,
 } from "@/app/utils/types";
 import { SGWBuildings, LoyolaBuildings } from "../data/buildingData";
-import { fetchCalendarEvents } from "@/app/services/GoogleCalendar/fetchingUserCalendarData";
+import { fetchTodaysEventsFromSelectedSchedule } from "@/app/services/GoogleCalendar/fetchingUserCalendarData"; // Importing the new method
 import { coordinatesFromRoomLocation } from "@/app/utils/directions";
 
 interface NextClassModalProps {
@@ -39,25 +39,37 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
 
       setIsLoading(true);
       try {
-        const response = await fetchCalendarEvents();
+        const events = await fetchTodaysEventsFromSelectedSchedule(); 
         
-        const events = Array.isArray(response?.events) ? response.events : [];
-
         if (events.length === 0) {
           setNextClass(null);
           setIsLoading(false);
           return;
         }
 
-        const nextEvent = events[0];
+        const nextEvent = events[0]; 
         setNextClass(nextEvent);
 
         const parsedLocation: RoomLocation = nextEvent.location
           ? JSON.parse(nextEvent.location)
           : null;
+
+        if (parsedLocation?.building && typeof parsedLocation.building === 'string') {
+          const buildingName = parsedLocation.building;
+          const building = [...SGWBuildings, ...LoyolaBuildings].find(
+            (b) => b.name === buildingName
+          );
+          if (building) {
+            parsedLocation.building = building;  
+          } else {
+            parsedLocation.building = SGWBuildings[0]; 
+          }
+        }
+
         setLocation(parsedLocation);
+
       } catch (error) {
-        console.error("Error fetching calendar events:", error);
+        console.error("Error fetching today's events:", error);
       } finally {
         setIsLoading(false);
       }
@@ -121,11 +133,13 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
 
               <View style={styles.infoContainer}>
                 <Text style={styles.label} testID="room-label">Room:</Text>
-                <Text style={styles.value} testID="room-value">{location?.room || "N/A"}</Text>
+                <Text style={styles.value} testID="room-value">{location?.room?.toUpperCase() || "N/A"}</Text>
               </View>
               <View style={styles.infoContainer}>
                 <Text style={styles.label} testID="building-label">Building:</Text>
-                <Text style={styles.value} testID="building-value">{location?.building.name || "N/A"}</Text>
+                <Text style={styles.value} testID="building-value">
+                  {location?.building?.name || "N/A"}
+                </Text>
               </View>
               <View style={styles.infoContainer}>
                 <Text style={styles.label} testID="campus-label">Campus:</Text>
@@ -139,7 +153,7 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
                 testID="get-directions-button"
               >
                 <Text style={styles.buttonText} testID="get-directions-text">
-                  {isButtonDisabled ? "Location Not Available" : "Get Directions"}
+                  {isButtonDisabled ? "Location Not Available" : "Go to Location"}
                 </Text>
               </TouchableOpacity>
             </>
