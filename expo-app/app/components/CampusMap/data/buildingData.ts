@@ -1,17 +1,18 @@
 import { Building } from '../../../utils/types';
 
-export const SGWBuildings : Building[] = [
+export const SGWBuildings: Building[] = [
   {
     id: 'FB',
     name: 'Faubourg Building',
     coordinates: [
-      { latitude: 45.49496 , longitude: -73.57784 },
+      { latitude: 45.49496, longitude: -73.57784 },
       { latitude: 45.49468, longitude: -73.5772 },
       { latitude: 45.49441, longitude: -73.57754 },
       { latitude: 45.49469, longitude: -73.57806 }
     ],
-    fillColor: "rgba(0, 100, 255, 0.5)", // Semi-Transparent blue
-    strokeColor: "rgba(0, 0, 255, 1)", // Solid blue outline
+    fillColor: "rgba(0, 100, 255, 0.5)",
+    strokeColor: "rgba(0, 0, 255, 1)", 
+    description: 'The Faubourg Building is a historical structure located at the heart of SGW campus, offering a mix of classrooms, lecture halls, and office spaces.',
     campus: "SGW"
   },
   {
@@ -19,12 +20,13 @@ export const SGWBuildings : Building[] = [
     name: 'Faubourg Ste-Catherine Building',
     coordinates: [
       { latitude: 45.49471, longitude: -73.57806 },
-      { latitude: 45.49441, longitude: -73.57754  },
+      { latitude: 45.49441, longitude: -73.57754 },
       { latitude: 45.4936, longitude: -73.57871 },
       { latitude: 45.49383, longitude: -73.57911 }
     ],
     fillColor: "rgba(0, 100, 255, 0.5)",
     strokeColor: "rgba(0, 0, 255, 1)",
+    description: 'This building provides additional space for academic programs and student services, enhancing the overall student experience at SGW.',
     campus: "SGW"
   },
   {
@@ -38,6 +40,7 @@ export const SGWBuildings : Building[] = [
     ],
     fillColor: "rgba(0, 100, 255, 0.5)",
     strokeColor: "rgba(0, 0, 255, 1)",
+    description: 'Home to the John Molson School of Business, this building is a hub for students pursuing business degrees with modern classrooms, computer labs, and meeting spaces.',
     campus: "SGW"
   },
   {
@@ -51,11 +54,12 @@ export const SGWBuildings : Building[] = [
     ],
     fillColor: "rgba(0, 100, 255, 0.5)",
     strokeColor: "rgba(0, 0, 255, 1)",
+    description: 'The Guy-De Maisonneuve Building houses several academic departments and offers numerous student services, including study rooms and recreational spaces.',
     campus: "SGW"
   },
   {
     id: 'EV',
-    name: 'Engineering, Computer Science and Visual Arts integrated Complex',
+    name: 'Engineering, Computer Science and Visual Arts Integrated Complex',
     coordinates: [
       { latitude: 45.49597, longitude: -73.57842 },
       { latitude: 45.49577, longitude: -73.57801 },
@@ -66,6 +70,7 @@ export const SGWBuildings : Building[] = [
     ],
     fillColor: "rgba(0, 100, 255, 0.5)",
     strokeColor: "rgba(0, 0, 255, 1)",
+    description: 'A state-of-the-art facility for the university’s engineering, computer science, and visual arts programs, featuring high-tech classrooms, labs, and collaborative spaces.',
     campus: "SGW"
   },
   {
@@ -79,6 +84,7 @@ export const SGWBuildings : Building[] = [
     ],
     fillColor: "rgba(0, 100, 255, 0.5)",
     strokeColor: "rgba(0, 0, 255, 1)",
+    description: 'A modern building that provides innovative learning spaces and hosts various university events and workshops, ideal for interactive educational experiences.',
     campus: "SGW"
   },
   {
@@ -88,10 +94,11 @@ export const SGWBuildings : Building[] = [
       { latitude: 45.49656, longitude: -73.57964 },
       { latitude: 45.49611, longitude: -73.57997 },
       { latitude: 45.49626, longitude: -73.58047 },
-      { latitude: 45.4967, longitude: -73.58012  }
+      { latitude: 45.4967, longitude: -73.58012 }
     ],
     fillColor: "rgba(0, 100, 255, 0.5)",
     strokeColor: "rgba(0, 0, 255, 1)",
+    description: 'The ER Building serves as a space for academic programs, student activities, and a variety of administrative services.',
     campus: "SGW"
   },
   {
@@ -105,6 +112,7 @@ export const SGWBuildings : Building[] = [
     ],
     fillColor: "rgba(0, 100, 255, 0.5)",
     strokeColor: "rgba(0, 0, 255, 1)",
+    description: 'One of the primary buildings on the SGW campus, the Hall Building offers classrooms, offices, and large lecture halls for various programs.',
     campus: "SGW"
   },
   {
@@ -120,6 +128,7 @@ export const SGWBuildings : Building[] = [
     ],
     fillColor: "rgba(0, 100, 255, 0.5)",
     strokeColor: "rgba(0, 0, 255, 1)",
+    description: 'This building features a mix of research labs, classrooms, and faculty offices, offering a variety of spaces for student learning and innovation.',
     campus: "SGW"
   },
   {
@@ -133,6 +142,7 @@ export const SGWBuildings : Building[] = [
     ],
     fillColor: "rgba(0, 100, 255, 0.5)",
     strokeColor: "rgba(0, 0, 255, 1)",
+    description: 'The Visual Arts Building is home to the university’s arts programs, featuring art galleries, studios, and classrooms dedicated to visual and performing arts.',
     campus: "SGW"
   },
   {
@@ -146,6 +156,7 @@ export const SGWBuildings : Building[] = [
     ],
     fillColor: "rgba(0, 100, 255, 0.5)",
     strokeColor: "rgba(0, 0, 255, 1)",
+    description: 'A key building for student residence, this building also offers a variety of social spaces and is home to several services supporting students at SGW.',
     campus: "SGW"
   }
 ];
@@ -153,46 +164,49 @@ export const SGWBuildings : Building[] = [
 export const LoyolaBuildings: Building[] = [
   {
     id: "CW",
-    name: "Central Wing,",
+    name: "Central Wing",
     coordinates: [
       { latitude: 45.45843, longitude: -73.64142 },
       { latitude: 45.45934, longitude: -73.64074 },
       { latitude: 45.45838, longitude: -73.6383 },
       { latitude: 45.45755, longitude: -73.63923 },
     ],
-    fillColor: "rgba(255, 165, 0, 0.5)", // Semi-Transparent orange
-    strokeColor: "rgba(255, 140, 0, 1)", // Solid orange outline
+    fillColor: "rgba(255, 165, 0, 0.5)",
+    strokeColor: "rgba(255, 140, 0, 1)", 
+    description: 'The Central Wing is the main academic building at Loyola campus, offering classrooms and faculty offices for a wide range of programs.',
     campus: "LOY",
   },
   {
     id: "LW",
-    name: "Left Wing,",
+    name: "Left Wing",
     coordinates: [
       { latitude: 45.45843, longitude: -73.64142 },
       { latitude: 45.45755, longitude: -73.63923 },
       { latitude: 45.45661, longitude: -73.64028 },
       { latitude: 45.45735, longitude: -73.64224 },
     ],
-    fillColor: "rgba(255, 165, 0, 0.5)", // Semi-Transparent orange
-    strokeColor: "rgba(255, 140, 0, 1)", // Solid orange outline
+    fillColor: "rgba(255, 165, 0, 0.5)", 
+    strokeColor: "rgba(255, 140, 0, 1)", 
+    description: 'The Left Wing is dedicated to student services and administrative offices, providing essential support for students and staff at Loyola.',
     campus: "LOY",
   },
   {
     id: "RW",
-    name: "Right Wing,",
+    name: "Right Wing",
     coordinates: [
       { latitude: 45.45934, longitude: -73.64074 },
       { latitude: 45.45838, longitude: -73.6383 },
       { latitude: 45.45922, longitude: -73.63732 },
       { latitude: 45.46035, longitude: -73.64026 },
     ],
-    fillColor: "rgba(255, 165, 0, 0.5)", // Semi-Transparent orange
-    strokeColor: "rgba(255, 140, 0, 1)", // Solid orange outline
+    fillColor: "rgba(255, 165, 0, 0.5)", 
+    strokeColor: "rgba(255, 140, 0, 1)", 
+    description: 'The Right Wing houses additional classrooms and study areas for various academic programs at Loyola.',
     campus: "LOY",
   },
   {
     id: "NW",
-    name: "North Wing,",
+    name: "North Wing",
     coordinates: [
       { latitude: 45.45959, longitude: -73.64064 },
       { latitude: 45.45799, longitude: -73.64187 },
@@ -201,13 +215,14 @@ export const LoyolaBuildings: Building[] = [
       { latitude: 45.45828, longitude: -73.6436 },
       { latitude: 45.46006, longitude: -73.64207 },
     ],
-    fillColor: "rgba(255, 165, 0, 0.5)", // Semi-Transparent orange
-    strokeColor: "rgba(255, 140, 0, 1)", // Solid orange outline
+    fillColor: "rgba(255, 165, 0, 0.5)", 
+    strokeColor: "rgba(255, 140, 0, 1)", 
+    description: 'The North Wing offers additional student and faculty spaces, with specialized facilities for various departments.',
     campus: "LOY",
   },
   {
     id: "SW",
-    name: "South Wing,",
+    name: "South Wing",
     coordinates: [
       { latitude: 45.45718, longitude: -73.63945 },
       { latitude: 45.45668, longitude: -73.63819 },
@@ -216,8 +231,9 @@ export const LoyolaBuildings: Building[] = [
       { latitude: 45.45777, longitude: -73.63431 },
       { latitude: 45.45912, longitude: -73.63723 },
     ],
-    fillColor: "rgba(255, 165, 0, 0.5)", // Semi-Transparent orange
-    strokeColor: "rgba(255, 140, 0, 1)", // Solid orange outline
+    fillColor: "rgba(255, 165, 0, 0.5)",
+    strokeColor: "rgba(255, 140, 0, 1)", 
+    description: 'The South Wing offers academic spaces, study areas, and provides access to outdoor spaces, ideal for relaxing and gathering.',
     campus: "LOY",
-  },
+  }
 ];
