@@ -1,3 +1,4 @@
+// locales/en/HomePageScreen.json
 {
   "refreshing": "Refreshing calendar events...",
   "no_calendar_selected": "No calendar selected. Please choose a calendar in settings.",
@@ -26,7 +27,7 @@
   "limited_seats": "Limited Seats",
   "on_time": "On Time",
   "no_schedule_available": "No schedule available.",
-  "id_card_is_obligatory_to_board_the_shuttle" : "ID Card is obligatory to board the shuttle.",
+  "id_card_is_obligatory_to_board_the_shuttle": "ID Card is obligatory to board the shuttle.",
   "home_tab": "Home",
   "services_tab": "Services",
   "report_tab": "Report",
