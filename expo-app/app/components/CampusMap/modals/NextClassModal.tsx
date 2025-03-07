@@ -8,13 +8,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 import {
-  Coordinates,
   GoogleCalendarEvent,
   LocationType,
   RoomLocation,
 } from "@/app/utils/types";
 import { SGWBuildings, LoyolaBuildings } from "../data/buildingData";
-import { fetchCalendarEvents } from "@/app/services/GoogleCalendar/fetchingUserCalendarData";
+import { fetchTodaysEventsFromSelectedSchedule } from "@/app/services/GoogleCalendar/fetchingUserCalendarData"; // Importing the new method
 import { coordinatesFromRoomLocation } from "@/app/utils/directions";
 
 interface NextClassModalProps {
@@ -40,23 +39,37 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
 
       setIsLoading(true);
       try {
-        const { events } = await fetchCalendarEvents();
-        if (!events || events.length === 0) {
+        const events = await fetchTodaysEventsFromSelectedSchedule(); 
+        
+        if (events.length === 0) {
           setNextClass(null);
           setIsLoading(false);
           return;
         }
 
-        const nextEvent = events[0];
+        const nextEvent = events[0]; 
         setNextClass(nextEvent);
 
-        // Parse location from event
         const parsedLocation: RoomLocation = nextEvent.location
           ? JSON.parse(nextEvent.location)
           : null;
+
+        if (parsedLocation?.building && typeof parsedLocation.building === 'string') {
+          const buildingName = parsedLocation.building;
+          const building = [...SGWBuildings, ...LoyolaBuildings].find(
+            (b) => b.name === buildingName
+          );
+          if (building) {
+            parsedLocation.building = building;  
+          } else {
+            parsedLocation.building = SGWBuildings[0]; 
+          }
+        }
+
         setLocation(parsedLocation);
+
       } catch (error) {
-        console.error("Error fetching calendar events:", error);
+        console.error("Error fetching today's events:", error);
       } finally {
         setIsLoading(false);
       }
@@ -65,8 +78,6 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
     fetchNextClass();
   }, [visible]);
 
-
-  // Have to revisit this function
   const handleGetDirections = () => {
     if (!location) return;
 
@@ -78,7 +89,12 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
 
     if (!coordinates) return;
 
-    setDestination({coordinates: coordinates, room: location, building: location.building, campus:location.campus} as LocationType);
+    setDestination({
+      coordinates: coordinates,
+      room: location,
+      building: location.building,
+      campus: location.campus,
+    } as LocationType);
     onClose();
   };
 
@@ -96,14 +112,14 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
     >
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>Next Class</Text>
+          <Text style={styles.title} testID="modal-title">Next Class</Text>
 
           {isLoading ? (
-            <ActivityIndicator size="large" color="#912338" />
+            <ActivityIndicator size="large" color="#912338" testID="loading-indicator" />
           ) : nextClass ? (
             <>
-              <Text style={styles.className}>{nextClass.summary}</Text>
-              <Text style={styles.time}>
+              <Text style={styles.className} testID="class-name">{nextClass.summary}</Text>
+              <Text style={styles.time} testID="class-time">
                 {new Date(nextClass.start.dateTime).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -116,34 +132,37 @@ const NextClassModal: React.FC<NextClassModalProps> = ({
               </Text>
 
               <View style={styles.infoContainer}>
-                <Text style={styles.label}>Room:</Text>
-                <Text style={styles.value}>{location?.room || "N/A"}</Text>
+                <Text style={styles.label} testID="room-label">Room:</Text>
+                <Text style={styles.value} testID="room-value">{location?.room?.toUpperCase() || "N/A"}</Text>
               </View>
               <View style={styles.infoContainer}>
-                <Text style={styles.label}>Building:</Text>
-                <Text style={styles.value}>{location?.building.name || "N/A"}</Text>
+                <Text style={styles.label} testID="building-label">Building:</Text>
+                <Text style={styles.value} testID="building-value">
+                  {location?.building?.name || "N/A"}
+                </Text>
               </View>
               <View style={styles.infoContainer}>
-                <Text style={styles.label}>Campus:</Text>
-                <Text style={styles.value}>{location?.campus || "Unknown"}</Text>
+                <Text style={styles.label} testID="campus-label">Campus:</Text>
+                <Text style={styles.value} testID="campus-value">{location?.campus || "Unknown"}</Text>
               </View>
 
               <TouchableOpacity
                 style={[styles.button, isButtonDisabled && styles.disabledButton]}
                 onPress={handleGetDirections}
                 disabled={isButtonDisabled}
+                testID="get-directions-button"
               >
-                <Text style={styles.buttonText}>
-                  {isButtonDisabled ? "Location Not Available" : "Get Directions"}
+                <Text style={styles.buttonText} testID="get-directions-text">
+                  {isButtonDisabled ? "Location Not Available" : "Go to Location"}
                 </Text>
               </TouchableOpacity>
             </>
           ) : (
-            <Text style={styles.noClassText}>No upcoming classes found.</Text>
+            <Text style={styles.noClassText} testID="no-class-text">No upcoming classes found.</Text>
           )}
 
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Close</Text>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose} testID="close-button">
+            <Text style={styles.closeButtonText} testID="close-button-text">Close</Text>
           </TouchableOpacity>
         </View>
       </View>

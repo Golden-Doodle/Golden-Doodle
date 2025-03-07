@@ -20,19 +20,20 @@ export default function ShuttleScreen() {
 
             {/* 🚀 Shuttle Route Toggle Switch */}
             <View style={styles.switchContainer}>
-                <Text style={[styles.switchText, selectedRoute === "LOY" && styles.activeText]}>LOY</Text>
+                <Text style={[styles.switchText, selectedRoute === "LOY" && styles.activeText]} testID="LOY-text">LOY</Text>
                 <Switch
                     trackColor={{ false: "#ddd", true: "#912338" }}
                     thumbColor={"#fff"}
                     ios_backgroundColor="#ddd"
                     onValueChange={toggleSwitch}
                     value={isEnabled}
+                    testID="route-switch"
                 />
-                <Text style={[styles.switchText, selectedRoute === "SGW" && styles.activeText]}>SGW</Text>
+                <Text style={[styles.switchText, selectedRoute === "SGW" && styles.activeText]} testID="SGW-text">SGW</Text>
             </View>
 
             {/* 🔄 Shuttle Schedule */}
-            <ShuttleSchedule route={selectedRoute} />
+            <ShuttleSchedule route={selectedRoute} testID="ShuttleSchedule" />
 
             <BottomNavigation />
         </View>

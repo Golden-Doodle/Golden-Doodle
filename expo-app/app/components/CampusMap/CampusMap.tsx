@@ -43,6 +43,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
   const [viewEatingOnCampus, setViewEatingOnCampus] = useState<boolean>(false);
   const [isSearchModalVisible, setIsSearchModalVisible] = useState<boolean>(false);
   const [isTransitModalVisible, setIsTransitModalVisible] = useState<boolean>(false);
+  const [mapRegion, setMapRegion] = useState(initialRegion[campus]); // Store region in state
 
   const markers = campus === "SGW" ? SGWMarkers : LoyolaMarkers;
   const buildings = campus === "SGW" ? SGWBuildings : LoyolaBuildings;
@@ -56,6 +57,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         return;
       }
 
+      // Might be worth changing to Location.watchPositionAsync
       let location = await Location.getCurrentPositionAsync({});
       setUserLocation(location.coords);
       setOrigin({
@@ -127,9 +129,17 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
 
   // Toggle between SGW and Loyola campuses
   const toggleCampus = useCallback(() => {
-    setCampus((prevCampus) => (prevCampus === "SGW" ? "LOY" : "SGW"));
-    resetDirections();
+    setCampus((prevCampus) => {
+      const newCampus = prevCampus === "SGW" ? "LOY" : "SGW";
+
+      // Update map region based on the new campus value
+      setMapRegion(initialRegion[newCampus]);
+
+      resetDirections();
+      return newCampus;
+    });
   }, []);
+
 
   // Handle building press to show building info
   const handleBuildingPressed = (building: Building) => () => {
@@ -141,6 +151,14 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
 
     setDestination({building, coordinates: building.coordinates[0], selectedBuilding: true});
     setIsBuildingInfoModalVisible(true);
+
+    // Update map region to center on the selected building
+    setMapRegion({
+      latitude: building.coordinates[0].latitude, // Adjust to building center
+      longitude: building.coordinates[0].longitude,
+      latitudeDelta: 0.005, // Zoom level
+      longitudeDelta: 0.005,
+    });
   };
 
   // Handle directions press
@@ -184,7 +202,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
       <MapView
         key={viewCampusMap ? "map-visible" : "map-hidden"} // Re-render map when viewCampusMap changes
         style={styles.map}
-        region={initialRegion[campus]}
+        region={mapRegion}
         showsUserLocation={true}
         loadingEnabled={true}
         scrollEnabled={true}
@@ -243,7 +261,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
           />
         )}
         {/* Render Destination Marker */}
-        {destination && !(destination.selectedBuilding) && (
+        {destination && !destination.selectedBuilding && (
           <Marker
             coordinate={destination.coordinates}
             pinColor="red"
@@ -264,7 +282,7 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
       <SearchModal
         visible={isSearchModalVisible}
         onClose={onCloseSearchModal}
-        onSelectBuilding={(building) => {
+        onSelectLocation={(building) => {
           setDestination({
             coordinates: building.coordinates[0],
             building,
@@ -272,14 +290,15 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
           }); // Set destination
           setIsSearchModalVisible(false);
         }}
-        buildings={buildings}
-        markers={markers}
         onPressSelectOnMap={onCloseSearchModal}
         destination={destination}
         onGetDirections={() => {
           fetchRoute();
           onCloseSearchModal();
         }}
+        // Passed Data
+        buildingData={buildings}
+        markerData={markers}
       />
 
       {/* Transit Modal -- Screen to select starting and final destination with mode of transportation */}
@@ -293,6 +312,9 @@ const CampusMap = ({ pressedOptimizeRoute = false }: CampusMapProps) => {
         setOrigin={setOrigin}
         setDestination={setDestination}
         setRouteCoordinates={setRouteCoordinates}
+        buildingData={buildings}
+        markerData={markers}
+        userLocation={userLocation}
       />
 
       <NextClassModal

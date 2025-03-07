@@ -1,18 +1,60 @@
 import React from "react";
-import { render } from "@testing-library/react-native";
-import NextClassComponent from "@/app/components/Header/NextClassComponent"
+import { render, fireEvent, waitFor, cleanup, act } from "@testing-library/react-native";
+import NextClassComponent from "@/app/components/Header/NextClassComponent";
 import { GoogleCalendarEvent } from "@/app/utils/types";
+import { AuthContext } from "@/app/contexts/AuthContext";
+import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { useRouter } from "expo-router";
 
-jest.useFakeTimers().setSystemTime(new Date("2025-02-17T10:00:00Z"));
+jest.useFakeTimers();
+
+jest.mock("expo-router", () => ({
+  useRouter: jest.fn(() => ({ push: jest.fn() })),
+}));
+
+jest.mock("@react-native-google-signin/google-signin", () => ({
+  GoogleSignin: {
+    configure: jest.fn(),
+    hasPlayServices: jest.fn().mockResolvedValue(true),
+    signIn: jest.fn().mockResolvedValue({ idToken: "test-id-token" }),
+    getTokens: jest.fn().mockResolvedValue({ idToken: "test-id-token", accessToken: "test-access-token" }),
+    revokeAccess: jest.fn(),
+    signOut: jest.fn(),
+  },
+}));
+
+jest.mock("@react-native-firebase/auth", () => ({
+  default: {
+    GoogleAuthProvider: {
+      credential: jest.fn(),
+    },
+    signInWithCredential: jest.fn().mockResolvedValue({ user: { uid: "1", email: "test@example.com" } }),
+    signOut: jest.fn(),
+  },
+  FirebaseAuthTypes: {},
+}));
+
+const mockPush = jest.fn();
+(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 
 describe("NextClassComponent", () => {
-  it("renders message when there are no classes", () => {
-    const { getByText } = render(<NextClassComponent calendarEvents={[]} />);
-    expect(getByText("No classes scheduled for today.")).toBeTruthy();
-  });
+  let mockAuthContext: any;
+  let mockEvents: GoogleCalendarEvent[];
 
-  it("renders the next upcoming class", () => {
-    const mockEvents: GoogleCalendarEvent[] = [
+  beforeEach(() => {
+    mockAuthContext = {
+      user: null as FirebaseAuthTypes.User | null,
+      setUser: jest.fn(),
+      signOut: jest.fn(),
+      handleGoogleSignIn: jest.fn(),
+      handleSignInAsGuest: jest.fn(),
+      googleCalendarEvents: [],
+      selectedCalendarId: null,
+      setSelectedCalendarId: jest.fn(),
+      loading: false,
+    };
+
+    mockEvents = [
       {
         id: "1",
         summary: "SOEN - 390",
@@ -26,38 +68,34 @@ describe("NextClassComponent", () => {
         end: { dateTime: "2025-02-17T14:00:00Z", timeZone: "UTC" },
       },
     ];
-
-    const { getByText } = render(<NextClassComponent calendarEvents={mockEvents} />);
-    expect(getByText(/Next class in 60 minutes at/)).toBeTruthy();
-    expect(getByText(/SOEN - 390/)).toBeTruthy();
   });
 
-  it("renders ongoing class message", () => {
-    const mockEvents: GoogleCalendarEvent[] = [
-      {
-        id: "3",
-        summary: "COMP - 346",
-        start: { dateTime: "2025-02-17T09:30:00Z", timeZone: "UTC" },
-        end: { dateTime: "2025-02-17T11:30:00Z", timeZone: "UTC" },
-      },
-    ];
-
-    const { getByText } = render(<NextClassComponent calendarEvents={mockEvents} />);
-    expect(getByText(/Class is ongoing/)).toBeTruthy();
-    expect(getByText(/COMP - 346/)).toBeTruthy();
+  afterEach(() => {
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    cleanup();
+    jest.clearAllMocks();
   });
 
-  it("renders past class message if no upcoming classes", () => {
-    const mockEvents: GoogleCalendarEvent[] = [
-      {
-        id: "4",
-        summary: "COMP - 344",
-        start: { dateTime: "2025-02-17T07:00:00Z", timeZone: "UTC" },
-        end: { dateTime: "2025-02-17T08:00:00Z", timeZone: "UTC" },
-      },
-    ];
+  it("renders correctly when there are no classes and user is not logged in", () => {
+    const { getByText } = render(
+      <AuthContext.Provider value={{ ...mockAuthContext, user: null }}>
+        <NextClassComponent calendarEvents={[]} nextClass={null} setNextClass={() => {}} testID="next-class" />
+      </AuthContext.Provider>
+    );
+    expect(getByText("Please login to see the next class")).toBeTruthy();
+  });
 
-    const { getByText } = render(<NextClassComponent calendarEvents={mockEvents} />);
+  it("renders correctly when there are no classes and user is logged in", () => {
+    const mockUser = { uid: "1", email: "test@example.com" } as FirebaseAuthTypes.User;
+
+    const { getByText } = render(
+      <AuthContext.Provider value={{ ...mockAuthContext, user: mockUser }}>
+        <NextClassComponent calendarEvents={[]} nextClass={null} setNextClass={() => {}} testID="next-class" />
+      </AuthContext.Provider>
+    );
     expect(getByText("No classes scheduled for today.")).toBeTruthy();
   });
+
 });

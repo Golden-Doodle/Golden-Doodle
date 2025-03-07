@@ -3,7 +3,11 @@ import { useRouter } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 
-export default function BottomNavigation() {
+interface BottomNavigationProps {
+    testID: string; 
+}
+
+const BottomNavigation: React.FC<BottomNavigationProps> = ({ testID }) => {
   
   const { t } = useTranslation("HomePageScreen");
   const router = useRouter();
@@ -28,12 +32,13 @@ export default function BottomNavigation() {
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID={testID}>
       {TABS.map((tab) => (
         <TouchableOpacity
           key={tab.label}
           style={styles.tab}
-          onPress={() => router.push(tab.path as any)}
+          onPress={() => router.push(tab.path as any)} 
+          testID={`${testID}-${tab.label.toLowerCase()}-tab`} 
         >
           <FontAwesome5 name={tab.icon} size={22} color="#999" />
           <Text style={styles.label}>{tab.label}</Text>
@@ -61,3 +66,5 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
 });
+
+export default BottomNavigation;

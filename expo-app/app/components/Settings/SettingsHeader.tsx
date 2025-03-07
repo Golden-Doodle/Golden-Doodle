@@ -3,19 +3,23 @@ import { View, Text, ImageBackground, StyleSheet, TouchableOpacity } from "react
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router"; 
 
-export default function SettingHeader() {
+interface SettingsHeaderProps {
+    testID: string;  
+}
 
+const SettingsHeader: React.FC<SettingsHeaderProps> = ({ testID }) => {
     const router = useRouter(); 
 
     return (
         <ImageBackground
             source={require("../../../assets/images/header-background.jpg")}
             style={styles.background}
+            testID={testID}
         >
             {/* Dark Overlay to Improve Text Readability */}
             <View style={styles.overlay} />
 
-                            {/* Back Arrow Button */}
+            {/* Back Arrow Button */}
             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
                 <FontAwesome5 name="arrow-left" size={30} color="#fff" />
             </TouchableOpacity>
@@ -81,3 +85,5 @@ const styles = StyleSheet.create({
         zIndex: 10, 
     },
 });
+
+export default SettingsHeader;

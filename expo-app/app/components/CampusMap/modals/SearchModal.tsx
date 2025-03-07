@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Modal,
   View,
@@ -8,15 +8,21 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { Building, concordiaBurgendyColor, Coordinates, CustomMarkerType, LocationType } from "@/app/utils/types";
+import {
+  Building,
+  concordiaBurgendyColor,
+  CustomMarkerType,
+  LocationType,
+} from "@/app/utils/types";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import useSearch from "@/app/hooks/useSearch"; 
 
 interface SearchModalProps {
   visible: boolean;
   onClose: () => void;
-  buildings: Building[];
-  onSelectBuilding: (building: Building) => void;
-  markers: CustomMarkerType[];
+  buildingData: Building[];
+  markerData: CustomMarkerType[];
+  onSelectLocation: (building: Building) => void;
   onPressSelectOnMap: () => void;
   destination: LocationType;
   onGetDirections: () => void;
@@ -25,32 +31,21 @@ interface SearchModalProps {
 const SearchModal: React.FC<SearchModalProps> = ({
   visible,
   onClose,
-  buildings,
-  onSelectBuilding,
-  markers,
+  buildingData,
+  onSelectLocation,
+  markerData,
   onPressSelectOnMap,
   destination,
   onGetDirections,
 }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredBuildings, setFilteredBuildings] = useState<Building[]>([]);
-
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredBuildings([]); // Reset results when input is empty
-      return;
-    }
-
-    const timeout = setTimeout(() => {
-      // Filter buildings based on the search query
-      const results = buildings.filter((building) =>
-        building.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredBuildings(results);
-    }, 300); // Debounce time: 300ms
-
-    return () => clearTimeout(timeout);
-  }, [searchQuery, buildings]);
+  const {
+    searchQuery,
+    setSearchQuery,
+    filteredData: filteredBuildings,
+  } = useSearch({
+    data: buildingData,
+    searchKey: "name", // The key to search by in the Building object
+  });
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -59,7 +54,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Select Destination</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
+            <TouchableOpacity onPress={onClose} style={styles.closeIcon} testID="close-icon">
               <MaterialIcons name="close" size={24} color="#333" />
             </TouchableOpacity>
           </View>
@@ -85,14 +80,14 @@ const SearchModal: React.FC<SearchModalProps> = ({
               <TouchableOpacity
                 style={styles.resultItem}
                 onPress={() => {
-                  onSelectBuilding(item);
+                  onSelectLocation(item);
                   setSearchQuery(item.name); // Set the selected destination
                 }}
               >
                 <MaterialIcons name="location-on" size={24} color="#007AFF" />
                 <View style={styles.resultTextContainer}>
                   <Text style={styles.resultText}>{item.name}</Text>
-                  <Text style={styles.resultSubtext}>Building Details</Text>
+                  <Text style={styles.resultSubtext}>{item.description}</Text>
                 </View>
               </TouchableOpacity>
             )}

@@ -9,9 +9,16 @@ interface NextClassComponentProps {
   style?: any;
   nextClass: GoogleCalendarEvent | null;
   setNextClass: (nextClass: GoogleCalendarEvent | null) => void;
+  testID?: string;
 }
 
-export default function NextClassComponent({ calendarEvents, style, nextClass, setNextClass }: NextClassComponentProps) {
+export default function NextClassComponent({
+  calendarEvents,
+  style,
+  nextClass,
+  setNextClass,
+  testID,
+}: NextClassComponentProps) {
 
   const { t } = useTranslation('HomePageScreen');
   
@@ -19,6 +26,7 @@ export default function NextClassComponent({ calendarEvents, style, nextClass, s
   const user = auth?.user ?? null; 
   
   const [timeUntilNextClass, setTimeUntilNextClass] = useState<string | null>(null);
+  
   useEffect(() => {
     if (!user) {
       setNextClass(null);
@@ -44,7 +52,7 @@ export default function NextClassComponent({ calendarEvents, style, nextClass, s
       setNextClass(null);
       setTimeUntilNextClass(t("no_classes_scheduled_for_today"));
     }
-  }, [calendarEvents, user]); 
+  }, [calendarEvents, user]);
 
   const getTimeUntilClass = (startTime: string, endTime: string): string => {
     const now = new Date();
@@ -52,7 +60,10 @@ export default function NextClassComponent({ calendarEvents, style, nextClass, s
     const classEnd = new Date(endTime);
 
     if (classStart <= now && classEnd > now) {
-      return `${t("class_is_ongoing")} (${t("started_at")} ${classStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`;
+      return `${t("class_is_ongoing")} (${t("started_at")} ${classStart.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })})`;
     }
 
     const timeDiffMs = classStart.getTime() - now.getTime();
@@ -60,10 +71,16 @@ export default function NextClassComponent({ calendarEvents, style, nextClass, s
 
     if (timeDiffMinutes <= 0) {
       return `${t("class_started")} ${Math.abs(timeDiffMinutes)} minutes ago`; // Need to fix for translation
-    } else if (timeDiffMinutes < 60 || timeDiffMinutes === 60) {
-      return `${t("next_class_in")} ${timeDiffMinutes} minutes at ${classStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`; // Need to fix for translation
+    } else if (timeDiffMinutes <= 60) {
+      return `${t("next_class_in")} ${timeDiffMinutes} minutes at ${classStart.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`; // Need to fix for translation
     } else {
-      return `${t("next_class_in")} ${Math.floor(timeDiffMinutes / 60)} hours at ${classStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`; // Need to fix for translation
+      return `${t("next_class_in")} ${Math.floor(timeDiffMinutes / 60)} hours at ${classStart.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`; // Need to fix for translation
     }
   };
 
@@ -79,17 +96,25 @@ export default function NextClassComponent({ calendarEvents, style, nextClass, s
     const todayEvents = events.filter((event) => {
       const eventStart = new Date(event.start.dateTime);
       const eventEnd = new Date(event.end.dateTime);
-      return (eventStart >= now || (eventStart <= now && eventEnd > now)) && eventStart <= endOfDay;
+      return (
+        (eventStart >= now || (eventStart <= now && eventEnd > now)) &&
+        eventStart <= endOfDay
+      );
     });
 
     if (todayEvents.length === 0) return null;
 
-    return todayEvents.sort((a, b) => new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime())[0];
+    return todayEvents.sort(
+      (a, b) =>
+        new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime()
+    )[0];
   };
 
   return (
-    <Text style={style}>
-      {nextClass && timeUntilNextClass ? `${timeUntilNextClass} (${nextClass.summary})` : timeUntilNextClass}
+    <Text style={style} testID={testID}>
+      {nextClass && timeUntilNextClass
+        ? `${timeUntilNextClass} (${nextClass.summary})`
+        : timeUntilNextClass}
     </Text>
   );
 }

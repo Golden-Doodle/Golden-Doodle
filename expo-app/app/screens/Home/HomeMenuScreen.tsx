@@ -24,6 +24,18 @@ export default function HomeMenuScreen() {
         <Text style={styles.menuText}>📍 Campus Map</Text>
       </TouchableOpacity>
 
+
+      <TouchableOpacity 
+        style={styles.menuItem} 
+        activeOpacity={0.8} 
+        onPress={() => router.push("/screens/Chatbot/ChatBotScreen")}
+      >
+        <Text style={styles.menuText}>💬 Chatbot</Text>
+      </TouchableOpacity>
+
+
+
+      
       <TouchableOpacity 
         style={styles.menuItem} 
         activeOpacity={0.8} 

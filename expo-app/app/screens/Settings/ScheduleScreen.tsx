@@ -65,33 +65,31 @@ export default function ScheduleScreen() {
     );
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container} testID="container">
 
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <View style={styles.header} testID="header">
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton} testID="backButton">
                     <FontAwesome5 name="arrow-left" size={30} color="#333" />
                 </TouchableOpacity>
-                <Text style={styles.headerText}>My Calendar</Text>
+                <Text style={styles.headerText} testID="headerText">My Calendar</Text>
             </View>
 
-
-            <View style={styles.formContainer}>
+            <View style={styles.formContainer} testID="formContainer">
                 {loading ? (
-                    <ActivityIndicator size="large" color="#912338" style={styles.loader} />
+                    <ActivityIndicator size="large" color="#912338" style={styles.loader} testID="loader" />
                 ) : (
                     <FlatList
                         data={eventsForSelectedDate}
                         keyExtractor={(item) => item.id}
                         contentContainerStyle={styles.listContainer}
-                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} testID="refreshControl" />}
                         ListHeaderComponent={() => (
                             <>
+                                <Text style={styles.scheduleName} testID="scheduleName">
+                                    Calendar Name: <Text style={styles.scheduleNameHighlight}>{scheduleName}</Text>
+                                </Text>
 
-                            <Text style={styles.scheduleName}>
-                                Calendar Name: <Text style={styles.scheduleNameHighlight}>{scheduleName}</Text>
-                            </Text>
-
-                            <View style={styles.divider} />
+                                <View style={styles.divider} testID="divider" />
                                 <Calendar
                                     initialDate={visibleMonth}
                                     markedDates={markedDates}
@@ -104,20 +102,21 @@ export default function ScheduleScreen() {
                                         dotColor: "#912338",
                                         textSectionTitleColor: "#912338",
                                     }}
+                                    testID="calendar"
                                 />
 
-                                <View style={styles.divider} />
+                                <View style={styles.divider} testID="divider" />
 
-                                <Text style={styles.dateTitle}>Events on {selectedDate}:</Text>
+                                <Text style={styles.dateTitle} testID="dateTitle">Events on {selectedDate}:</Text>
                                 {eventsForSelectedDate.length === 0 && (
-                                    <Text style={styles.noEventsText}>No events on this day.</Text>
+                                    <Text style={styles.noEventsText} testID="noEventsText">No events on this day.</Text>
                                 )}
                             </>
                         )}
                         renderItem={({ item }) => (
-                            <View style={styles.eventItem}>
-                                <Text style={styles.eventTitle}>{item.summary}</Text>
-                                <Text style={styles.eventTime}>
+                            <View style={styles.eventItem} testID="eventItem">
+                                <Text style={styles.eventTitle} testID="eventTitle">{item.summary}</Text>
+                                <Text style={styles.eventTime} testID="eventTime">
                                     {new Date(item.start.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
                                     {new Date(item.end.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </Text>
@@ -127,7 +126,6 @@ export default function ScheduleScreen() {
                 )}
             </View>
         </View>
-        
     );
 }
 
@@ -221,7 +219,7 @@ const styles = StyleSheet.create({
     },
     scheduleNameHighlight: {
         color: "#912338",
-      },
+    },
     divider: {
         height: 1,
         backgroundColor: "#E0E0E0",
@@ -229,4 +227,3 @@ const styles = StyleSheet.create({
         width: "100%",
     },
 });
-

@@ -14,12 +14,12 @@ describe("ShuttleSchedule Component", () => {
   });
 
   it("renders the ID card notice at the top", () => {
-    const { getByText, getByTestId } = render(<ShuttleSchedule route="LOY" />);
+    const { getByText, getByTestId } = render(<ShuttleSchedule route="LOY" testID="LOY" />);
+    
     expect(getByText("ID Card is obligatory to board the shuttle")).toBeTruthy();
-    expect(getByTestId("id-card-icon")).toBeTruthy(); 
+    expect(getByTestId("LOY-id-card-icon")).toBeTruthy();
   });
   
-
   it("renders the schedule correctly for LOY route", () => {
     const { getByText } = render(<ShuttleSchedule route="LOY" />);
     
