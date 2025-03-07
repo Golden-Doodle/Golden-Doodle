@@ -19,25 +19,28 @@ import { AuthContext } from "@/app/contexts/AuthContext";
 import { fetchGoogleCalendarEvents } from "@/app/services/GoogleCalendar/fetchingUserCalendarData";
 import { GoogleCalendarEvent } from "@/app/utils/types";
 
+// 1) IMPORT useTranslation AND SPECIFY THE NAMESPACE
+import { useTranslation } from "react-i18next";
+
 export default function HomePageScreen() {
   const auth = useContext(AuthContext);
   const user = auth?.user;
+  
+  // 2) HOOK INTO THE "HomePageScreen" NAMESPACE
+  const { t } = useTranslation("HomePageScreen");
 
   const [isLoading, setIsLoading] = useState(false);
   const [calendarEvents, setCalendarEvents] = useState<GoogleCalendarEvent[]>([]);
-  const [campus, setCampus] = useState<"LOY" | "SGW">("LOY")
+  const [campus, setCampus] = useState<"LOY" | "SGW">("LOY");
 
   // Load stored campus selection
   useEffect(() => {
     const loadCampus = async () => {
       const storedCampus = await AsyncStorage.getItem("selectedCampus");
-      
-      // Ensure storedCampus is either "LOY" or "SGW"
       if (storedCampus === "LOY" || storedCampus === "SGW") {
         setCampus(storedCampus);
       }
     };
-  
     loadCampus();
   }, []);
 
@@ -46,35 +49,30 @@ export default function HomePageScreen() {
     setIsLoading(true);
 
     try {
-      console.log("Refreshing calendar events...");
+      // Use t("refreshing") for logs or UI text
+      console.log(t("refreshing"));
 
-      // Retrieve the selected calendar ID from AsyncStorage
       const selectedCalendarId = await AsyncStorage.getItem("selectedScheduleID");
-
       if (!selectedCalendarId) {
-        console.warn("No calendar selected. Please choose a calendar in settings.");
+        console.warn(t("no_calendar_selected"));
+        setIsLoading(false);
         return;
       }
 
-      // Fetch events for the selected calendar (next 7 days)
       const events = await fetchGoogleCalendarEvents(selectedCalendarId, 7);
       setCalendarEvents(events);
     } catch (error) {
-      console.error("Failed to refresh calendar:", error);
+      console.error(t("failed_refresh"), error);
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, t]);
 
   useEffect(() => {
     refreshCalendarEvents();
-    // const interval = setInterval(refreshCalendarEvents, 30000);
-    
-    // return () => clearInterval(interval);
     return () => {};
-  }, [refreshCalendarEvents]); 
-  
-  // Must make sure this was the intended function (Megered Conflict)
+  }, [refreshCalendarEvents]);
+
   const toggleCampus = async () => {
     const newCampus = campus === "LOY" ? "SGW" : "LOY";
     setCampus(newCampus);
@@ -85,7 +83,12 @@ export default function HomePageScreen() {
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refreshCalendarEvents} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={refreshCalendarEvents}
+          />
+        }
       >
         <Header
           refreshCalendarEvents={refreshCalendarEvents}
@@ -99,15 +102,14 @@ export default function HomePageScreen() {
 
         {/* Shuttle Schedule Toggle */}
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>SGW</Text>
+          <Text style={styles.switchLabel}>{t("campus_sgw")}</Text>
           <Switch
             value={campus === "LOY"}
             onValueChange={toggleCampus}
-            trackColor={{ false: "#912338", true: "#D3D3D3" }} 
-            thumbColor={campus === "LOY" ? "#912338" : "#D3D3D3"} 
+            trackColor={{ false: "#912338", true: "#D3D3D3" }}
+            thumbColor={campus === "LOY" ? "#912338" : "#D3D3D3"}
           />
-
-          <Text style={styles.switchLabel}>LOY</Text>
+          <Text style={styles.switchLabel}>{t("campus_loy")}</Text>
         </View>
 
         {/* Shuttle Schedule Component */}
@@ -149,4 +151,3 @@ const styles = StyleSheet.create({
     color: "#333",
   },
 });
-
