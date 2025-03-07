@@ -1,4 +1,4 @@
-// locales/es/HomePageScreen.json
+// locales/es/HomePageScreen.json.
 {
   "refreshing": "Actualizando eventos del calendario...",
   "no_calendar_selected": "No se ha seleccionado ningún calendario. Por favor, elige un calendario en la configuración.",
