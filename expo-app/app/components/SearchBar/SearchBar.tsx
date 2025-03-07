@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"; // Translation
 
 export default function SearchBar() {
 
-  const { t } = useTranslation("search_for_anything_nearby");
+  const { t } = useTranslation("HomePageScreen");
 
   const [searchText, setSearchText] = useState("");
 

@@ -1,4 +1,3 @@
-// locales/en/HomePageScreen.json
 {
   "refreshing": "Refreshing calendar events...",
   "no_calendar_selected": "No calendar selected. Please choose a calendar in settings.",

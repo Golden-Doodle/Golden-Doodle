@@ -28,7 +28,7 @@ const getLanguage = async () => {
     if (savedLang) return savedLang;
 
     const locales = Localization.getLocales();
-    return locales[0]?.languageCode || "he"; // Use device language if no saved language || default to English
+    return locales[0]?.languageCode || "en"; // Use device language if no saved language || default to English
   } catch (error) {
     console.error("Error loading language:", error);
     return "en";
@@ -37,12 +37,12 @@ const getLanguage = async () => {
 
 // Initialize i18n after getting the language
 (async () => {
-  // const lng = await getLanguage();
-  const lng = "he"; // For testing purposes
+  const lng = await getLanguage();
+  // const lng = "en"; // For testing purposes - you may set the language here
   i18n.use(initReactI18next).init({
     resources,
     lng,
-    fallbackLng: "he",
+    fallbackLng: "en",
     ns: ["HomePageScreen"], // Define namespaces based on screen names
     defaultNS: "HomePageScreen",
     interpolation: { escapeValue: false },
