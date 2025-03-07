@@ -1,0 +1,8 @@
+{
+  "refreshing": "Actualizando eventos del calendario...",
+  "no_calendar_selected": "Ningún calendario seleccionado. Por favor, elige uno en la configuración.",
+  "failed_refresh": "Error al actualizar el calendario:",
+  "campus_sgw": "SGW",
+  "campus_loy": "LOY",
+  "shuttle_schedule": "Horario de transporte"
+}
