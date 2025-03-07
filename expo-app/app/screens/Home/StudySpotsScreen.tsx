@@ -2,17 +2,26 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
+// 1) Import and configure react-i18next with the "StudySpotsScreen" namespace
+import { useTranslation } from "react-i18next";
+
 export default function StudySpotsScreen() {
   const router = useRouter();
 
+  // 2) Hook into the "StudySpotsScreen" namespace
+  const { t } = useTranslation("StudySpotsScreen");
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Study Spots</Text>
-      <Text style={styles.infoText}>Nearby study spots will be displayed here.</Text>
-      
+      {/* Screen Title */}
+      <Text style={styles.title}>{t("study_spots_title")}</Text>
+
+      {/* Information Text */}
+      <Text style={styles.infoText}>{t("nearby_study_spots_msg")}</Text>
+
       {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backButtonText}>Back</Text>
+        <Text style={styles.backButtonText}>{t("back_button")}</Text>
       </TouchableOpacity>
     </View>
   );
