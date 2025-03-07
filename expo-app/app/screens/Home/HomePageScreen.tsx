@@ -85,7 +85,12 @@ export default function HomePageScreen() {
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refreshCalendarEvents} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={refreshCalendarEvents}
+          />
+        }
       >
         <Header
           refreshCalendarEvents={refreshCalendarEvents}
@@ -103,8 +108,8 @@ export default function HomePageScreen() {
           <Switch
             value={campus === "LOY"}
             onValueChange={toggleCampus}
-            trackColor={{ false: "#912338", true: "#D3D3D3" }} 
-            thumbColor={campus === "LOY" ? "#912338" : "#D3D3D3"} 
+            trackColor={{ false: "#912338", true: "#D3D3D3" }}
+            thumbColor={campus === "LOY" ? "#912338" : "#D3D3D3"}
           />
 
           <Text style={styles.switchLabel}>LOY</Text>
@@ -114,7 +119,7 @@ export default function HomePageScreen() {
         <ShuttleSchedule route={campus} />
       </ScrollView>
 
-      <BottomNavigation />
+      <BottomNavigation testID="bottom-navigation" />
     </View>
   );
 }
