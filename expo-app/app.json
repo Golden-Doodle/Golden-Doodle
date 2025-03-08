@@ -9,7 +9,9 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.goldendoodle.expoapp",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -47,8 +49,7 @@
           }
         ]
       ]
-    ]
-    ,
+    ],
     "experiments": {
       "typedRoutes": true
     },
@@ -58,7 +59,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "fd5074ae-9387-4f62-9753-f8274ba822e0"
+        "projectId": "627256cf-1a6c-48bd-be13-e6ea1ec22e4d"
       }
     }
   }
