@@ -11,14 +11,21 @@ import itHomePageScreen from "@/app/locales/it/HomePageScreen.json";
 import heHomePageScreen from "@/app/locales/he/HomePageScreen.json";
 import arHomePageScreen from "@/app/locales/ar/HomePageScreen.json";
 
+import enHomeMenuScreen from "@/app/locales/en/HomeMenuScreen.json";
+import frHomeMenuScreen from "@/app/locales/fr/HomeMenuScreen.json";
+import esHomeMenuScreen from "@/app/locales/es/HomeMenuScreen.json";
+import itHomeMenuScreen from "@/app/locales/it/HomeMenuScreen.json";
+import heHomeMenuScreen from "@/app/locales/he/HomeMenuScreen.json";
+import arHomeMenuScreen from "@/app/locales/ar/HomeMenuScreen.json";
+
 // Define translations using namespaces
 const resources = {
-  en: { HomePageScreen: enHomePageScreen },
-  fr: { HomePageScreen: frHomePageScreen },
-  es: { HomePageScreen: esHomePageScreen },
-  it: { HomePageScreen: itHomePageScreen },
-  he: { HomePageScreen: heHomePageScreen },
-  ar: { HomePageScreen: arHomePageScreen },
+  en: { HomePageScreen: enHomePageScreen, HomeMenuScreen: enHomeMenuScreen },
+  fr: { HomePageScreen: frHomePageScreen, HomeMenuScreen: frHomeMenuScreen },
+  es: { HomePageScreen: esHomePageScreen, HomeMenuScreen: esHomeMenuScreen },
+  it: { HomePageScreen: itHomePageScreen, HomeMenuScreen: itHomeMenuScreen },
+  he: { HomePageScreen: heHomePageScreen, HomeMenuScreen: heHomeMenuScreen },
+  ar: { HomePageScreen: arHomePageScreen, HomeMenuScreen: arHomeMenuScreen },
 };
 
 // Function to load the saved language or default to device language
@@ -37,13 +44,13 @@ const getLanguage = async () => {
 
 // Initialize i18n after getting the language
 (async () => {
-  const lng = await getLanguage();
-  // const lng = "en"; // For testing purposes - you may set the language here
+  // const lng = await getLanguage();
+  const lng = "en"; // For testing purposes - you may set the language here
   i18n.use(initReactI18next).init({
     resources,
     lng,
     fallbackLng: "en",
-    ns: ["HomePageScreen"], // Define namespaces based on screen names
+    ns: ["HomePageScreen", "HomeMenuScreen"], // Define namespaces based on screen names
     defaultNS: "HomePageScreen",
     interpolation: { escapeValue: false },
   });
