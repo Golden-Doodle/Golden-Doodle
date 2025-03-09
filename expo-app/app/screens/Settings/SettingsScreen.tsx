@@ -13,6 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import auth from "@react-native-firebase/auth"; 
 import SettingsHeader from "../../components/Settings/SettingsHeader"; 
 import BottomNavigation from "../../components/BottomNavigation/BottomNavigation"; 
+import LanguageSelector from "@/app/components/LanguagePicker/LanguagePicker";
 
 export default function SettingsScreen() {
     const router = useRouter();
@@ -95,6 +96,9 @@ export default function SettingsScreen() {
                         testID="dark-mode-switch"  // This is the key part
                     />
                 </View>
+
+                {/* Select Language */}
+                <LanguageSelector />
 
                 {/* Account Details */}
                 <TouchableOpacity 
