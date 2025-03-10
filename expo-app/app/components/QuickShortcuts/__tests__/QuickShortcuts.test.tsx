@@ -1,4 +1,4 @@
-import { renderComponent } from "@/app/__tests__/test-utils"
+import { renderComponent } from "@/app/utils/test-utils"
 import QuickShortcuts from "../QuickShortcuts"
 
 test('component renders correctly', () => {
