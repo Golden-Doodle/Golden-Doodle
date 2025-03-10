@@ -189,9 +189,9 @@ describe('TransitModal', () => {
         setOrigin={mockSetOrigin}
         setDestination={mockSetDestination}
         setRouteCoordinates={mockSetRouteCoordinates}
-        buildingData={mockBuildingData}       // Pass mock building data
-        markerData={mockMarkerData}           // Pass mock marker data
-        userLocation={mockUserLocation}       // Pass mock user location
+        buildingData={mockBuildingData}
+        markerData={mockMarkerData}          
+        userLocation={mockUserLocation}  
       />
     );
 
