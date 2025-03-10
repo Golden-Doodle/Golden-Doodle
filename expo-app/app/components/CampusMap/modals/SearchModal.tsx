@@ -48,19 +48,23 @@ const SearchModal: React.FC<SearchModalProps> = ({
   });
 
   return (
-    <Modal visible={visible} animationType="slide" transparent>
+    <Modal visible={visible} animationType="slide" transparent testID="search-modal">
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Select Destination</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeIcon} testID="close-icon">
+            <Text style={styles.title} testID="modal-title">Select Destination</Text>
+            <TouchableOpacity 
+              onPress={onClose} 
+              style={styles.closeIcon} 
+              testID="close-icon"
+            >
               <MaterialIcons name="close" size={24} color="#333" />
             </TouchableOpacity>
           </View>
 
           {/* Destination Input */}
-          <View style={styles.inputContainer}>
+          <View style={styles.inputContainer} testID="input-container">
             <MaterialIcons name="search" size={24} color="#888" />
             <TextInput
               style={styles.input}
@@ -69,6 +73,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
               value={searchQuery}
               onChangeText={setSearchQuery}
               autoFocus
+              testID="search-input"
             />
           </View>
 
@@ -83,6 +88,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
                   onSelectLocation(item);
                   setSearchQuery(item.name); // Set the selected destination
                 }}
+                testID={`result-item-${item.id}`}
               >
                 <MaterialIcons name="location-on" size={24} color="#007AFF" />
                 <View style={styles.resultTextContainer}>
@@ -92,8 +98,9 @@ const SearchModal: React.FC<SearchModalProps> = ({
               </TouchableOpacity>
             )}
             ListEmptyComponent={
-              <Text style={styles.noResultsText}>No results found</Text>
+              <Text style={styles.noResultsText} testID="no-results-text">No results found</Text>
             }
+            testID="result-list"
           />
 
           {/* Action Buttons */}
@@ -102,6 +109,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
               <TouchableOpacity
                 style={styles.selectOnMapButton}
                 onPress={onPressSelectOnMap}
+                testID="select-on-map-button"
               >
                 <MaterialIcons name="map" size={20} color="#fff" />
                 <Text style={styles.selectOnMapText}>Select on Map</Text>
@@ -110,6 +118,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
               <TouchableOpacity
                 style={styles.getDirectionsButton}
                 onPress={onGetDirections}
+                testID="get-directions-button"
               >
                 <MaterialIcons name="directions" size={20} color="#fff" />
                 <Text style={styles.getDirectionsText}>Get Directions</Text>
