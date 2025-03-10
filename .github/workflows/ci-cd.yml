@@ -64,7 +64,7 @@ jobs:
   
       - name: Run Jest Tests with Coverage
         run: |
-          npx jest --coverage --ci --passWithNoTests || true
+          npx jest --coverage --ci --passWithNoTests
         working-directory: expo-app
   
       - name: Upload Coverage Report to Codecov
