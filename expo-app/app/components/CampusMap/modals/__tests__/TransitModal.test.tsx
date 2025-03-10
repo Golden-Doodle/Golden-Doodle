@@ -1,8 +1,7 @@
-import { render, fireEvent, screen, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, screen, waitFor, act } from '@testing-library/react-native';
 import TransitModal from '../TransitModal';  
 import { fetchAllRoutes } from '@/app/utils/directions';
-import { LocationType, RouteOption, TransportMode } from '@/app/utils/types';
-import { act } from 'react-test-renderer';
+import { LocationType, RouteOption, TransportMode, Building, Campus, Coordinates, CustomMarkerType } from '@/app/utils/types'; // Added CustomMarkerType import;
 
 jest.mock('@/app/utils/directions', () => ({
   fetchAllRoutes: jest.fn(),
@@ -15,11 +14,38 @@ describe('TransitModal', () => {
   const mockSetRouteCoordinates = jest.fn();
 
   const origin: LocationType = {
-    coordinates: { latitude: 45.4215, longitude: -75.6992 }
+    coordinates: { latitude: 45.4215, longitude: -75.6992 },
   };
+
   const destination: LocationType = {
     coordinates: { latitude: 45.4275, longitude: -75.6933 }
   };
+
+  const mockBuildingData: Building[] = [
+    {
+      id: "1",
+      name: "Building A",
+      coordinates: [{ latitude: 45.423, longitude: -75.699 }],
+      fillColor: "#FF0000",
+      strokeColor: "#000000",
+      campus: "SGW",
+    },
+    {
+      id: "2",
+      name: "Building B",
+      coordinates: [{ latitude: 45.424, longitude: -75.700 }],
+      fillColor: "#00FF00",
+      strokeColor: "#000000",
+      campus: "LOY",
+    },
+  ];
+
+  const mockMarkerData: CustomMarkerType[] = [
+    { id: '1', title: 'Marker 1', description: 'Description 1', coordinate: { latitude: 45.423, longitude: -75.699 }, campus: "SGW" },
+    { id: '2', title: 'Marker 2', description: 'Description 2', coordinate: { latitude: 45.424, longitude: -75.700 }, campus: "LOY" }
+  ];
+
+  const mockUserLocation: Coordinates = { latitude: 45.4215, longitude: -75.6992 };
 
   const routeOptions: RouteOption[] = [
     {
@@ -55,29 +81,28 @@ describe('TransitModal', () => {
       userLocation: true, 
       coordinates: { latitude: 45.4215, longitude: -75.6992 },
     };
-    
-    const destination: LocationType = {
-      coordinates: { latitude: 45.4275, longitude: -75.6933 }
-    };
-  
+
     render(
       <TransitModal
         visible={true}
         onClose={mockOnClose}
-        origin={originWithUserLocation} 
+        origin={originWithUserLocation}
         destination={destination}
         setOrigin={mockSetOrigin}
         setDestination={mockSetDestination}
         setRouteCoordinates={mockSetRouteCoordinates}
+        buildingData={mockBuildingData} 
+        markerData={mockMarkerData}
+        userLocation={mockUserLocation}    
       />
     );
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Current Location')).toBeTruthy();
-      expect(screen.getByText('45.4275, -75.6933')).toBeTruthy();
+      expect(screen.getByTestId('origin-input').props.value).toBe('Current Location');
+      expect(screen.getByTestId('destination-input').props.value).toBe('45.4275, -75.6933');
     });
   });
-  
+
   it('hides modal when visible prop is false', async () => {
     render(
       <TransitModal
@@ -88,15 +113,16 @@ describe('TransitModal', () => {
         setOrigin={mockSetOrigin}
         setDestination={mockSetDestination}
         setRouteCoordinates={mockSetRouteCoordinates}
+        buildingData={mockBuildingData}    
+        markerData={mockMarkerData}          
+        userLocation={mockUserLocation}    
       />
     );
 
-    await waitFor (() => {
-        expect(screen.queryByText('Current Location')).toBeNull();
-    })
-
+    await waitFor(() => {
+      expect(screen.queryByText('Current Location')).toBeNull();
+    });
   });
-
 
   it('fetches and displays route options', async () => {
     render(
@@ -108,38 +134,50 @@ describe('TransitModal', () => {
         setOrigin={mockSetOrigin}
         setDestination={mockSetDestination}
         setRouteCoordinates={mockSetRouteCoordinates}
+        buildingData={mockBuildingData}   
+        markerData={mockMarkerData}          
+        userLocation={mockUserLocation}   
       />
     );
-  
+
     await waitFor(() => {
-      expect(screen.getByTestId('route-transport')).toHaveTextContent('Transport: Car');
-      expect(screen.getByTestId('route-cost')).toHaveTextContent('Cost: $5');
-      expect(screen.getByTestId('route-time')).toHaveTextContent('10:00 AM - 10:30 AM');
-      expect(screen.getByTestId('route-distance')).toHaveTextContent('Distance: 2.5 km');
+      expect(screen.getByTestId('route-transport-1')).toHaveTextContent('Transport: Car');
+      expect(screen.getByTestId('route-cost-1')).toHaveTextContent('Cost: $5');
+      expect(screen.getByTestId('route-time-1')).toHaveTextContent('10:00 AM - 10:30 AM');
+      expect(screen.getByTestId('route-distance-1')).toHaveTextContent('Distance: 2.5 km');
     });
   });
-  
-
   it('handles "Switch" button press', async () => {
+    const originWithCoordinates: LocationType = {
+      coordinates: { latitude: 45.4215, longitude: -75.6992 },
+    };
+    const destinationWithCoordinates: LocationType = {
+      coordinates: { latitude: 45.4275, longitude: -75.6933 }
+    };
+  
     render(
       <TransitModal
         visible={true}
         onClose={mockOnClose}
-        origin={origin}
-        destination={destination}
+        origin={originWithCoordinates}
+        destination={destinationWithCoordinates}
         setOrigin={mockSetOrigin}
         setDestination={mockSetDestination}
         setRouteCoordinates={mockSetRouteCoordinates}
+        buildingData={mockBuildingData}
+        markerData={mockMarkerData}
+        userLocation={mockUserLocation}
       />
     );
-
+  
     await act(async () => {
-        fireEvent.press(screen.getByTestId('switch-button'));
-    })
-
-    expect(mockSetOrigin).toHaveBeenCalledWith(destination); 
-    expect(mockSetDestination).toHaveBeenCalledWith(origin); 
+      fireEvent.press(screen.getByTestId('switch-button'));
+    });
+  
+    expect(mockSetOrigin).toHaveBeenCalledWith(destinationWithCoordinates);
+    expect(mockSetDestination).toHaveBeenCalledWith(originWithCoordinates);
   });
+  
 
   it('closes modal when close icon is pressed', async () => {
     render(
@@ -151,13 +189,15 @@ describe('TransitModal', () => {
         setOrigin={mockSetOrigin}
         setDestination={mockSetDestination}
         setRouteCoordinates={mockSetRouteCoordinates}
+        buildingData={mockBuildingData}       // Pass mock building data
+        markerData={mockMarkerData}           // Pass mock marker data
+        userLocation={mockUserLocation}       // Pass mock user location
       />
     );
 
-
-    await act (async () => {
-        fireEvent.press(screen.getByTestId('close-button'));
-    })
+    await act(async () => {
+      fireEvent.press(screen.getByTestId('close-button'));
+    });
 
     expect(mockOnClose).toHaveBeenCalled();
   });
@@ -172,20 +212,21 @@ describe('TransitModal', () => {
         setOrigin={mockSetOrigin}
         setDestination={mockSetDestination}
         setRouteCoordinates={mockSetRouteCoordinates}
+        buildingData={mockBuildingData} 
+        markerData={mockMarkerData}     
+        userLocation={mockUserLocation}  
       />
     );
-  
-    await waitFor(() => {
-      expect(screen.getByTestId(`route-option-${routeOptions[0].id}`)).toBeTruthy();
-    });
-  
 
-    await act (async () => {
-        fireEvent.press(screen.getByTestId(`route-option-${routeOptions[0].id}`));
-    })
+    await waitFor(() => {
+      expect(screen.getByTestId(`route-option-1`)).toBeTruthy();
+    });
+
+    await act(async () => {
+      fireEvent.press(screen.getByTestId(`route-option-1`));
+    });
 
     expect(mockSetRouteCoordinates).toHaveBeenCalledWith(routeOptions[0].routeCoordinates);
     expect(mockOnClose).toHaveBeenCalled();
   });
-  
 });
